@@ -1,0 +1,1841 @@
+1|1|Mimarlık Fakültesi
+2|1|Mühendislik Fakültesi
+3|1|Yaşam ve Doğa Bilimleri Fakültesi
+4|1|Yönetim Bilimleri Fakültesi
+5|1|İnsan ve Toplum Bilimleri Fakültesi
+6|2|Eczacılık Fakültesi
+7|2|Mühendislik ve Doğa Bilimleri Fakültesi
+8|2|Sağlık Bilimleri Fakültesi
+9|2|Tıp Fakültesi
+10|2|İnsan ve Toplum Bilimleri Fakültesi
+11|3|Bilgisayar ve Bilişim Fakültesi
+12|3|Havacılık ve Uzay Bilimleri Fakültesi
+13|3|Mimarlık ve Tasarım Fakültesi
+14|3|Mühendislik Fakültesi
+15|3|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+16|5|Diş Hekimliği Fakültesi
+17|5|Eczacılık Fakültesi
+18|5|Eğitim Fakültesi
+19|5|Fen-Edebiyat Fakültesi
+20|5|Mühendislik Fakültesi
+21|5|Sağlık Bilimleri Fakültesi
+22|5|Turizm Fakültesi
+23|5|Tıp Fakültesi
+24|5|İktisadi ve İdari Bilimler Fakültesi
+25|5|İlahiyat Fakültesi
+26|6|Bolvadin Uygulamalı Bilimler Fakültesi
+27|6|Dinar Uygulamalı Bilimler Yüksekokulu
+28|6|Eğitim Fakültesi
+29|6|Fen-Edebiyat Fakültesi
+30|6|Güzel Sanatlar Fakültesi
+31|6|Hukuk Fakültesi
+32|6|Mühendislik Fakültesi
+33|6|Sandıklı Uygulamalı Bilimler Yüksekokulu
+34|6|Teknoloji Fakültesi
+35|6|Turizm Fakültesi
+36|6|Veteriner Fakültesi
+37|6|İktisadi ve İdari Bilimler Fakültesi
+38|6|İlahiyat Fakültesi
+39|7|Diş Hekimliği Fakültesi
+40|7|Eczacılık Fakültesi
+41|7|Sağlık Bilimleri Fakültesi
+42|7|Tıp Fakültesi
+53|9|Diş Hekimliği Fakültesi
+54|9|Edebiyat Fakültesi
+55|9|Eğitim Fakültesi
+56|9|Fen Fakültesi
+57|9|Hemşirelik Fakültesi
+58|9|Hukuk Fakültesi
+59|9|Kemer Denizcilik Fakültesi
+60|9|Kumluca Sağlık Bilimleri Fakültesi
+61|9|Manavgat Sosyal ve Beşeri Bilimler Fakültesi
+62|9|Manavgat Turizm Fakültesi
+63|9|Manavgat Yabancı Diller Fakültesi
+64|9|Mimarlık Fakültesi
+65|9|Mühendislik Fakültesi
+66|9|Sağlık Bilimleri Fakültesi
+67|9|Serik İşletme Fakültesi
+68|9|Spor Bilimleri Fakültesi
+69|9|Su Ürünleri Fakültesi
+70|9|Turizm Fakültesi
+71|9|Tıp Fakültesi
+72|9|Uygulamalı Bilimler Fakültesi
+73|9|Ziraat Fakültesi
+74|9|İktisadi ve İdari Bilimler Fakültesi
+75|9|İlahiyat Fakültesi
+76|9|İletişim Fakültesi
+77|10|Diş Hekimliği Fakültesi
+78|10|Eğitim Fakültesi
+79|10|Fen-Edebiyat Fakültesi
+80|10|Mimarlık ve Tasarım Fakültesi
+81|10|Mühendislik Fakültesi
+82|10|Sağlık Bilimleri Fakültesi
+83|10|Spor Bilimleri Fakültesi
+84|10|Turizm Fakültesi
+85|10|Tıp Fakültesi
+86|10|Veteriner Fakültesi
+87|10|İktisadi ve İdari Bilimler Fakültesi
+88|10|İletişim Fakültesi
+89|10|İslami İlimler Fakültesi
+90|11|Diş Hekimliği Fakültesi
+91|11|Eğitim Fakültesi
+92|11|Gazipaşa Havacılık ve Uzay Bilimleri Fakültesi
+93|11|Rafet Kayış Mühendislik Fakültesi
+94|11|Sanat, Tasarım ve Mimarlık Fakültesi
+95|11|Sağlık Bilimleri Fakültesi
+96|11|Turizm Fakültesi
+97|11|Tıp Fakültesi
+98|11|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+99|12|Mühendislik ve Mimarlık Fakültesi
+100|12|Sosyal ve Beşeri Bilimler Fakültesi
+101|12|Tarım ve Doğa Bilimleri Fakültesi
+102|13|Mühendislik ve Doğa Bilimleri Fakültesi
+103|13|Sanat ve Tasarım Fakültesi
+104|13|Sağlık Bilimleri Fakültesi
+105|13|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+106|14|Diş Hekimliği Fakültesi
+107|14|Eczacılık Fakültesi
+108|14|Hukuk Fakültesi
+109|14|Mühendislik ve Mimarlık Fakültesi
+110|14|Sağlık Bilimleri Fakültesi
+111|14|Tıp Fakültesi
+112|14|Uygulamalı Bilimler Fakültesi
+113|14|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+114|14|İletişim Fakültesi
+115|14|İşletme Fakültesi
+116|15|Eğitim Fakültesi
+117|15|Fen-Edebiyat Fakültesi
+118|15|Hattat Hamdullah Güzel Sanatlar Fakültesi
+119|15|Merzifon İktisadi ve İdari Bilimler Fakültesi
+120|15|Mimarlık Fakültesi
+121|15|Mühendislik Fakültesi
+122|15|Sağlık Bilimleri Fakültesi
+123|15|Tıp Fakültesi
+124|15|İlahiyat Fakültesi
+125|16|Açıköğretim Fakültesi
+126|16|Eczacılık Fakültesi
+127|16|Edebiyat Fakültesi
+128|16|Eğitim Fakültesi
+129|16|Güzel Sanatlar Fakültesi
+130|16|Hukuk Fakültesi
+131|16|Sağlık Bilimleri Fakültesi
+132|16|Turizm Fakültesi
+133|16|İktisadi ve İdari Bilimler Fakültesi
+134|16|İletişim Bilimleri Fakültesi
+135|17|Güzel Sanatlar ve Tasarım Fakültesi
+136|17|Hukuk Fakültesi
+137|17|Mühendislik ve Mimarlık Fakültesi
+138|17|İnsan ve Toplum Bilimleri Fakültesi
+139|18|Edebiyat Fakültesi
+140|18|Finansal Bilimler Fakültesi
+141|18|Güzel Sanatlar Fakültesi
+142|18|Hukuk Fakültesi
+143|18|Polatlı Fen-Edebiyat Fakültesi
+144|18|Sanat ve Tasarım Fakültesi
+145|18|Tapu Kadastro Yüksekokulu
+146|18|Turizm Fakültesi
+147|18|İktisadi ve İdari Bilimler Fakültesi
+148|18|İlahiyat Fakültesi
+149|18|İletişim Fakültesi
+150|19|Diş Hekimliği Fakültesi
+151|19|Eczacılık Fakültesi
+152|19|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+153|19|Hukuk Fakültesi
+154|19|Mühendislik ve Doğa Bilimleri Fakültesi
+155|19|Sağlık Bilimleri Fakültesi
+156|19|Siyasal Bilgiler Fakültesi
+157|19|Tıp Fakültesi
+158|19|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+159|19|İletişim Fakültesi
+160|20|Sanat ve Tasarım Fakültesi
+161|21|Hukuk Fakültesi
+162|21|Siyasal Bilgiler Fakültesi
+163|21|Sosyal ve Beşeri Bilimler Fakültesi
+164|21|Yabancı Diller Fakültesi
+165|21|İlahiyat Fakültesi
+166|21|İletişim Fakültesi
+167|22|Beden Eğitimi ve Spor Yüksekokulu
+168|22|Diş Hekimliği Fakültesi
+169|22|Mühendislik-Mimarlık Fakültesi
+170|22|Sanat ve Tasarım Fakültesi
+171|22|Sağlık Bilimleri Fakültesi
+172|22|Sivil Havacılık Yüksekokulu
+173|22|Tıp Fakültesi
+174|22|Uygulamalı Bilimler Yüksekokulu
+175|22|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+195|24|Diş Hekimliği Fakültesi
+196|24|Havacılık ve Uzay Bilimleri Fakültesi
+197|24|Hukuk Fakültesi
+198|24|Mimarlık ve Güzel Sanatlar Fakültesi
+199|24|Mühendislik ve Doğa Bilimleri Fakültesi
+200|24|Sağlık Bilimleri Fakültesi
+201|24|Siyasal Bilgiler Fakültesi
+202|24|Spor Bilimleri Fakültesi
+203|24|Tıp Fakültesi
+204|24|İlahiyat Fakültesi
+205|24|İletişim Fakültesi
+206|24|İnsan ve Toplum Bilimleri Fakültesi
+207|24|İşletme Fakültesi
+208|24|Şereflikoçhisar Uygulamalı Bilimler Fakültesi
+176|23|Açık ve Uzaktan Eğitim Fakültesi
+177|23|Dil ve Tarih Coğrafya Fakültesi
+178|23|Diş Hekimliği Fakültesi
+179|23|Eczacılık Fakültesi
+180|23|Eğitim Bilimleri Fakültesi
+181|23|Fen Fakültesi
+182|23|Güzel Sanatlar Fakültesi
+183|23|Hemşirelik Fakültesi
+184|23|Hukuk Fakültesi
+185|23|Mühendislik Fakültesi
+186|23|Sağlık Bilimleri Fakültesi
+187|23|Siyasal Bilgiler Fakültesi
+188|23|Spor Bilimleri Fakültesi
+189|23|Tıp Fakültesi
+190|23|Uygulamalı Bilimler Fakültesi
+191|23|Veteriner Fakültesi
+192|23|Ziraat Fakültesi
+193|23|İlahiyat Fakültesi
+194|23|İletişim Fakültesi
+209|25|Mühendislik-Mimarlık Fakültesi
+210|25|Sanat ve Tasarım Fakültesi
+211|25|İktisadi ve İdari Bilimler Fakültesi
+212|25|İnsani Bilimler Fakültesi
+213|26|Diş Hekimliği Fakültesi
+214|26|Güzel Sanatlar ve Mimarlık Fakültesi
+215|26|Hukuk Fakültesi
+216|26|Mühendislik ve Doğa Bilimleri Fakültesi
+217|26|Sağlık Bilimleri Fakültesi
+218|26|Sivil Havacılık Yüksekokulu
+219|26|Turizm Fakültesi
+220|26|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+221|27|Mühendislik Fakültesi
+222|27|Sağlık Bilimleri Fakültesi
+223|27|Spor Bilimleri Fakültesi
+224|27|Turizm İşletmeciliği ve Otelcilik Yüksekokulu
+225|27|İktisadi ve İdari Bilimler Fakültesi
+226|27|İlahiyat Fakültesi
+227|27|İnsani Bilimler ve Edebiyat Fakültesi
+228|28|Eğitim Fakültesi
+229|28|Fen-Edebiyat Fakültesi
+230|28|Hopa İktisadi ve İdari Bilimler Fakültesi
+231|28|Mühendislik Fakültesi
+232|28|Orman Fakültesi
+233|28|Sağlık Bilimleri Fakültesi
+234|28|Spor Bilimleri Fakültesi
+235|28|Turizm Fakültesi
+236|28|İşletme Fakültesi
+237|29|Açık ve Uzaktan Öğretim Fakültesi
+238|29|Diş Hekimliği Fakültesi
+239|29|Eczacılık Fakültesi
+240|29|Edebiyat Fakültesi
+241|29|Fen Fakültesi
+242|29|Güzel Sanatlar Fakültesi
+243|29|Hemşirelik Fakültesi
+244|29|Hukuk Fakültesi
+245|29|Kazım Karabekir Eğitim Fakültesi
+246|29|Mimarlık ve Tasarım Fakültesi
+247|29|Mühendislik Fakültesi
+248|29|Oltu Beşeri ve Sosyal Bilimler Fakültesi
+249|29|Sağlık Bilimleri Fakültesi
+250|29|Spor Bilimleri Fakültesi
+251|29|Su Ürünleri Fakültesi
+252|29|Turizm Fakültesi
+253|29|Tıp Fakültesi
+254|29|Veteriner Fakültesi
+255|29|Ziraat Fakültesi
+256|29|İktisadi ve İdari Bilimler Fakültesi
+257|29|İlahiyat Fakültesi
+258|29|İletişim Fakültesi
+259|30|Fen-Edebiyat Fakültesi
+260|30|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+261|30|Hukuk Fakültesi
+262|30|Mühendislik Fakültesi
+263|30|Sağlık Bilimleri Fakültesi
+264|30|Sivil Havacılık Yüksekokulu
+265|30|Tıp Fakültesi
+266|30|İşletme Fakültesi
+267|31|Fen-Edebiyat Fakültesi
+268|31|Mühendislik ve Mimarlık Fakültesi
+269|31|Sağlık Bilimleri Fakültesi
+270|31|Spor Bilimleri Fakültesi
+271|31|Uygulamalı Bilimler Yüksekokulu
+272|31|İktisadi ve İdari Bilimler Fakültesi
+273|31|İletişim Fakültesi
+274|32|Diş Hekimliği Fakültesi
+275|32|Eğitim Fakültesi
+276|32|Fen Fakültesi
+277|32|Hemşirelik Fakültesi
+278|32|Mühendislik Fakültesi
+279|32|Nazilli İktisadi ve İdari Bilimler Fakültesi
+280|32|Sağlık Bilimleri Fakültesi
+281|32|Siyasal Bilgiler Fakültesi
+282|32|Spor Bilimleri Fakültesi
+283|32|Söke İşletme Fakültesi
+284|32|Tıp Fakültesi
+285|32|Veteriner Fakültesi
+286|32|Ziraat Fakültesi
+287|32|İlahiyat Fakültesi
+288|32|İletişim Fakültesi
+289|32|İnsan ve Toplum Bilimleri Fakültesi
+43|8|Eczacılık Fakültesi
+44|8|Eğitim Fakültesi
+45|8|Fen-Edebiyat Fakültesi
+46|8|Patnos Sosyal Hizmetler Yüksekokulu
+47|8|Sağlık Bilimleri Fakültesi
+48|8|Spor Bilimleri Fakültesi
+49|8|Turizm İşletmeciliği ve Otelcilik Yüksekokulu
+50|8|Tıp Fakültesi
+51|8|İktisadi ve İdari Bilimler Fakültesi
+52|8|İslami İlimler Fakültesi
+290|33|Burhaniye Uygulamalı Bilimler Fakültesi
+291|33|Edremit Sivil Havacılık Yüksekokulu
+292|33|Fen-Edebiyat Fakültesi
+293|33|Hukuk Fakültesi
+294|33|Mimarlık Fakültesi
+295|33|Mühendislik Fakültesi
+296|33|Necatibey Eğitim Fakültesi
+297|33|Sağlık Bilimleri Fakültesi
+298|33|Spor Bilimleri Fakültesi
+299|33|Turizm Fakültesi
+300|33|Tıp Fakültesi
+301|33|Veteriner Fakültesi
+302|33|İktisadi ve İdari Bilimler Fakültesi
+303|33|İlahiyat Fakültesi
+304|34|Bartın Orman Fakültesi
+305|34|Edebiyat Fakültesi
+306|34|Eğitim Fakültesi
+307|34|Fen Fakültesi
+308|34|Mühendislik, Mimarlık ve Tasarım Fakültesi
+309|34|Sağlık Bilimleri Fakültesi
+310|34|Spor Bilimleri Fakültesi
+311|34|İktisadi ve İdari Bilimler Fakültesi
+312|34|İlahiyat Fakültesi
+313|35|Diş Hekimliği Fakültesi
+314|35|Fen-Edebiyat Fakültesi
+315|35|Mühendislik-Mimarlık Fakültesi
+316|35|Sağlık Bilimleri Fakültesi
+317|35|Spor Bilimleri Fakültesi
+318|35|Turizm Fakültesi
+319|35|İktisadi ve İdari Bilimler Fakültesi
+320|35|İslami İlimler Fakültesi
+321|36|Eğitim Fakültesi
+322|36|Mühendislik Fakültesi
+323|36|Sanat ve Tasarım Fakültesi
+324|36|Sağlık Bilimleri Fakültesi
+325|36|Spor Bilimleri Fakültesi
+326|36|Uygulamalı Bilimler Fakültesi
+327|36|İktisadi ve İdari Bilimler Fakültesi
+328|36|İlahiyat Fakültesi
+329|36|İnsan ve Toplum Bilimleri Fakültesi
+342|38|Diş Hekimliği Fakültesi
+343|38|Fen Fakültesi
+344|38|Güzel Sanatlar ve Tasarım Fakültesi
+345|38|Mühendislik Fakültesi
+346|38|Sağlık Bilimleri Fakültesi
+347|38|Tıp Fakültesi
+348|38|Uygulamalı Bilimler Fakültesi
+349|38|Ziraat ve Doğa Bilimleri Fakültesi
+350|38|İktisadi ve İdari Bilimler Fakültesi
+351|38|İlahiyat Fakültesi
+352|38|İnsan ve Toplum Bilimleri Fakültesi
+353|39|Diş Hekimliği Fakültesi
+354|39|Fen-Edebiyat Fakültesi
+355|39|Fizik Tedavi ve Rehabilitasyon Fakültesi
+356|39|Mühendislik-Mimarlık Fakültesi
+357|39|Sağlık Bilimleri Fakültesi
+358|39|Spor Bilimleri Fakültesi
+359|39|Veteriner Fakültesi
+360|39|Ziraat Fakültesi
+361|39|İktisadi ve İdari Bilimler Fakültesi
+362|39|İlahiyat Fakültesi
+330|37|Diş Hekimliği Fakültesi
+331|37|Eczacılık Fakültesi
+332|37|Eğitim Fakültesi
+333|37|Fen-Edebiyat Fakültesi
+334|37|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+335|37|Hukuk Fakültesi
+336|37|Mühendislik Fakültesi
+337|37|Sağlık Bilimleri Fakültesi
+338|37|Ticari Bilimler Fakültesi
+339|37|Tıp Fakültesi
+340|37|İktisadi ve İdari Bilimler Fakültesi
+341|37|İletişim Fakültesi
+363|40|Diş Hekimliği Fakültesi
+364|40|Eczacılık Fakültesi
+365|40|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+366|40|Mühendislik ve Doğa Bilimleri Fakültesi
+367|40|Sağlık Bilimleri Fakültesi
+368|40|Tıp Fakültesi
+369|40|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+370|40|İletişim Fakültesi
+371|40|İnsan ve Toplum Bilimleri Fakültesi
+372|41|Mühendislik ve Mimarlık Fakültesi
+373|41|Sanat ve Tasarım Fakültesi
+374|41|Sivil Havacılık Yüksekokulu
+375|41|Sosyal Bilimler Fakültesi
+376|41|İşletme ve Yönetim Bilimleri Fakültesi
+377|42|Diş Hekimliği Fakültesi
+378|42|Eczacılık Fakültesi
+379|42|Sağlık Bilimleri Fakültesi
+380|42|Tıp Fakültesi
+381|43|Fen-Edebiyat Fakültesi
+382|43|Güzel Sanatlar Fakültesi
+383|43|Mühendislik-Mimarlık Fakültesi
+384|43|Sağlık Bilimleri Fakültesi
+385|43|İktisadi ve İdari Bilimler Fakültesi
+386|43|İlahiyat Fakültesi
+387|44|Eğitim Fakültesi
+388|44|Fen Fakültesi
+389|44|Hukuk Fakültesi
+390|44|Mühendislik Fakültesi
+391|44|İktisadi ve İdari Bilimler Fakültesi
+392|44|İnsan ve Toplum Bilimleri Fakültesi
+393|45|Akdağmadeni Sağlık Yüksekokulu
+394|45|Diş Hekimliği Fakültesi
+395|45|Eğitim Fakültesi
+396|45|Fen-Edebiyat Fakültesi
+397|45|Hukuk Fakültesi
+398|45|Mühendislik-Mimarlık Fakültesi
+399|45|Sarıkaya Fizyoterapi ve Rehabilitasyon Yüksekokulu
+400|45|Sağlık Bilimleri Fakültesi
+401|45|Spor Bilimleri Fakültesi
+402|45|Tıp Fakültesi
+403|45|Veteriner Fakültesi
+404|45|Ziraat Fakültesi
+405|45|İktisadi ve İdari Bilimler Fakültesi
+406|45|İlahiyat Fakültesi
+407|45|İletişim Fakültesi
+408|46|Denizcilik Fakültesi
+409|46|Mimarlık ve Tasarım Fakültesi
+410|46|Mühendislik ve Doğa Bilimleri Fakültesi
+411|46|Orman Fakültesi
+412|46|İnsan ve Toplum Bilimleri Fakültesi
+413|47|Diş Hekimliği Fakültesi
+414|47|Eczacılık Fakültesi
+415|47|Eğitim Fakültesi
+416|47|Mühendislik ve Doğa Bilimleri Fakültesi
+417|47|Sağlık Bilimleri Fakültesi
+418|47|Tıp Fakültesi
+419|47|Uygulamalı Bilimler Fakültesi
+420|48|Bilgisayar ve Bilişim Bilimleri Fakültesi
+421|48|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+422|48|Hasan Ferdi Turgutlu Teknoloji Fakültesi
+423|48|Mühendislik ve Doğa Bilimleri Fakültesi
+424|48|Salihli İktisadi ve İdari Bilimler Fakültesi
+425|48|Sağlık Bilimleri Fakültesi
+426|48|Spor Bilimleri Fakültesi
+427|48|Tütün Eksperliği Yüksekokulu
+428|48|Tıp Fakültesi
+429|48|Uygulamalı Bilimler Fakültesi
+430|48|İktisadi ve İdari Bilimler Fakültesi
+431|48|İlahiyat Fakültesi
+432|48|İletişim Fakültesi
+433|48|İnsan ve Toplum Bilimleri Fakültesi
+434|48|İşletme Fakültesi
+455|50|Biga Uygulamalı Bilimler Fakültesi
+456|50|Biga İktisadi ve İdari Bilimler Fakültesi
+457|50|Deniz Bilimleri ve Teknolojisi Fakültesi
+458|50|Diş Hekimliği Fakültesi
+459|50|Eğitim Fakültesi
+460|50|Fen Fakültesi
+461|50|Gökçeada Uygulamalı Bilimler Yüksekokulu
+462|50|Mimarlık ve Tasarım Fakültesi
+463|50|Mühendislik Fakültesi
+464|50|Sağlık Bilimleri Fakültesi
+465|50|Siyasal Bilgiler Fakültesi
+466|50|Spor Bilimleri Fakültesi
+467|50|Turizm Fakültesi
+468|50|Tıp Fakültesi
+469|50|Ziraat Fakültesi
+470|50|Çan Uygulamalı Bilimler Fakültesi
+471|50|Çanakkale Uygulamalı Bilimler Fakültesi
+472|50|İlahiyat Fakültesi
+473|50|İletişim Fakültesi
+474|50|İnsan ve Toplum Bilimleri Fakültesi
+435|49|Diş Hekimliği Fakültesi
+436|49|Eczacılık Fakültesi
+437|49|Edebiyat Fakültesi
+438|49|Eğitim Fakültesi
+439|49|Fen Fakültesi
+440|49|Hukuk Fakültesi
+441|49|Mimarlık, Güzel Sanatlar ve Tasarım Fakültesi
+442|49|Mühendislik Fakültesi
+443|49|Sağlık Bilimleri Fakültesi
+444|49|Spor Bilimleri Fakültesi
+445|49|Suşehri Sağlık Yüksekokulu
+446|49|Teknoloji Fakültesi
+447|49|Turizm Fakültesi
+448|49|Tıp Fakültesi
+449|49|Veteriner Fakültesi
+450|49|Zara Veysel Dursun Uygulamalı Bilimler Yüksekokulu
+451|49|İktisadi ve İdari Bilimler Fakültesi
+452|49|İlahiyat Fakültesi
+453|49|İletişim Fakültesi
+454|49|Şarkışla Uygulamalı Bilimler Yüksekokulu
+475|51|Diş Hekimliği Fakültesi
+476|51|Fen Fakültesi
+477|51|Hukuk Fakültesi
+478|51|Mühendislik Fakültesi
+479|51|Orman Fakültesi
+480|51|Sanat, Tasarım ve Mimarlık Fakültesi
+481|51|Sağlık Bilimleri Fakültesi
+482|51|İktisadi ve İdari Bilimler Fakültesi
+483|51|İnsan ve Toplum Bilimleri Fakültesi
+484|51|İslami İlimler Fakültesi
+485|52|Ceyhan Mühendislik Fakültesi
+486|52|Ceyhan Veteriner Fakültesi
+487|52|Diş Hekimliği Fakültesi
+488|52|Eczacılık Fakültesi
+489|52|Eğitim Fakültesi
+490|52|Fen-Edebiyat Fakültesi
+491|52|Güzel Sanatlar Fakültesi
+492|52|Hukuk Fakültesi
+493|52|Kozan İşletme Fakültesi
+494|52|Mimarlık Fakültesi
+495|52|Mühendislik Fakültesi
+496|52|Sağlık Bilimleri Fakültesi
+497|52|Spor Bilimleri Fakültesi
+498|52|Su Ürünleri Fakültesi
+499|52|Tıp Fakültesi
+500|52|Ziraat Fakültesi
+501|52|İktisadi ve İdari Bilimler Fakültesi
+502|52|İlahiyat Fakültesi
+503|52|İletişim Fakültesi
+504|53|Eğitim Fakültesi
+505|53|Fen-Edebiyat Fakültesi
+506|53|Güzel Sanatlar Fakültesi
+507|53|Kütahya Uygulamalı Bilimler Fakültesi
+508|53|Mimarlık Fakültesi
+509|53|Mühendislik Fakültesi
+510|53|Simav Teknoloji Fakültesi
+511|53|Spor Bilimleri Fakültesi
+512|53|Tavşanlı Uygulamalı Bilimler Fakültesi
+513|53|İktisadi ve İdari Bilimler Fakültesi
+514|53|İlahiyat Fakültesi
+571|59|Fen-Edebiyat Fakültesi
+572|59|Florence Nightingale Hastanesi Hemşirelik Yüksekokulu
+573|59|Sağlık Bilimleri Fakültesi
+574|59|Tıp Fakültesi
+575|59|İşletme ve Yönetim Bilimleri Fakültesi
+576|60|Bilgisayar ve Bilişim Bilimleri Fakültesi
+577|60|Birgivi İlahiyat Fakültesi
+578|60|Diş Hekimliği Fakültesi
+579|60|Eczacılık Fakültesi
+580|60|Edebiyat Fakültesi
+581|60|Eğitim Fakültesi
+582|60|Fen Fakültesi
+583|60|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+584|60|Hemşirelik Fakültesi
+585|60|Moda ve Tasarım Yüksekokulu
+586|60|Mühendislik Fakültesi
+587|60|Sağlık Bilimleri Fakültesi
+588|60|Spor Bilimleri Fakültesi
+589|60|Su Ürünleri Fakültesi
+590|60|Tıp Fakültesi
+591|60|Ziraat Fakültesi
+592|60|Çeşme Turizm Fakültesi
+593|60|Ödemiş Sağlık Bilimleri Fakültesi
+594|60|İktisadi ve İdari Bilimler Fakültesi
+595|60|İletişim Fakültesi
+625|64|Diş Hekimliği Fakültesi
+626|64|Eczacılık Fakültesi
+627|64|Edebiyat Fakültesi
+628|64|Eğitim Fakültesi
+629|64|Fen Fakültesi
+630|64|Havacılık ve Uzay Bilimleri Fakültesi
+631|64|Hukuk Fakültesi
+632|64|Mimarlık Fakültesi
+633|64|Mühendislik Fakültesi
+634|64|Sağlık Bilimleri Fakültesi
+635|64|Spor Bilimleri Fakültesi
+636|64|Turizm Fakültesi
+637|64|Tıp Fakültesi
+638|64|Veteriner Fakültesi
+639|64|Ziraat Fakültesi
+640|64|İktisadi ve İdari Bilimler Fakültesi
+641|64|İlahiyat Fakültesi
+642|64|İletişim Fakültesi
+596|61|Bilgisayar ve Teknoloji Yüksekokulu
+597|61|Diş Hekimliği Fakültesi
+598|61|Eczacılık Fakültesi
+599|61|Eğitim Fakültesi
+600|61|Fen ve Edebiyat Fakültesi
+601|61|Hukuk Fakültesi
+602|61|Mimarlık Fakültesi
+603|61|Mühendislik Fakültesi
+604|61|Sağlık Bilimleri Fakültesi
+605|61|Turizm Fakültesi
+606|61|Tıp Fakültesi
+607|61|İletişim Fakültesi
+608|61|İşletme ve Ekonomi Fakültesi
+609|62|Güzel Sanatlar Fakültesi
+610|62|Siyasal Bilgiler Fakültesi
+611|62|İşletme ve Ekonomi Fakültesi
+612|63|Ali Cavit Çelebioğlu Sivil Havacılık Yüksekokulu
+613|63|Diş Hekimliği Fakültesi
+614|63|Eczacılık Fakültesi
+615|63|Eğitim Fakültesi
+616|63|Fen-Edebiyat Fakültesi
+617|63|Hukuk Fakültesi
+618|63|Kemaliye Hacı Ali Akın Uygulamalı Bilimler Yüksekokulu
+619|63|Mühendislik-Mimarlık Fakültesi
+620|63|Sağlık Bilimleri Fakültesi
+621|63|Spor Bilimleri Fakültesi
+622|63|Tıp Fakültesi
+623|63|İktisadi ve İdari Bilimler Fakültesi
+624|63|İlahiyat Fakültesi
+643|65|Mühendislik, Mimarlık ve Tasarım Fakültesi
+644|65|Sanat ve Sosyal Bilimler Fakültesi
+645|65|Sağlık Bilimleri Fakültesi
+646|66|Edebiyat Fakültesi
+647|66|Fen Fakültesi
+648|66|Mühendislik ve Mimarlık Fakültesi
+649|66|Sağlık Bilimleri Fakültesi
+650|66|İktisadi ve İdari Bilimler Fakültesi
+651|67|Diş Hekimliği Fakültesi
+652|67|Eğitim Fakültesi
+653|67|Fen Fakültesi
+654|67|Hukuk Fakültesi
+655|67|Mühendislik-Mimarlık Fakültesi
+656|67|Sanat ve Tasarım Fakültesi
+657|67|Sağlık Bilimleri Fakültesi
+658|67|Turizm Fakültesi
+659|67|Tıp Fakültesi
+660|67|Ziraat Fakültesi
+661|67|İktisadi ve İdari Bilimler Fakültesi
+662|67|İlahiyat Fakültesi
+663|67|İnsan ve Toplum Bilimleri Fakültesi
+664|68|Diş Hekimliği Fakültesi
+665|68|Eczacılık Fakültesi
+666|68|Eğitim Fakültesi
+667|68|Fen Fakültesi
+668|68|Mimarlık Fakültesi
+669|68|Mühendislik Fakültesi
+670|68|Sağlık Bilimleri Fakültesi
+671|68|Sivil Havacılık Yüksekokulu
+672|68|Spor Bilimleri Fakültesi
+673|68|Su Ürünleri Fakültesi
+674|68|Teknoloji Fakültesi
+675|68|Tıp Fakültesi
+676|68|Veteriner Fakültesi
+677|68|İktisadi ve İdari Bilimler Fakültesi
+678|68|İlahiyat Fakültesi
+679|68|İletişim Fakültesi
+680|68|İnsan ve Toplum Bilimleri Fakültesi
+681|69|Fen-Edebiyat Fakültesi
+682|69|Hukuk Fakültesi
+683|69|Mühendislik ve Teknoloji Fakültesi
+684|69|İktisadi ve İdari Bilimler Fakültesi
+685|69|İletişim Fakültesi
+686|70|Diş Hekimliği Fakültesi
+687|70|Eczacılık Fakültesi
+688|70|Fen Fakültesi
+689|70|Gazi Eğitim Fakültesi
+690|70|Hemşirelik Fakültesi
+691|70|Mimarlık Fakültesi
+692|70|Mühendislik Fakültesi
+693|70|Sağlık Bilimleri Fakültesi
+694|70|Spor Bilimleri Fakültesi
+695|70|Teknoloji Fakültesi
+696|70|Tıp Fakültesi
+697|70|Uygulamalı Bilimler Fakültesi
+698|71|Diş Hekimliği Fakültesi
+699|71|Fen-Edebiyat Fakültesi
+700|71|Gaziantep Eğitim Fakültesi
+701|71|Güzel Sanatlar Fakültesi
+702|71|Havacılık ve Uzay Bilimleri Fakültesi
+703|71|Hukuk Fakültesi
+704|71|Mimarlık Fakültesi
+705|71|Mühendislik Fakültesi
+706|71|Nizip Eğitim Fakültesi
+707|71|Sağlık Bilimleri Fakültesi
+708|71|Spor Bilimleri Fakültesi
+709|71|Turizm Fakültesi
+710|71|Tıp Fakültesi
+711|71|İktisadi ve İdari Bilimler Fakültesi
+712|71|İlahiyat Fakültesi
+713|71|İletişim Fakültesi
+714|71|İslahiye İktisadi ve İdari Bilimler Fakültesi
+715|72|Diş Hekimliği Fakültesi
+716|72|Eczacılık Fakültesi
+717|72|Erbaa Sağlık Bilimleri Fakültesi
+718|72|Erbaa Sosyal ve Beşeri Bilimler Fakültesi
+719|72|Eğitim Fakültesi
+720|72|Fen-Edebiyat Fakültesi
+721|72|Güzel Sanatlar Fakültesi
+722|72|Hukuk Fakültesi
+723|72|Mühendislik ve Mimarlık Fakültesi
+724|72|Niksar Uygulamalı Bilimler Fakültesi
+725|72|Sağlık Bilimleri Fakültesi
+726|72|Spor Bilimleri Fakültesi
+727|72|Turhal Uygulamalı Bilimler Fakültesi
+728|72|Tıp Fakültesi
+729|72|Zile Dinçerler Turizm İşletmeciliği ve Otelcilik Yüksekokulu
+730|72|Ziraat Fakültesi
+731|72|İktisadi ve İdari Bilimler Fakültesi
+732|72|İslami İlimler Fakültesi
+733|73|Eğitim Fakültesi
+734|73|Hukuk Fakültesi
+735|73|Mühendislik Fakültesi
+736|73|Sanat, Tasarım ve Mimarlık Fakültesi
+737|73|İktisadi ve İdari Bilimler Fakültesi
+738|73|İnsan ve Toplum Bilimleri Fakültesi
+739|73|İslami İlimler Fakültesi
+740|74|Havacılık ve Uzay Bilimleri Fakültesi
+741|74|Mimarlık Fakültesi
+742|74|Mühendislik Fakültesi
+743|74|Temel Bilimler Fakültesi
+744|74|İşletme Fakültesi
+745|75|Bulancak Kadir Karabaş Uygulamalı Bilimler Yüksekokulu
+746|75|Diş Hekimliği Fakültesi
+747|75|Eğitim Fakültesi
+748|75|Fen-Edebiyat Fakültesi
+749|75|Görele Güzel Sanatlar Fakültesi
+750|75|Görele Uygulamalı Bilimler Yüksekokulu
+751|75|Mühendislik Fakültesi
+752|75|Sivil Havacılık Yüksekokulu
+753|75|Tirebolu İletişim Fakültesi
+754|75|Tıp Fakültesi
+755|75|İktisadi ve İdari Bilimler Fakültesi
+756|75|İlahiyat Fakültesi
+757|75|Şebinkarahisar Uygulamalı Bilimler Yüksekokulu
+758|77|Edebiyat Fakültesi
+759|77|Gümüşhane İktisadi ve İdari Bilimler Fakültesi
+760|77|Mühendislik ve Doğa Bilimleri Fakültesi
+761|77|Sağlık Bilimleri Fakültesi
+762|77|Spor Bilimleri Fakültesi
+763|77|Turizm Fakültesi
+764|77|Uygulamalı Bilimler Yüksekokulu
+765|77|İlahiyat Fakültesi
+766|77|İletişim Fakültesi
+782|79|Eğitim Fakültesi
+783|79|Mühendislik Fakültesi
+784|79|Sağlık Bilimleri Fakültesi
+785|79|Spor Bilimleri Fakültesi
+786|79|İktisadi ve İdari Bilimler Fakültesi
+787|79|İlahiyat Fakültesi
+767|78|Diş Hekimliği Fakültesi
+768|78|Eczacılık Fakültesi
+769|78|Edebiyat Fakültesi
+770|78|Eğitim Fakültesi
+771|78|Fen Fakültesi
+772|78|Fizik Tedavi ve Rehabilitasyon Fakültesi
+773|78|Güzel Sanatlar Fakültesi
+774|78|Hemşirelik Fakültesi
+775|78|Hukuk Fakültesi
+776|78|Mimarlık Fakültesi
+777|78|Mühendislik Fakültesi
+778|78|Sağlık Bilimleri Fakültesi
+779|78|Tıp Fakültesi
+780|78|İktisadi ve İdari Bilimler Fakültesi
+781|78|İletişim Fakültesi
+788|81|Diş Hekimliği Fakültesi
+789|81|Eczacılık Fakültesi
+790|81|Eğitim Fakültesi
+791|81|Fen-Edebiyat Fakültesi
+792|81|Güzel Sanatlar Fakültesi
+793|81|Mühendislik Fakültesi
+794|81|Sağlık Bilimleri Fakültesi
+795|81|Siverek Uygulamalı Bilimler Fakültesi
+796|81|Turizm Fakültesi
+797|81|Tıp Fakültesi
+798|81|Veteriner Fakültesi
+799|81|Viranşehir Sağlık Yüksekokulu
+800|81|Ziraat Fakültesi
+801|81|İktisadi ve İdari Bilimler Fakültesi
+802|81|İlahiyat Fakültesi
+803|82|Mühendislik ve Doğa Bilimleri Fakültesi
+804|82|Sağlık Bilimleri Fakültesi
+805|82|Spor Bilimleri Fakültesi
+806|82|Tıp Fakültesi
+807|82|İktisadi ve İdari Bilimler Fakültesi
+808|82|İlahiyat Fakültesi
+809|82|İnsan ve Toplum Bilimleri Fakültesi
+810|83|Deniz Bilimleri Fakültesi
+811|83|Deniz İşletmeciliği ve Yönetimi Fakültesi
+812|83|Denizcilik Fakültesi
+813|83|Diş Hekimliği Fakültesi
+814|83|Eğitim Fakültesi
+815|83|Fen Edebiyat Fakültesi
+816|83|Havacılık ve Uzay Bilimleri Fakültesi
+817|83|Hukuk Fakültesi
+818|83|Mimarlık Fakültesi
+819|83|Mühendislik Fakültesi
+820|83|Sağlık Bilimleri Fakültesi
+821|83|Turizm Fakültesi
+822|83|Tıp Fakültesi
+823|83|İktisadi ve İdari Bilimler Fakültesi
+824|84|Diş Hekimliği Fakültesi
+825|84|Fen-Edebiyat Fakültesi
+826|84|Mühendislik Fakültesi
+827|84|Sağlık Bilimleri Fakültesi
+828|84|Spor Bilimleri Fakültesi
+829|84|Turizm Fakültesi
+830|84|Uygulamalı Bilimler Fakültesi
+831|84|Ziraat Fakültesi
+832|84|İktisadi ve İdari Bilimler Fakültesi
+833|84|İlahiyat Fakültesi
+834|85|Diş Hekimliği Fakültesi
+835|85|Eczacılık Fakültesi
+836|85|Eğitim Fakültesi
+837|85|Fen-Edebiyat Fakültesi
+838|85|Güzel Sanatlar ve Tasarım Fakültesi
+839|85|Hemşirelik Fakültesi
+840|85|Hukuk Fakültesi
+841|85|Mühendislik Fakültesi
+842|85|Sağlık Bilimleri Fakültesi
+843|85|Spor Bilimleri Fakültesi
+844|85|Tıp Fakültesi
+845|85|İktisadi ve İdari Bilimler Fakültesi
+846|85|İlahiyat Fakültesi
+847|85|İletişim Fakültesi
+848|86|Diş Hekimliği Fakültesi
+849|86|Edebiyat Fakültesi
+850|86|Eğitim Bilimleri Fakültesi
+851|86|Hukuk Fakültesi
+852|86|Mühendislik ve Doğa Bilimleri Fakültesi
+853|86|Sanat, Tasarım ve Mimarlık Fakültesi
+854|86|Sağlık Bilimleri Fakültesi
+855|86|Siyasal Bilgiler Fakültesi
+856|86|Turizm Fakültesi
+857|86|Tıp Fakültesi
+858|86|İlahiyat Fakültesi
+859|87|Fen-Edebiyat Fakültesi
+860|87|Güzel Sanatlar Fakültesi
+861|87|Mimarlık Fakültesi
+862|87|Mühendislik Fakültesi
+863|87|Sağlık Bilimleri Fakültesi
+864|87|Spor Bilimleri Fakültesi
+865|87|Tıp Fakültesi
+866|87|İşletme Fakültesi
+867|88|Bilgisayar ve Bilişim Fakültesi
+868|88|Denizcilik Fakültesi
+869|88|Elektrik-Elektronik Fakültesi
+870|88|Fen-Edebiyat Fakültesi
+871|88|Gemi İnşaatı ve Deniz Bilimleri Fakültesi
+872|88|Kimya-Metalurji Fakültesi
+873|88|Maden Fakültesi
+874|88|Makine Fakültesi
+875|88|Mimarlık Fakültesi
+876|88|Tekstil Teknolojileri ve Tasarımı Fakültesi
+877|88|Uçak ve Uzay Bilimleri Fakültesi
+878|88|İnşaat Fakültesi
+879|88|İşletme Fakültesi
+880|89|Eğitim Fakültesi
+881|89|Güzel Sanatlar ve Mimarlık Fakültesi
+882|89|Havacılık ve Uzay Bilimleri Fakültesi
+883|89|Hukuk Fakültesi
+884|89|Mühendislik Fakültesi
+885|89|Sağlık Bilimleri Fakültesi
+886|89|Turizm Fakültesi
+887|89|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+888|89|İletişim Fakültesi
+889|90|Açık ve Uzaktan Eğitim Fakültesi
+890|90|Bilgisayar ve Bilişim Teknolojileri Fakültesi
+891|90|Diş Hekimliği Fakültesi
+892|90|Eczacılık Fakültesi
+893|90|Edebiyat Fakültesi
+894|90|Fen Fakültesi
+895|90|Hemşirelik Fakültesi
+896|90|Hukuk Fakültesi
+897|90|Mimarlık Fakültesi
+898|90|Siyasal Bilgiler Fakültesi
+899|90|Su Bilimleri Fakültesi
+900|90|Ulaştırma ve Lojistik Fakültesi
+901|90|İktisat Fakültesi
+902|90|İlahiyat Fakültesi
+903|90|İletişim Fakültesi
+904|90|İstanbul Tıp Fakültesi
+905|90|İşletme Fakültesi
+920|92|Fen Fakültesi
+921|92|Mimarlık Fakültesi
+922|92|Mühendislik Fakültesi
+906|91|Diş Hekimliği Fakültesi
+907|91|Eczacılık Fakültesi
+908|91|Gemi İnşaatı ve Denizcilik Fakültesi
+909|91|Hukuk Fakültesi
+910|91|Mühendislik ve Mimarlık Fakültesi
+911|91|Orman Fakültesi
+912|91|Sanat ve Tasarım Fakültesi
+913|91|Sağlık Bilimleri Fakültesi
+914|91|Sosyal ve Beşeri Bilimler Fakültesi
+915|91|Su Ürünleri Fakültesi
+916|91|Turizm Fakültesi
+917|91|Tıp Fakültesi
+918|91|İktisadi ve İdari Bilimler Fakültesi
+919|91|İlahiyat Fakültesi
+923|93|Mühendislik ve Doğa Bilimleri Fakültesi
+924|93|Sanat, Tasarım ve Mimarlık Fakültesi
+925|93|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1293|128|Diş Hekimliği Fakültesi
+1294|128|Fen-Edebiyat Fakültesi
+1295|128|Güzel Sanatlar ve Tasarım Fakültesi
+1296|128|Hukuk Fakültesi
+1297|128|Sağlık Bilimleri Fakültesi
+1298|128|İktisadi ve İdari Bilimler Fakültesi
+1299|128|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1300|129|Eğitim Fakültesi
+1301|129|Fen-Edebiyat Fakültesi
+1302|129|Mimarlık Fakültesi
+1303|129|Mühendislik Fakültesi
+1304|129|İktisadi ve İdari Bilimler Fakültesi
+1314|131|Diş Hekimliği Fakültesi
+1315|131|Eğitim Fakültesi
+1316|131|Fen Fakültesi
+1317|131|Fizyoterapi ve Rehabilitasyon Fakültesi
+1318|131|Hukuk Fakültesi
+1319|131|Mimarlık ve Tasarım Fakültesi
+1320|131|Mühendislik Fakültesi
+1321|131|Sağlık Bilimleri Fakültesi
+1322|131|Spor Bilimleri Fakültesi
+1323|131|Teknoloji Fakültesi
+1324|131|Turizm Fakültesi
+1325|131|Tıp Fakültesi
+1326|131|İktisadi ve İdari Bilimler Fakültesi
+1327|131|İlahiyat Fakültesi
+1328|131|İletişim Fakültesi
+1329|131|İnsan ve Toplum Bilimleri Fakültesi
+1305|130|Beden Eğitimi ve Spor Yüksekokulu
+1306|130|Kadirli Sosyal ve Beşeri Bilimler Fakültesi
+1307|130|Kadirli Uygulamalı Bilimler Fakültesi
+1308|130|Mimarlık, Tasarım ve Güzel Sanatlar Fakültesi
+1309|130|Mühendislik ve Doğa Bilimleri Fakültesi
+1310|130|Sağlık Bilimleri Fakültesi
+1311|130|İktisadi ve İdari Bilimler Fakültesi
+1312|130|İlahiyat Fakültesi
+1313|130|İnsan ve Toplum Bilimleri Fakültesi
+1330|132|Diş Hekimliği Fakültesi
+1331|132|Eczacılık Fakültesi
+1332|132|Eğitim Fakültesi
+1333|132|Hukuk Fakültesi
+1334|132|Mühendislik ve Doğa Bilimleri Fakültesi
+1335|132|Sanat, Tasarım ve Mimarlık Fakültesi
+1336|132|Sağlık Bilimleri Fakültesi
+1337|132|Tıp Fakültesi
+1338|132|Uygulamalı Bilimler Fakültesi
+1339|132|İnsan ve Toplum Bilimleri Fakültesi
+1340|132|İşletme ve Yönetim Bilimleri Fakültesi
+1341|133|Ardeşen Turizm Fakültesi
+1342|133|Diş Hekimliği Fakültesi
+1343|133|Fen-Edebiyat Fakültesi
+1344|133|Fındıklı Uygulamalı Bilimler Yüksekokulu
+1345|133|Güneysu Fizik Tedavi ve Rehabilitasyon Yüksekokulu
+1346|133|Hukuk Fakültesi
+1347|133|Mühendislik ve Mimarlık Fakültesi
+1348|133|Sağlık Bilimleri Fakültesi
+1349|133|Spor Bilimleri Fakültesi
+1350|133|Su Ürünleri Fakültesi
+1351|133|Turgut Kıran Denizcilik Fakültesi
+1352|133|Tıp Fakültesi
+1353|133|İktisadi ve İdari Bilimler Fakültesi
+1354|133|İlahiyat Fakültesi
+1355|134|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1356|134|Diş Hekimliği Fakültesi
+1357|134|Fen Fakültesi
+1358|134|Hukuk Fakültesi
+1359|134|Mühendislik Fakültesi
+1360|134|Sanat, Tasarım ve Mimarlık Fakültesi
+1361|134|Sağlık Bilimleri Fakültesi
+1362|134|Siyasal Bilgiler Fakültesi
+1363|134|Tıp Fakültesi
+1364|134|İlahiyat Fakültesi
+1365|134|İletişim Fakültesi
+1366|134|İnsan ve Toplum Bilimleri Fakültesi
+1367|134|İşletme Fakültesi
+1368|135|Akşehir Kadir Yallagöz Sağlık Yüksekokulu
+1369|135|Akşehir Mühendislik ve Mimarlık Fakültesi
+1370|135|Akşehir İktisadi ve İdari Bilimler Fakültesi
+1371|135|Beyşehir Ali Akkanat Turizm Fakültesi
+1372|135|Beyşehir Ali Akkanat Uygulamalı Bilimler Yüksekokulu
+1373|135|Beyşehir Ali Akkanat İşletme Fakültesi
+1374|135|Diş Hekimliği Fakültesi
+1375|135|Eczacılık Fakültesi
+1376|135|Edebiyat Fakültesi
+1377|135|Eğitim Fakültesi
+1378|135|Fen Fakültesi
+1379|135|Güzel Sanatlar Fakültesi
+1380|135|Hemşirelik Fakültesi
+1381|135|Hukuk Fakültesi
+1382|135|Kulu Sağlık Bilimleri Fakültesi
+1383|135|Mimarlık ve Tasarım Fakültesi
+1384|135|Sağlık Bilimleri Fakültesi
+1385|135|Sivil Havacılık Yüksekokulu
+1386|135|Spor Bilimleri Fakültesi
+1387|135|Teknoloji Fakültesi
+1388|135|Turizm Fakültesi
+1389|135|Tıp Fakültesi
+1390|135|Veteriner Fakültesi
+1391|135|Ziraat Fakültesi
+1392|135|Çumra Uygulamalı Bilimler Yüksekokulu
+1393|135|İktisadi ve İdari Bilimler Fakültesi
+1394|135|İlahiyat Fakültesi
+1395|135|İletişim Fakültesi
+1396|136|Beden Eğitimi ve Spor Yüksekokulu
+1397|136|Eğitim Fakültesi
+1398|136|Fen-Edebiyat Fakültesi
+1399|136|Güzel Sanatlar ve Tasarım Fakültesi
+1400|136|Mühendislik Fakültesi
+1401|136|Sağlık Bilimleri Fakültesi
+1402|136|Turizm İşletmeciliği ve Otelcilik Yüksekokulu
+1403|136|Tıp Fakültesi
+1404|136|Veteriner Fakültesi
+1405|136|Ziraat Fakültesi
+1406|136|İktisadi ve İdari Bilimler Fakültesi
+1407|136|İlahiyat Fakültesi
+1435|141|Boyabat İktisadi ve İdari Bilimler Fakültesi
+1436|141|Eğitim Fakültesi
+1437|141|Fen-Edebiyat Fakültesi
+1438|141|Mühendislik ve Mimarlık Fakültesi
+1439|141|Sağlık Bilimleri Fakültesi
+1440|141|Spor Bilimleri Fakültesi
+1441|141|Su Ürünleri Fakültesi
+1442|141|Turizm Fakültesi
+1443|141|İlahiyat Fakültesi
+1444|142|Diş Hekimliği Fakültesi
+1445|142|Eczacılık Fakültesi
+1446|142|Eğitim Fakültesi
+1447|142|Hukuk Fakültesi
+1448|142|Mimarlık Fakültesi
+1449|142|Mühendislik ve Doğa Bilimleri Fakültesi
+1450|142|Sağlık Bilimleri Fakültesi
+1451|142|Spor Bilimleri Fakültesi
+1452|142|Tıp Fakültesi
+1453|142|İktisadi ve İdari Bilimler Fakültesi
+1454|142|İlahiyat Fakültesi
+1455|142|İletişim Fakültesi
+1456|142|İnsan ve Toplum Bilimleri Fakültesi
+1463|144|Denizcilik Fakültesi
+1464|144|Hukuk Fakültesi
+1465|144|Mühendislik Fakültesi
+1466|144|İktisadi ve İdari Bilimler Fakültesi
+1467|145|Diş Hekimliği Fakültesi
+1468|145|Eczacılık Fakültesi
+1469|145|Edebiyat Fakültesi
+1470|145|Eğitim Fakültesi
+1471|145|Fen Fakültesi
+1472|145|Güzel Sanatlar Fakültesi
+1473|145|Keşan Hakkı Yörük Sağlık Yüksekokulu
+1474|145|Keşan Yusuf Çapraz Uygulamalı Bilimler Yüksekokulu
+1475|145|Kırkpınar Spor Bilimleri Fakültesi
+1476|145|Mimarlık Fakültesi
+1477|145|Mühendislik Fakültesi
+1478|145|Sağlık Bilimleri Fakültesi
+1479|145|Tıp Fakültesi
+1480|145|Uygulamalı Bilimler Fakültesi
+1481|145|Uzunköprü Uygulamalı Bilimler Yüksekokulu
+1482|145|İktisadi ve İdari Bilimler Fakültesi
+1483|145|İlahiyat Fakültesi
+1457|143|Mühendislik Fakültesi
+1458|143|Sağlık Bilimleri Fakültesi
+1459|143|Turizm ve Otel İşletmeciliği Yüksekokulu
+1460|143|Ziraat Fakültesi
+1461|143|İktisadi ve İdari Bilimler Fakültesi
+1462|143|İlahiyat Fakültesi
+1484|146|Diş Hekimliği Fakültesi
+1485|146|Eczacılık Fakültesi
+1486|146|Mühendislik ve Doğa Bilimleri Fakültesi
+1487|146|Sanat ve Tasarım Fakültesi
+1488|146|Sağlık Bilimleri Fakültesi
+1489|146|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1490|148|Edebiyat Fakültesi
+1491|148|Güzel Sanatlar, Tasarım ve Mimarlık Fakültesi
+1492|148|Mühendislik Fakültesi
+1493|148|Sağlık Bilimleri Fakültesi
+1494|148|Spor Bilimleri Fakültesi
+1495|148|Su Ürünleri Fakültesi
+1496|148|İktisadi ve İdari Bilimler Fakültesi
+1497|148|İletişim Fakültesi
+1498|149|Fen Fakültesi
+1499|149|Hukuk Fakültesi
+1500|149|Kültür ve Sosyal Bilimler Fakültesi
+1501|149|Mühendislik Fakültesi
+1502|149|İktisadi ve İdari Bilimler Fakültesi
+1411|138|Beden Eğitimi ve Spor Yüksekokulu
+1412|138|Diş Hekimliği Fakültesi
+1413|138|Sağlık Bilimleri Fakültesi
+1414|138|Sosyal ve Beşeri Bilimler Fakültesi
+1415|139|Diş Hekimliği Fakültesi
+1416|139|Eğitim Bilimleri Fakültesi
+1417|139|Fen-Edebiyat Fakültesi
+1418|139|Hukuk Fakültesi
+1419|139|Mimarlık ve Güzel Sanatlar Fakültesi
+1420|139|Mühendislik Fakültesi
+1421|139|Sağlık Bilimleri Fakültesi
+1422|139|Ünal Çağıner Turizm ve Mutfak Sanatları Yüksekokulu
+1423|139|İktisadi ve İdari Bilimler Fakültesi
+1408|137|Sanat Fakültesi
+1409|137|Tasarım Fakültesi
+1410|137|İletişim Fakültesi
+1424|140|Eğitim Fakültesi
+1425|140|Fen-Edebiyat Fakültesi
+1426|140|Fizik Tedavi ve Rehabilitasyon Yüksekokulu
+1427|140|Kaman Uygulamalı Bilimler Yüksekokulu
+1428|140|Mühendislik-Mimarlık Fakültesi
+1429|140|Sağlık Bilimleri Fakültesi
+1430|140|Spor Bilimleri Fakültesi
+1431|140|Tıp Fakültesi
+1432|140|Ziraat Fakültesi
+1433|140|İktisadi ve İdari Bilimler Fakültesi
+1434|140|İlahiyat Fakültesi
+1503|150|Beşeri Bilimler Fakültesi
+1504|150|Denizcilik ve Ulaştırma Yüksekokulu
+1505|150|Eczacılık Fakültesi
+1506|150|Eğitim Fakültesi
+1507|150|Havacılık Yüksekokulu
+1508|150|Hemşirelik Yüksekokulu
+1509|150|Hukuk Fakültesi
+1510|150|Mimarlık, Tasarım ve Güzel Sanatlar Fakültesi
+1511|150|Mühendislik Fakültesi
+1512|150|Sağlık Bilimleri Fakültesi
+1513|150|Siyasal Bilimler Fakültesi
+1514|150|Uygulamalı Sosyal Bilimler Yüksekokulu
+1515|150|İletişim Fakültesi
+1516|150|İşletme Fakültesi
+1517|151|Diş Hekimliği Fakültesi
+1518|151|Eğitim Fakültesi
+1519|151|Hukuk Fakültesi
+1520|151|Mühendislik ve Mimarlık Fakültesi
+1521|151|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1522|152|Güzel Sanatlar, Tasarım ve Mimarlık Fakültesi
+1523|152|Mühendislik ve Doğa Bilimleri Fakültesi
+1524|152|Sağlık Bilimleri Fakültesi
+1525|152|Spor Bilimleri Fakültesi
+1526|152|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1527|152|İletişim Fakültesi
+1528|152|İnsan ve Toplum Bilimleri Fakültesi
+1529|153|Mimarlık ve Mühendislik Fakültesi
+1530|153|İşletme ve Ekonomi Fakültesi
+1531|154|Diş Hekimliği Fakültesi
+1532|154|Eğitim Fakültesi
+1533|154|Fen-Edebiyat Fakültesi
+1534|154|Mimarlık Fakültesi
+1535|154|Mühendislik Fakültesi
+1536|154|Sağlık Bilimleri Fakültesi
+1537|154|Tıp Fakültesi
+1538|154|Veteriner Fakültesi
+1539|154|Ziraat Fakültesi
+1540|154|İktisadi ve İdari Bilimler Fakültesi
+1541|154|İlahiyat Fakültesi
+1542|154|İnegöl İşletme Fakültesi
+1543|155|Diş Hekimliği Fakültesi
+1544|155|Eğitim Fakültesi
+1545|155|Güzel Sanatlar Fakültesi
+1546|155|Mimarlık ve Tasarım Fakültesi
+1547|155|Mühendislik ve Doğa Bilimleri Fakültesi
+1548|155|Sağlık Bilimleri Fakültesi
+1549|155|Spor Bilimleri Fakültesi
+1550|155|Tıp Fakültesi
+1551|155|Uygulamalı Bilimler Fakültesi
+1552|155|Ziraat Fakültesi
+1553|155|İktisadi ve İdari Bilimler Fakültesi
+1554|155|İlahiyat Fakültesi
+1555|155|İletişim Fakültesi
+1556|155|İnsan ve Toplum Bilimleri Fakültesi
+1557|156|Hukuk Fakültesi
+1558|156|Mühendislik Fakültesi
+1559|156|Sanat ve Tasarım Fakültesi
+1560|156|Sağlık Bilimleri Fakültesi
+1561|156|Spor Bilimleri Fakültesi
+1562|156|Tıp Fakültesi
+1563|156|Yalova İktisadi ve İdari Bilimler Fakültesi
+1564|156|İnsan ve Toplum Bilimleri Fakültesi
+1565|156|İslami İlimler Fakültesi
+1566|157|Elektrik-Elektronik Fakültesi
+1567|157|Eğitim Fakültesi
+1568|157|Fen-Edebiyat Fakültesi
+1569|157|Gemi İnşaatı ve Denizcilik Fakültesi
+1570|157|Kimya-Metalurji Fakültesi
+1571|157|Makine Fakültesi
+1572|157|Mimarlık Fakültesi
+1573|157|Sanat ve Tasarım Fakültesi
+1574|157|İktisadi ve İdari Bilimler Fakültesi
+1575|157|İnşaat Fakültesi
+1576|158|Mühendislik ve Doğa Bilimleri Fakültesi
+1577|158|Sanat ve Sosyal Bilimler Fakültesi
+1578|158|Yönetim Bilimleri Fakültesi
+1579|160|Mimarlık ve Mühendislik Fakültesi
+1580|160|Turizm Fakültesi
+1581|160|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1582|161|Diş Hekimliği Fakültesi
+1583|161|Eczacılık Fakültesi
+1584|161|Edebiyat Fakültesi
+1585|161|Erciş İşletme Fakültesi
+1586|161|Eğitim Fakültesi
+1587|161|Fen Fakültesi
+1588|161|Güzel Sanatlar Fakültesi
+1589|161|Mimarlık ve Tasarım Fakültesi
+1590|161|Mühendislik Fakültesi
+1591|161|Sağlık Bilimleri Fakültesi
+1592|161|Spor Bilimleri Fakültesi
+1593|161|Su Ürünleri Fakültesi
+1594|161|Turizm Fakültesi
+1595|161|Tıp Fakültesi
+1596|161|Veteriner Fakültesi
+1597|161|Ziraat Fakültesi
+1598|161|İktisadi ve İdari Bilimler Fakültesi
+1599|161|İlahiyat Fakültesi
+1600|163|Denizcilik Fakültesi
+1601|163|Diş Hekimliği Fakültesi
+1602|163|Eczacılık Fakültesi
+1603|163|Ereğli Eğitim Fakültesi
+1604|163|Fen Fakültesi
+1605|163|Karadeniz Ereğli Turizm Fakültesi
+1606|163|Mühendislik Fakültesi
+1607|163|Sağlık Bilimleri Fakültesi
+1608|163|Teoman Duralı İnsan ve Toplum Bilimleri Fakültesi
+1609|163|Tıp Fakültesi
+1610|163|İktisadi ve İdari Bilimler Fakültesi
+1611|163|İlahiyat Fakültesi
+1612|163|İletişim Fakültesi
+1613|164|Denizcilik Fakültesi
+1614|164|Mühendislik ve Doğa Bilimleri Fakültesi
+1615|164|Sağlık Bilimleri Fakültesi
+1616|164|Spor Bilimleri Fakültesi
+1617|164|Tıp Fakültesi
+1618|164|Ömer Seyfettin Uygulamalı Bilimler Fakültesi
+1619|164|İktisadi ve İdari Bilimler Fakültesi
+1620|164|İlahiyat Fakültesi
+1621|164|İletişim Fakültesi
+1622|164|İnsan ve Toplum Bilimleri Fakültesi
+1623|167|Barbaros Hayrettin Gemi İnşaatı ve Denizcilik Fakültesi
+1624|167|Deniz Bilimleri ve Teknolojisi Fakültesi
+1625|167|Havacılık ve Uzay Bilimleri Fakültesi
+1626|167|Mimarlık Fakültesi
+1627|167|Mühendislik ve Doğa Bilimleri Fakültesi
+1628|167|Turizm Fakültesi
+1629|167|İşletme ve Yönetim Bilimleri Fakültesi
+1630|168|Adana Tıp Fakültesi
+1631|168|Bursa Tıp Fakültesi
+1632|168|Erzurum Tıp Fakültesi
+1633|168|Gülhane Fizyoterapi ve Rehabilitasyon Fakültesi
+1634|168|Gülhane Hemşirelik Fakültesi
+1635|168|Gülhane Sağlık Bilimleri Fakültesi
+1636|168|Gülhane Tıp Fakültesi
+1637|168|Hamidiye Diş Hekimliği Fakültesi
+1638|168|Hamidiye Eczacılık Fakültesi
+1639|168|Hamidiye Hemşirelik Fakültesi
+1640|168|Hamidiye Sağlık Bilimleri Fakültesi
+1641|168|Hamidiye Tıp Fakültesi
+1642|168|Hamidiye Uluslararası Tıp Fakültesi
+1643|168|Hamidiye Yaşam Bilimleri Fakültesi
+1644|168|Kayseri Tıp Fakültesi
+1645|168|Saraybosna Uluslararası Diş Hekimliği Fakültesi
+1646|168|Saraybosna Uluslararası Tıp Fakültesi
+1647|168|İzmir Tıp Fakültesi
+1648|169|Diş Hekimliği Fakültesi
+1649|169|Eğitim Fakültesi
+1650|169|Fen-Edebiyat Fakültesi
+1651|169|Hukuk Fakültesi
+1652|169|Mimarlık Fakültesi
+1653|169|Mühendislik Fakültesi
+1654|169|Sağlık Bilimleri Fakültesi
+1655|169|Tıp Fakültesi
+1656|169|İktisadi ve İdari Bilimler Fakültesi
+1657|170|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+1658|170|Mühendislik ve Doğa Bilimleri Fakültesi
+1659|170|Sağlık Bilimleri Fakültesi
+1660|170|Tıp Fakültesi
+1661|170|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1662|170|İlahiyat Fakültesi
+1663|171|Fen-Edebiyat Fakültesi
+1664|171|Hukuk Fakültesi
+1665|171|Mimarlık ve Tasarım Fakültesi
+1666|171|Mühendislik Fakültesi
+1667|171|Tıp Fakültesi
+1668|171|İktisadi ve İdari Bilimler Fakültesi
+1669|172|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1670|172|Mimarlık ve Tasarım Fakültesi
+1671|172|Mühendislik ve Doğa Bilimleri Fakültesi
+1672|173|Diş Hekimliği Fakültesi
+1673|173|Mühendislik ve Doğa Bilimleri Fakültesi
+1674|173|Sağlık Bilimleri Fakültesi
+1675|173|Tıp Fakültesi
+1676|174|Mühendislik ve Doğa Bilimleri Fakültesi
+1677|174|Sanat, Tasarım ve Mimarlık Fakültesi
+1678|174|Sağlık Bilimleri Fakültesi
+1679|174|Sivil Havacılık Yüksekokulu
+1680|174|Sosyal ve Beşeri Bilimler Fakültesi
+1681|174|Tıp Fakültesi
+1682|174|Ziraat Fakültesi
+1683|175|Cerrahpaşa Tıp Fakültesi
+1684|175|Diş Hekimliği Fakültesi
+1685|175|Eczacılık Fakültesi
+1686|175|Florence Nightingale Hemşirelik Fakültesi
+1687|175|Hasan Ali Yücel Eğitim Fakültesi
+1688|175|Mühendislik Fakültesi
+1689|175|Orman Fakültesi
+1690|175|Sağlık Bilimleri Fakültesi
+1691|175|Spor Bilimleri Fakültesi
+1692|175|Veteriner Fakültesi
+1693|176|Spor Bilimleri Fakültesi
+1694|176|Teknoloji Fakültesi
+1695|176|Uygulamalı Bilimler Fakültesi
+1696|176|Ziraat Fakültesi
+1700|179|Havacılık ve Uzay Bilimleri Fakültesi
+1701|179|Mühendislik Fakültesi
+1702|179|Sağlık Bilimleri Fakültesi
+1703|179|Uygulamalı Bilimler Fakültesi
+1704|179|İktisadi ve İdari Bilimler Fakültesi
+1705|180|Güzel Sanatlar ve Tasarım Fakültesi
+1706|180|Hukuk Fakültesi
+1707|180|Mühendislik Fakültesi
+1708|180|Sağlık Bilimleri Fakültesi
+1709|180|Turizm Fakültesi
+1710|180|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1711|181|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1712|181|Fatih Eğitim Fakültesi
+1713|181|Hukuk Fakültesi
+1714|181|Siyasal Bilgiler Fakültesi
+1715|181|Spor Bilimleri Fakültesi
+1716|181|Tıp Fakültesi
+1717|181|Uygulamalı Bilimler Yüksekokulu
+1718|181|İlahiyat Fakültesi
+1719|181|İletişim Fakültesi
+1720|181|İnsan ve Toplum Bilimleri Fakültesi
+1721|183|Mühendislik, Mimarlık ve Tasarım Fakültesi
+1722|183|Sağlık Bilimleri Fakültesi
+1723|183|Turizm Fakültesi
+1724|183|İletişim Fakültesi
+1725|183|İnsan ve Toplum Bilimleri Fakültesi
+1726|184|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1727|184|Fen Fakültesi
+1728|184|Havacılık ve Uzay Bilimleri Fakültesi
+1729|184|Mimarlık ve Tasarım Fakültesi
+1730|184|Mühendislik Fakültesi
+1731|184|Spor Bilimleri Fakültesi
+1732|185|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1733|185|Develi Sosyal ve Beşeri Bilimler Fakültesi
+1734|185|Develi İslami İlimler Fakültesi
+1735|185|Mühendislik, Mimarlık ve Tasarım Fakültesi
+1736|185|Sağlık Bilimleri Fakültesi
+1737|185|Uygulamalı Bilimler Fakültesi
+1738|186|Eğirdir Su Ürünleri Fakültesi
+1739|186|Orman Fakültesi
+1740|186|Teknoloji Fakültesi
+1741|186|Ziraat Fakültesi
+1742|187|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1743|187|Diş Hekimliği Fakültesi
+1744|187|Eczacılık Fakültesi
+1745|187|Eğitim Fakültesi
+1746|187|Fen-Edebiyat Fakültesi
+1747|187|Güzel Sanatlar Fakültesi
+1748|187|Hukuk Fakültesi
+1749|187|Mimarlık Fakültesi
+1750|187|Mühendislik Fakültesi
+1751|187|Sağlık Bilimleri Fakültesi
+1752|187|Tıp Fakültesi
+1753|187|İktisadi ve İdari Bilimler Fakültesi
+1754|187|İletişim Fakültesi
+1755|188|Mimarlık ve Tasarım Fakültesi
+1756|188|Mühendislik ve Doğa Bilimleri Fakültesi
+1757|188|Sivil Havacılık Yüksekokulu
+1758|188|Siyasal Bilgiler Fakültesi
+1759|188|Tıp Fakültesi
+1760|188|Özdemir Bayraktar Havacılık ve Uzay Bilimleri Fakültesi
+1761|188|İlahiyat Fakültesi
+1762|188|İnsan ve Toplum Bilimleri Fakültesi
+1763|189|Hukuk Fakültesi
+1764|189|Mühendislik ve Mimarlık Fakültesi
+1765|189|Sağlık Bilimleri Fakültesi
+1766|189|Tıp Fakültesi
+1767|189|İktisadi ve İdari Bilimler Fakültesi
+1768|189|İnsan ve Toplum Bilimleri Fakültesi
+1769|196|Diş Hekimliği Fakültesi
+1770|196|Eczacılık Fakültesi
+1771|196|Fen-Edebiyat Fakültesi
+1772|196|Hukuk Fakültesi
+1773|196|Mühendislik-Mimarlık Fakültesi
+1774|196|Sağlık Bilimleri Fakültesi
+1775|196|Spor Bilimleri Fakültesi
+1776|196|Tıp Fakültesi
+1777|196|İktisadi ve İdari Bilimler Fakültesi
+1778|196|İletişim Fakültesi
+1779|199|Diş Hekimliği Fakültesi
+1780|199|Mühendislik ve Doğa Bilimleri Fakültesi
+1781|199|Sağlık Bilimleri Fakültesi
+1782|199|Tıp Fakültesi
+1783|199|İletişim Fakültesi
+1784|199|İnsan ve Toplum Bilimleri Fakültesi
+1785|200|Diş Hekimliği Fakültesi
+1786|200|Eğitim Fakültesi
+1787|200|Hukuk Fakültesi
+1788|200|Mühendislik Fakültesi
+1789|200|Sanat ve Tasarım Fakültesi
+1790|200|Sosyal ve Beşeri Bilimler Fakültesi
+1791|200|İktisadi ve İdari Bilimler Fakültesi
+1792|205|Eğitim Fakültesi
+1793|205|Fen-Edebiyat Fakültesi
+1794|205|Mimarlık ve Tasarım Fakültesi
+1795|205|Mühendislik Fakültesi
+1796|205|İktisadi ve İdari Bilimler Fakültesi
+1797|206|Beden Eğitimi ve Spor Yüksekokulu
+1798|206|Diş Hekimliği Fakültesi
+1799|206|Dr. Fazıl Küçük Eğitim Fakültesi
+1800|206|Fen ve Edebiyat Fakültesi
+1801|206|Hemşirelik Yüksekokulu
+1802|206|Hukuk Fakültesi
+1803|206|Mimarlık Fakültesi
+1804|206|Mühendislik Fakültesi
+1805|206|Sağlık Bilimleri Fakültesi
+1806|206|Tarım Bilimleri ve Teknolojileri Fakültesi
+1807|206|Turizm ve Otel İşletmeciliği Yüksekokulu
+1808|206|Uygulamalı Bilimler Yüksekokulu
+1809|206|İktisadi ve İdari Bilimler Fakültesi
+1810|206|İletişim Bilimleri Fakültesi
+1811|207|İşletme Fakültesi
+1816|211|Diş Hekimliği Fakültesi
+1817|211|Eczacılık Fakültesi
+1818|211|Eğitim Fakültesi
+1819|211|Fen-Edebiyat Fakültesi
+1820|211|Güzel Sanatlar Tasarım ve Mimarlık Fakültesi
+1821|211|Hukuk Fakültesi
+1822|211|Mühendislik Fakültesi
+1823|211|Sağlık Bilimleri Fakültesi
+1824|211|Sağlık Bilimleri Yüksekokulu
+1825|211|Tarım Bilimleri ve Teknolojileri Fakültesi
+1826|211|Turizm ve Otel İşletmeciliği Yüksekokulu
+1827|211|Uygulamalı Bilimler Yüksekokulu
+1828|211|İktisadi ve İdari Bilimler Fakültesi
+1829|211|İletişim Fakültesi
+1830|213|Mühendislik ve Mimarlık Fakültesi
+1831|213|Sanat ve Sosyal Bilimler Fakültesi
+1832|213|Sağlık Bilimleri Fakültesi
+1833|213|Spor Bilimleri Fakültesi
+1834|213|Uygulamalı Bilimler Yüksekokulu
+1835|213|İşletme ve Yönetim Bilimleri Fakültesi
+1836|214|Sağlık Bilimleri Fakültesi
+1837|214|Tıp Fakültesi
+1840|218|Sağlık Bilimleri Fakültesi
+1841|218|Tıp Fakültesi
+1838|215|Hukuk ve Sosyal Bilimler Fakültesi
+1839|215|Mühendislik ve Mimarlık Fakültesi
+518|55|Atatürk Sağlık Bilimleri Fakültesi
+519|55|Beden Eğitimi ve Spor Yüksekokulu
+520|55|Diş Hekimliği Fakültesi
+521|55|Eczacılık Fakültesi
+522|55|Fen Fakültesi
+523|55|Hukuk Fakültesi
+524|55|Mimarlık Fakültesi
+525|55|Mühendislik Fakültesi
+526|55|Sezai Karakoç Edebiyat Fakültesi
+527|55|Sivil Havacılık Yüksekokulu
+528|55|Tıp Fakültesi
+529|55|Veteriner Fakültesi
+530|55|Ziraat Fakültesi
+531|55|Ziya Gökalp Eğitim Fakültesi
+532|55|İktisadi ve İdari Bilimler Fakültesi
+533|55|İlahiyat Fakültesi
+534|55|İletişim Fakültesi
+535|56|Fen-Edebiyat Fakültesi
+536|56|Hukuk Fakültesi
+537|56|Mimarlık Fakültesi
+538|56|Mühendislik Fakültesi
+539|56|İktisadi ve İdari Bilimler Fakültesi
+540|57|Buca Eğitim Fakültesi
+541|57|Denizcilik Fakültesi
+542|57|Diş Hekimliği Fakültesi
+543|57|Edebiyat Fakültesi
+544|57|Fen Fakültesi
+545|57|Fizik Tedavi ve Rehabilitasyon Fakültesi
+546|57|Güzel Sanatlar Fakültesi
+547|57|Hemşirelik Fakültesi
+548|57|Hukuk Fakültesi
+549|57|Mimarlık Fakültesi
+550|57|Mühendislik Fakültesi
+551|57|Necat Hepkon Spor Bilimleri Fakültesi
+552|57|Turizm Fakültesi
+553|57|Tıp Fakültesi
+554|57|İktisadi ve İdari Bilimler Fakültesi
+555|57|İlahiyat Fakültesi
+556|57|İşletme Fakültesi
+515|54|Fen-Edebiyat Fakültesi
+516|54|Hukuk Fakültesi
+517|54|İktisadi ve İdari Bilimler Fakültesi
+557|58|Akçakoca Bey Siyasal Bilgiler Fakültesi
+558|58|Eczacılık Fakültesi
+559|58|Eğitim Fakültesi
+560|58|Fen-Edebiyat Fakültesi
+561|58|Mühendislik Fakültesi
+562|58|Orman Fakültesi
+563|58|Sanat, Tasarım ve Mimarlık Fakültesi
+564|58|Sağlık Bilimleri Fakültesi
+565|58|Spor Bilimleri Fakültesi
+566|58|Turizm Fakültesi
+567|58|Tıp Fakültesi
+568|58|Ziraat Fakültesi
+569|58|İlahiyat Fakültesi
+570|58|İşletme Fakültesi
+1697|177|Havacılık ve Uzay Bilimleri Fakültesi
+1698|177|Mühendislik ve Doğa Bilimleri Fakültesi
+1699|177|Tarım Bilimleri ve Teknoloji Fakültesi
+1812|209|Hukuk Fakültesi
+1813|209|Mühendislik Fakültesi
+1814|209|Sanat, Tasarım ve Mimarlık Fakültesi
+1815|209|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+926|94|Eğitim Bilimleri Fakültesi
+927|94|Hukuk Fakültesi
+928|94|Yönetim Bilimleri Fakültesi
+929|94|İletişim Fakültesi
+930|94|İnsan ve Toplum Bilimleri Fakültesi
+931|94|İslami İlimler Fakültesi
+932|95|Dede Korkut Eğitim Fakültesi
+933|95|Diş Hekimliği Fakültesi
+934|95|Fen-Edebiyat Fakültesi
+935|95|Kağızman Uygulamalı Bilimler Yüksekokulu
+936|95|Mühendislik-Mimarlık Fakültesi
+937|95|Sarıkamış Spor Bilimleri Fakültesi
+938|95|Sarıkamış Turizm Fakültesi
+939|95|Sağlık Bilimleri Fakültesi
+940|95|Tıp Fakültesi
+941|95|Veteriner Fakültesi
+942|95|İktisadi ve İdari Bilimler Fakültesi
+943|95|İlahiyat Fakültesi
+944|96|Afşin Sağlık Yüksekokulu
+945|96|Diş Hekimliği Fakültesi
+946|96|Eğitim Fakültesi
+947|96|Fen Fakültesi
+948|96|Göksun Uygulamalı Bilimler Yüksekokulu
+949|96|Güzel Sanatlar Fakültesi
+950|96|Mühendislik-Mimarlık Fakültesi
+951|96|Orman Fakültesi
+952|96|Sağlık Bilimleri Fakültesi
+953|96|Spor Bilimleri Fakültesi
+954|96|Tıp Fakültesi
+955|96|Ziraat Fakültesi
+956|96|İktisadi ve İdari Bilimler Fakültesi
+957|96|İlahiyat Fakültesi
+958|96|İnsan ve Toplum Bilimleri Fakültesi
+959|97|Mühendislik ve Mimarlık Fakültesi
+960|97|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+961|98|Bilgisayar ve Bilişim Bilimleri Fakültesi
+962|98|Diş Hekimliği Fakültesi
+963|98|Hasan Doğan Spor Bilimleri Fakültesi
+964|98|Mühendislik ve Doğa Bilimleri Fakültesi
+965|98|Orman Fakültesi
+966|98|Safranbolu Başak Cengiz Mimarlık Fakültesi
+967|98|Safranbolu Fethi Toker Güzel Sanatlar ve Tasarım Fakültesi
+968|98|Safranbolu Turizm Fakültesi
+969|98|Safranbolu Türker İnanoğlu İletişim Fakültesi
+970|98|Sağlık Bilimleri Fakültesi
+971|98|Tıp Fakültesi
+972|98|İktisadi ve İdari Bilimler Fakültesi
+973|98|İlahiyat Fakültesi
+974|98|İnsan ve Toplum Bilimleri Fakültesi
+975|98|İşletme Fakültesi
+976|99|Edebiyat Fakültesi
+977|99|Eğitim Fakültesi
+978|99|Hukuk Fakültesi
+979|99|Mühendislik ve Doğa Bilimleri Fakültesi
+980|99|İktisadi ve İdari Bilimler Fakültesi
+981|99|İlahiyat Fakültesi
+982|100|Diş Hekimliği Fakültesi
+983|100|Eczacılık Fakültesi
+984|100|Edebiyat Fakültesi
+985|100|Fen Fakültesi
+986|100|Mimarlık Fakültesi
+987|100|Mühendislik Fakültesi
+988|100|Of Teknoloji Fakültesi
+989|100|Orman Fakültesi
+990|100|Sağlık Bilimleri Fakültesi
+991|100|Sürmene Deniz Bilimleri Fakültesi
+992|100|Tıp Fakültesi
+993|100|İktisadi ve İdari Bilimler Fakültesi
+994|101|Ahmet Keleşoğlu Diş Hekimliği Fakültesi
+995|101|Edebiyat Fakültesi
+996|101|Eğitim Fakültesi
+997|101|Kamil Özdağ Fen Fakültesi
+998|101|Mühendislik Fakültesi
+999|101|Sağlık Bilimleri Fakültesi
+1000|101|Spor Bilimleri Fakültesi
+1001|101|Tıp Fakültesi
+1002|101|Uygulamalı Bilimler Fakültesi
+1003|101|İktisadi ve İdari Bilimler Fakültesi
+1004|101|İlahiyat Fakültesi
+1005|102|Eğitim Fakültesi
+1006|102|Fen Fakültesi
+1007|102|Mühendislik ve Mimarlık Fakültesi
+1008|102|Orman Fakültesi
+1009|102|Sağlık Bilimleri Fakültesi
+1010|102|Sivil Havacılık Yüksekokulu
+1011|102|Spor Bilimleri Fakültesi
+1012|102|Turizm Fakültesi
+1013|102|Tıp Fakültesi
+1014|102|Veteriner Fakültesi
+1015|102|İktisadi ve İdari Bilimler Fakültesi
+1016|102|İlahiyat Fakültesi
+1017|102|İletişim Fakültesi
+1018|102|İnsan ve Toplum Bilimleri Fakültesi
+1019|104|Diş Hekimliği Fakültesi
+1020|104|Eğitim Fakültesi
+1021|104|Güzel Sanatlar Fakültesi
+1022|104|Hukuk Fakültesi
+1023|104|Mühendislik ve Doğa Bilimleri Fakültesi
+1024|104|Sağlık Bilimleri Fakültesi
+1025|104|Spor Bilimleri Fakültesi
+1026|104|Tıp Fakültesi
+1027|104|Veteriner Fakültesi
+1028|104|İktisadi ve İdari Bilimler Fakültesi
+1029|104|İnsan ve Toplum Bilimleri Fakültesi
+1030|104|İslami İlimler Fakültesi
+1031|105|Fen-Edebiyat Fakültesi
+1032|105|Hukuk Fakültesi
+1033|105|Mimarlık Fakültesi
+1034|105|Mühendislik Fakültesi
+1035|105|Sağlık Bilimleri Fakültesi
+1036|105|Teknoloji Fakültesi
+1037|105|Turizm Fakültesi
+1038|105|Tıp Fakültesi
+1039|105|İktisadi ve İdari Bilimler Fakültesi
+1040|105|İlahiyat Fakültesi
+1041|106|Diş Hekimliği Fakültesi
+1042|106|Eczacılık Fakültesi
+1043|106|Mühendislik ve Doğa Bilimleri Fakültesi
+1044|106|Sağlık Bilimleri Fakültesi
+1045|106|Tıp Fakültesi
+1046|106|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1047|108|Fen Fakültesi
+1048|108|Kilisli Muallim Rıfat Eğitim Fakültesi
+1049|108|Mühendislik-Mimarlık Fakültesi
+1050|108|Yusuf Şerefoğlu Sağlık Bilimleri Fakültesi
+1051|108|Ziraat Fakültesi
+1052|108|İktisadi ve İdari Bilimler Fakültesi
+1053|108|İlahiyat Fakültesi
+1054|108|İnsan ve Toplum Bilimleri Fakültesi
+1055|109|Denizcilik Fakültesi
+1056|109|Diş Hekimliği Fakültesi
+1057|109|Eğitim Fakültesi
+1058|109|Fen-Edebiyat Fakültesi
+1059|109|Havacılık ve Uzay Bilimleri Fakültesi
+1060|109|Hukuk Fakültesi
+1061|109|Mimarlık ve Tasarım Fakültesi
+1062|109|Mühendislik Fakültesi
+1063|109|Sağlık Bilimleri Fakültesi
+1064|109|Siyasal Bilgiler Fakültesi
+1065|109|Spor Bilimleri Fakültesi
+1066|109|Teknoloji Fakültesi
+1067|109|Turizm Fakültesi
+1068|109|Tıp Fakültesi
+1069|109|Ziraat Fakültesi
+1070|109|İlahiyat Fakültesi
+1071|109|İletişim Fakültesi
+1072|109|İşletme Fakültesi
+1073|110|Eğitim Fakültesi
+1074|110|Hukuk Fakültesi
+1075|110|Mühendislik ve Doğa Bilimleri Fakültesi
+1076|110|Sağlık Bilimleri Fakültesi
+1077|110|Spor Bilimleri Fakültesi
+1078|110|İnsan ve Toplum Bilimleri Fakültesi
+1079|110|İslami İlimler Fakültesi
+1080|110|İşletme ve Yönetim Bilimleri Fakültesi
+1081|111|Ahmet Keleşoğlu Eğitim Fakültesi
+1082|111|Ahmet Keleşoğlu İlahiyat Fakültesi
+1083|111|Diş Hekimliği Fakültesi
+1084|111|Ereğli Eğitim Fakültesi
+1085|111|Ereğli Ziraat Fakültesi
+1086|111|Fen Fakültesi
+1087|111|Güzel Sanatlar ve Mimarlık Fakültesi
+1088|111|Havacılık ve Uzay Bilimleri Fakültesi
+1089|111|Hemşirelik Fakültesi
+1090|111|Hukuk Fakültesi
+1091|111|Mühendislik Fakültesi
+1092|111|Nezahat Keleşoğlu Sağlık Bilimleri Fakültesi
+1093|111|Seydişehir Ahmet Cengiz Mühendislik Fakültesi
+1094|111|Seydişehir Kamil Akkanat Sağlık Bilimleri Fakültesi
+1095|111|Siyasal Bilgiler Fakültesi
+1096|111|Sosyal ve Beşeri Bilimler Fakültesi
+1097|111|Turizm Fakültesi
+1098|111|Tıp Fakültesi
+1099|111|Uygulamalı Bilimler Fakültesi
+1100|112|Edebiyat Fakültesi
+1101|112|Güzel Sanatlar Fakültesi
+1102|112|Kızıltepe Tarım Bilimleri ve Teknolojileri Fakültesi
+1103|112|Midyat Sanat ve Tasarım Fakültesi
+1104|112|Mühendislik-Mimarlık Fakültesi
+1105|112|Sağlık Bilimleri Fakültesi
+1106|112|Spor Bilimleri Fakültesi
+1107|112|Turizm Fakültesi
+1108|112|Tıp Fakültesi
+1109|112|İktisadi ve İdari Bilimler Fakültesi
+1110|112|İlahiyat Fakültesi
+1111|113|Atatürk Eğitim Fakültesi
+1112|113|Diş Hekimliği Fakültesi
+1113|113|Eczacılık Fakültesi
+1114|113|Fen Fakültesi
+1115|113|Finansal Bilimler Fakültesi
+1116|113|Güzel Sanatlar Fakültesi
+1117|113|Hukuk Fakültesi
+1118|113|Mimarlık ve Tasarım Fakültesi
+1119|113|Mühendislik Fakültesi
+1120|113|Sağlık Bilimleri Fakültesi
+1121|113|Siyasal Bilgiler Fakültesi
+1122|113|Spor Bilimleri Fakültesi
+1123|113|Teknoloji Fakültesi
+1124|113|Tıp Fakültesi
+1125|113|Uygulamalı Bilimler Fakültesi
+1126|113|İktisat Fakültesi
+1127|113|İlahiyat Fakültesi
+1128|113|İletişim Fakültesi
+1129|113|İnsan ve Toplum Bilimleri Fakültesi
+1130|113|İşletme Fakültesi
+1131|114|Hukuk Fakültesi
+1132|114|Mühendislik ve Doğa Bilimleri Fakültesi
+1133|114|Sanat ve Tasarım Fakültesi
+1134|114|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1135|114|İletişim Fakültesi
+1152|116|Bilgisayar ve Bilişim Teknolojileri Fakültesi
+1153|116|Diş Hekimliği Fakültesi
+1154|116|Mimarlık, Tasarım ve Güzel Sanatlar Fakültesi
+1155|116|Sağlık Bilimleri Yüksekokulu
+1156|116|Uygulamalı Bilimler Yüksekokulu
+1157|116|İnsan ve Toplum Bilimleri Fakültesi
+1136|115|Bucak Bilgisayar ve Bilişim Fakültesi
+1137|115|Bucak Sağlık Yüksekokulu
+1138|115|Bucak Zeliha Tolunay Uygulamalı Teknoloji ve İşletmecilik Yüksekokulu
+1139|115|Bucak İşletme Fakültesi
+1140|115|Diş Hekimliği Fakültesi
+1141|115|Eğitim Fakültesi
+1142|115|Fen-Edebiyat Fakültesi
+1143|115|Gölhisar Uygulamalı Bilimler Yüksekokulu
+1144|115|Mühendislik-Mimarlık Fakültesi
+1145|115|Sanat ve Tasarım Fakültesi
+1146|115|Sağlık Bilimleri Fakültesi
+1147|115|Spor Bilimleri Fakültesi
+1148|115|Turizm Fakültesi
+1149|115|Veteriner Fakültesi
+1150|115|İktisadi ve İdari Bilimler Fakültesi
+1151|115|İlahiyat Fakültesi
+1158|117|Denizcilik Fakültesi
+1159|117|Diş Hekimliği Fakültesi
+1160|117|Eczacılık Fakültesi
+1161|117|Erdemli Uygulamalı Teknoloji ve İşletmecilik Yüksekokulu
+1162|117|Eğitim Fakültesi
+1163|117|Fen Fakültesi
+1164|117|Hemşirelik Fakültesi
+1165|117|Mimarlık Fakültesi
+1166|117|Mühendislik Fakültesi
+1167|117|Sağlık Bilimleri Fakültesi
+1168|117|Silifke Uygulamalı Teknoloji ve İşletmecilik Yüksekokulu
+1169|117|Spor Bilimleri Fakültesi
+1170|117|Su Ürünleri Fakültesi
+1171|117|Turizm Fakültesi
+1172|117|Tıp Fakültesi
+1173|117|İktisadi ve İdari Bilimler Fakültesi
+1174|117|İlahiyat Fakültesi
+1175|117|İletişim Fakültesi
+1176|117|İnsan ve Toplum Bilimleri Fakültesi
+1177|118|Fen-Edebiyat Fakültesi
+1178|118|Güzel Sanatlar Fakültesi
+1179|118|Kültür Varlıklarını Koruma ve Onarım Yüksekokulu
+1180|118|Mimarlık Fakültesi
+1181|118|İletişim Fakültesi
+1216|121|Eğitim Fakültesi
+1217|121|Fen-Edebiyat Fakültesi
+1218|121|Mühendislik-Mimarlık Fakültesi
+1219|121|Sağlık Bilimleri Fakültesi
+1220|121|Spor Bilimleri Fakültesi
+1221|121|Uygulamalı Bilimler Fakültesi
+1222|121|İktisadi ve İdari Bilimler Fakültesi
+1223|121|İlahiyat Fakültesi
+1224|121|İletişim Fakültesi
+1182|119|Bodrum Güzel Sanatlar Fakültesi
+1183|119|Dalaman Sivil Havacılık Yüksekokulu
+1184|119|Diş Hekimliği Fakültesi
+1185|119|Edebiyat Fakültesi
+1186|119|Eğitim Fakültesi
+1187|119|Fen Fakültesi
+1188|119|Fethiye Sağlık Bilimleri Fakültesi
+1189|119|Fethiye Ziraat Fakültesi
+1190|119|Fethiye İşletme Fakültesi
+1191|119|Milas Veteriner Fakültesi
+1192|119|Mimarlık Fakültesi
+1193|119|Mühendislik Fakültesi
+1194|119|Sağlık Bilimleri Fakültesi
+1195|119|Seydikemer Uygulamalı Bilimler Yüksekokulu
+1196|119|Spor Bilimleri Fakültesi
+1197|119|Su Ürünleri Fakültesi
+1198|119|Teknoloji Fakültesi
+1199|119|Turizm Fakültesi
+1200|119|Tıp Fakültesi
+1201|119|İktisadi ve İdari Bilimler Fakültesi
+1202|119|İlahiyat Fakültesi
+1203|120|Diş Hekimliği Fakültesi
+1204|120|Eğitim Fakültesi
+1205|120|Fen-Edebiyat Fakültesi
+1206|120|Mimarlık Fakültesi
+1207|120|Sağlık Bilimleri Fakültesi
+1208|120|Spor Bilimleri Fakültesi
+1209|120|Tayfur Ata Sökmen Tıp Fakültesi
+1210|120|Turizm İşletmeciliği ve Otelcilik Yüksekokulu
+1211|120|Veteriner Fakültesi
+1212|120|Ziraat Fakültesi
+1213|120|İktisadi ve İdari Bilimler Fakültesi
+1214|120|İlahiyat Fakültesi
+1215|120|İletişim Fakültesi
+1225|122|Fen-Edebiyat Fakültesi
+1226|122|Güzel Sanatlar, Tasarım ve Mimarlık Fakültesi
+1227|122|Hukuk Fakültesi
+1228|122|Sağlık Bilimleri Fakültesi
+1229|122|Spor Bilimleri Fakültesi
+1230|122|Tıp Fakültesi
+1231|122|Veteriner Fakültesi
+1232|122|Ziraat Fakültesi
+1233|122|Çorlu Mühendislik Fakültesi
+1234|122|İktisadi ve İdari Bilimler Fakültesi
+1235|122|İlahiyat Fakültesi
+1236|123|Diş Hekimliği Fakültesi
+1237|123|Eğitim Fakültesi
+1238|123|Fen-Edebiyat Fakültesi
+1239|123|Mühendislik-Mimarlık Fakültesi
+1240|123|Semra ve Vefa Küçük Sağlık Bilimleri Fakültesi
+1241|123|Turizm Fakültesi
+1242|123|İktisadi ve İdari Bilimler Fakültesi
+1243|123|İlahiyat Fakültesi
+1244|124|Bilgisayar ve Bilişim Bilimleri Fakültesi
+1245|124|Bor Sağlık Bilimleri Fakültesi
+1246|124|Diş Hekimliği Fakültesi
+1247|124|Eğitim Fakültesi
+1248|124|Fen Fakültesi
+1249|124|Güzel Sanatlar Fakültesi
+1250|124|Mimarlık Fakültesi
+1251|124|Mühendislik Fakültesi
+1252|124|Spor Bilimleri Fakültesi
+1253|124|Tarım Bilimleri ve Teknolojileri Fakültesi
+1254|124|Tıp Fakültesi
+1255|124|Zübeyde Hanım Sağlık Bilimleri Fakültesi
+1256|124|İktisadi ve İdari Bilimler Fakültesi
+1257|124|İletişim Fakültesi
+1258|124|İnsan ve Toplum Bilimleri Fakültesi
+1259|124|İslami İlimler Fakültesi
+1260|125|Diş Hekimliği Fakültesi
+1261|125|Eczacılık Fakültesi
+1262|125|Eğitim Fakültesi
+1263|125|Fen Fakültesi
+1264|125|Güzel Sanatlar Fakültesi
+1265|125|Mimarlık Fakültesi
+1266|125|Mühendislik Fakültesi
+1267|125|Sağlık Bilimleri Fakültesi
+1268|125|Tıp Fakültesi
+1269|125|Veteriner Fakültesi
+1270|125|Yaşar Doğu Spor Bilimleri Fakültesi
+1271|125|Ziraat Fakültesi
+1272|125|Çarşamba İnsan ve Toplum Bilimleri Fakültesi
+1273|125|İktisadi ve İdari Bilimler Fakültesi
+1274|125|İlahiyat Fakültesi
+1275|125|İnsan ve Toplum Bilimleri Fakültesi
+1276|126|Mühendislik ve Doğa Bilimleri Fakültesi
+1277|126|Sanat, Tasarım ve Mimarlık Fakültesi
+1278|126|Sağlık Bilimleri Fakültesi
+1279|126|Spor Bilimleri Fakültesi
+1280|126|İktisadi, İdari ve Sosyal Bilimler Fakültesi
+1281|127|Diş Hekimliği Fakültesi
+1282|127|Eğitim Fakültesi
+1283|127|Fatsa Deniz Bilimleri Fakültesi
+1284|127|Fen-Edebiyat Fakültesi
+1285|127|Güzel Sanatlar Fakültesi
+1286|127|Sağlık Bilimleri Fakültesi
+1287|127|Spor Bilimleri Fakültesi
+1288|127|Turizm Fakültesi
+1289|127|Tıp Fakültesi
+1290|127|Ziraat Fakültesi
+1291|127|Ünye İktisadi ve İdari Bilimler Fakültesi
+1292|127|İlahiyat Fakültesi

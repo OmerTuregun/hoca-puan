@@ -1,0 +1,25 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.userprefs
+
+# Env
+.env
+!.env.example
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# EF Migrations (kendi migration'larını oluştur)
+# src/HocaPuan.Data/Migrations/
+
+# OS
+.DS_Store
+Thumbs.db

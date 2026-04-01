@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-alt text-text font-sans antialiased;
+  }
+
+  h1, h2, h3 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* ─── Butonlar ─────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded font-sans font-semibold text-sm
+           transition-all duration-150 cursor-pointer select-none;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover active:scale-[0.98] shadow-sm;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-text-muted hover:bg-surface-border hover:text-text;
+  }
+  .btn-outline {
+    @apply btn border border-surface-border bg-white text-text hover:border-primary hover:text-primary;
+  }
+
+  /* ─── Kart ──────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-lg shadow-card border border-surface-border;
+  }
+  .card-hover {
+    @apply card hover:shadow-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer;
+  }
+
+  /* ─── Input ─────────────────────────────────────────── */
+  .input {
+    @apply w-full px-4 py-2.5 rounded border border-surface-border bg-white text-text
+           placeholder:text-text-light text-sm
+           focus:outline-none focus:border-primary focus:shadow-input
+           transition-all duration-150;
+  }
+
+  /* ─── Badge ─────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-primary { @apply badge bg-primary-light text-primary; }
+  .badge-success { @apply badge bg-green-50 text-green-700; }
+  .badge-warning { @apply badge bg-amber-50 text-amber-700; }
+  .badge-danger  { @apply badge bg-red-50 text-red-700; }
+
+  /* ─── Puan yıldızı ──────────────────────────────────── */
+  .rating-dot {
+    @apply w-9 h-9 rounded-lg flex items-center justify-center text-white text-sm font-bold;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-surface-border rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-text-light; }
+
+/* ─── Sayfa geçiş animasyonları ──────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeUp {
+  animation: fadeUp 0.35s ease forwards;
+}
+.animate-fadeUp-delay-1 { animation-delay: 0.08s; opacity: 0; }
+.animate-fadeUp-delay-2 { animation-delay: 0.16s; opacity: 0; }
+.animate-fadeUp-delay-3 { animation-delay: 0.24s; opacity: 0; }

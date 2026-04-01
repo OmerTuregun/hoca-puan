@@ -1,0 +1,85 @@
+services:
+  # ─── PostgreSQL ───────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: hocapuan_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    networks:
+      - hocapuan_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── pgAdmin ──────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hocapuan_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "${PGADMIN_PORT:-5051}:80"
+    depends_on:
+      - db
+    networks:
+      - hocapuan_net
+
+  # ─── ASP.NET Core API ─────────────────────────────────────────
+  api:
+    build:
+      context: ./hocapuan-backend
+      dockerfile: src/HocaPuan.API/Dockerfile
+    container_name: hocapuan_api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
+      JwtSettings__SecretKey: ${JWT_SECRET}
+      JwtSettings__Issuer: ${JWT_ISSUER:-HocaPuanAPI}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-HocaPuanClient}
+      JwtSettings__ExpirationHours: ${JWT_EXPIRATION_HOURS:-24}
+    ports:
+      - "${API_PORT:-5001}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - hocapuan_net
+
+  # ─── React + Vite Frontend ────────────────────────────────────
+  frontend:
+    build:
+      context: ./hocapuan-frontend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: hocapuan_frontend
+    restart: unless-stopped
+    volumes:
+      - ./hocapuan-frontend:/app
+      - /app/node_modules
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      - VITE_API_URL=http://api:8080
+    depends_on:
+      - api
+    networks:
+      - hocapuan_net
+
+volumes:
+  postgres_data:
+
+networks:
+  hocapuan_net:
+    driver: bridge

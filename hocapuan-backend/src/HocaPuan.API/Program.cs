@@ -1,0 +1,49 @@
+using HocaPuan.API.Extensions;
+using HocaPuan.API.Middleware;
+using HocaPuan.Data;
+using HocaPuan.Data.Seed;
+using HocaPuan.Services;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ─── Servisler ───────────────────────────────────────────────
+builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddApplicationServices();
+builder.Services.AddSingleton<ImportJobStore>();
+builder.Services.AddSwagger();
+builder.Services.AddCorsPolicy();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+// ─── Uygulama pipeline ───────────────────────────────────────
+var app = builder.Build();
+
+// Otomatik migration + seed
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+    await DatabaseSeeder.SeedAsync(db);
+}
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "HocaPuan API v1");
+        c.RoutePrefix = string.Empty; // Swagger ana sayfada açılır: http://localhost:5001
+    });
+}
+
+app.UseCors("HocaPuanCors");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();

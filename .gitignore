@@ -1,0 +1,19 @@
+.env
+.env.*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Frontend
+hocapuan-frontend/node_modules/
+hocapuan-frontend/dist/
+
+# Backend (.NET)
+**/bin/
+**/obj/
+
+# Logs
+*.log
