@@ -7,6 +7,7 @@ using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HocaPuan.Services;
@@ -15,16 +16,23 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
     private readonly IConfiguration _config;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(AppDbContext db, IConfiguration config)
+    public AuthService(
+        AppDbContext db,
+        IConfiguration config,
+        IEmailService emailService,
+        ILogger<AuthService> logger)
     {
         _db = db;
         _config = config;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
-        // .edu.tr zorunluluğu — production'da açın, dev'de kapatılabilir
         // if (!dto.Email.EndsWith(".edu.tr", StringComparison.OrdinalIgnoreCase))
         //     return new AuthResponseDto { Success = false, Message = "Sadece .edu.tr uzantılı e-posta adresleri kabul edilmektedir." };
 
@@ -36,29 +44,42 @@ public class AuthService : IAuthService
         if (usernameExists)
             return new AuthResponseDto { Success = false, Message = "Bu kullanıcı adı zaten alınmış." };
 
+        var verificationToken = Guid.NewGuid().ToString("N");
         var user = new User
         {
             Username = dto.Username,
             Email = dto.Email.ToLower(),
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             UniversityName = dto.UniversityName,
-            EmailVerificationToken = Guid.NewGuid().ToString(),
+            EmailVerificationToken = verificationToken,
             EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24),
-            IsEmailVerified = true // TODO: E-posta doğrulamasını aktif etmek için false yapın
+            IsEmailVerified = false
         };
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
 
-        // TODO: Doğrulama e-postası gönder
+        var frontendUrl = (_config["App:FrontendUrl"] ?? "http://localhost:5173").TrimEnd('/');
+        var verificationLink = $"{frontendUrl}/verify-email?token={verificationToken}";
 
-        var token = GenerateJwtToken(user);
+        try
+        {
+            await _emailService.SendVerificationEmailAsync(user.Email, verificationLink);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Doğrulama e-postası gönderilemedi: {Email}", user.Email);
+            return new AuthResponseDto
+            {
+                Success = false,
+                Message = "Kayıt oluşturuldu ancak doğrulama e-postası gönderilemedi. Lütfen daha sonra tekrar deneyin."
+            };
+        }
+
         return new AuthResponseDto
         {
             Success = true,
-            Token = token,
-            Message = "Kayıt başarılı.",
-            User = MapUserInfo(user)
+            Message = "E-postanıza doğrulama linki gönderildi."
         };
     }
 
@@ -71,8 +92,8 @@ public class AuthService : IAuthService
         if (user.IsBanned)
             return new AuthResponseDto { Success = false, Message = "Hesabınız askıya alınmıştır." };
 
-        // if (!user.IsEmailVerified)
-        //     return new AuthResponseDto { Success = false, Message = "Lütfen önce e-posta adresinizi doğrulayın." };
+        if (!user.IsEmailVerified)
+            return new AuthResponseDto { Success = false, Message = "Önce e-posta adresinizi doğrulayın." };
 
         var token = GenerateJwtToken(user);
         return new AuthResponseDto
@@ -98,17 +119,35 @@ public class AuthService : IAuthService
         return true;
     }
 
-    public async Task<bool> ForgotPasswordAsync(string email)
+    public async Task<ForgotPasswordResponseDto> ForgotPasswordAsync(string email)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email.ToLower());
-        if (user == null) return false;
+        var response = new ForgotPasswordResponseDto
+        {
+            Message = "Kayıtlı bir hesap varsa şifre sıfırlama bağlantısı e-posta adresinize gönderildi."
+        };
 
-        user.PasswordResetToken = Guid.NewGuid().ToString();
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail);
+        if (user == null) return response;
+
+        var token = Guid.NewGuid().ToString("N");
+        user.PasswordResetToken = token;
         user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1);
         await _db.SaveChangesAsync();
 
-        // TODO: Şifre sıfırlama e-postası gönder
-        return true;
+        var frontendUrl = (_config["App:FrontendUrl"] ?? "http://localhost:5173").TrimEnd('/');
+        var resetLink = $"{frontendUrl}/reset-password?token={token}";
+
+        try
+        {
+            await _emailService.SendPasswordResetEmailAsync(user.Email, resetLink);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Şifre sıfırlama e-postası gönderilemedi: {Email}", user.Email);
+        }
+
+        return response;
     }
 
     public async Task<bool> ResetPasswordAsync(ResetPasswordDto dto)
@@ -126,7 +165,24 @@ public class AuthService : IAuthService
         return true;
     }
 
-    // ────────────────────────────────────────────────────────────
+    public async Task<UserProfileDto?> GetProfileAsync(int userId)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return null;
+
+        var totalReviews = await _db.Reviews.CountAsync(r => r.UserId == userId && !r.IsDeleted);
+
+        return new UserProfileDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            UniversityName = user.UniversityName,
+            CreatedAt = user.CreatedAt,
+            TotalReviews = totalReviews
+        };
+    }
+
     private string GenerateJwtToken(User user)
     {
         var jwtSettings = _config.GetSection("JwtSettings");

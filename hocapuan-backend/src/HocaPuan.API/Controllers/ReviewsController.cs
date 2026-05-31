@@ -16,6 +16,24 @@ public class ReviewsController : ControllerBase
     private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     private bool IsAdmin => User.IsInRole("Admin") || User.IsInRole("Moderator");
 
+    /// <summary>Giriş yapmış kullanıcının yorumları</summary>
+    [HttpGet("my")]
+    [Authorize]
+    public async Task<IActionResult> GetMyReviews([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var result = await _reviewService.GetByUserAsync(CurrentUserId, page, pageSize);
+        return Ok(result);
+    }
+
+    /// <summary>Bekleyen yorumlar (Admin)</summary>
+    [HttpGet("pending")]
+    [Authorize(Roles = "Admin,Moderator")]
+    public async Task<IActionResult> GetPending([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        var result = await _reviewService.GetPendingAsync(page, pageSize);
+        return Ok(result);
+    }
+
     /// <summary>Hocaya ait yorumları getir</summary>
     [HttpGet("professor/{professorId:int}")]
     public async Task<IActionResult> GetByProfessor(int professorId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -46,6 +64,27 @@ public class ReviewsController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return Conflict(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>Yorumu güncelle (sadece sahibi)</summary>
+    [HttpPut("{id:int}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateReview(int id, [FromBody] UpdateReviewDto dto)
+    {
+        try
+        {
+            var result = await _reviewService.UpdateAsync(id, CurrentUserId, dto);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid();
         }
         catch (ArgumentException ex)
         {
@@ -100,14 +139,5 @@ public class ReviewsController : ControllerBase
         {
             return NotFound();
         }
-    }
-
-    /// <summary>Bekleyen yorumlar (Admin)</summary>
-    [HttpGet("pending")]
-    [Authorize(Roles = "Admin,Moderator")]
-    public async Task<IActionResult> GetPending([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
-    {
-        var result = await _reviewService.GetPendingAsync(page, pageSize);
-        return Ok(result);
     }
 }

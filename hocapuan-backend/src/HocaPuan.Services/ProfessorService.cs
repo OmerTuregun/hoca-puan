@@ -40,6 +40,9 @@ public class ProfessorService : IProfessorService
         if (dto.UniversityId.HasValue)
             query = query.Where(p => p.UniversityId == dto.UniversityId.Value);
 
+        if (dto.FacultyId.HasValue)
+            query = query.Where(p => p.Department != null && p.Department.FacultyId == dto.FacultyId.Value);
+
         if (dto.DepartmentId.HasValue)
             query = query.Where(p => p.DepartmentId == dto.DepartmentId.Value);
 

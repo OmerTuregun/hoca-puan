@@ -1,13 +1,13 @@
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, Controller } from 'react-hook-form'
-import { professorApi, reviewApi } from '../services/api'
+import { reviewApi } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 import StarRating from '../components/ui/StarRating'
 import Spinner from '../components/ui/Spinner'
+import { REVIEW_TAGS } from '../constants/reviewTags'
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
-import { REVIEW_TAGS } from '../constants/reviewTags'
 
 interface FormData {
   qualityRating: number
@@ -20,12 +20,14 @@ interface FormData {
   comment: string
 }
 
-export default function AddReviewPage() {
+export default function EditReviewPage() {
   const { id } = useParams<{ id: string }>()
-  const profId = Number(id)
+  const reviewId = Number(id)
   const navigate = useNavigate()
+  const location = useLocation()
+  const fromPath = (location.state as { from?: string } | null)?.from
   const qc = useQueryClient()
-  const { isLoggedIn, hasHydrated } = useAuthStore()
+  const { user, isLoggedIn, hasHydrated } = useAuthStore()
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -33,24 +35,36 @@ export default function AddReviewPage() {
   useEffect(() => {
     if (!hasHydrated) return
     if (!isLoggedIn) {
-      navigate('/login', { replace: true, state: { from: `/professors/${profId}/review` } })
+      navigate('/login', { replace: true, state: { from: `/reviews/${reviewId}/edit` } })
     }
-  }, [hasHydrated, isLoggedIn, navigate, profId])
+  }, [hasHydrated, isLoggedIn, navigate, reviewId])
 
-  const { data: professor, isLoading } = useQuery({
-    queryKey: ['professor', profId],
-    queryFn:  () => professorApi.get(profId),
+  const { data: review, isLoading, isError } = useQuery({
+    queryKey: ['review', reviewId],
+    queryFn: () => reviewApi.get(reviewId),
+    enabled: !!reviewId && hasHydrated && isLoggedIn,
   })
 
-  const { register, control, handleSubmit, formState: { errors } } = useForm<FormData>({
-    defaultValues: {
-      qualityRating: 0,
-      difficultyRating: 0,
-      wouldTakeAgain: true,
-      attendanceMandatory: false,
-      year: new Date().getFullYear(),
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
+
+  useEffect(() => {
+    if (!review || !user) return
+    if (review.userId !== user.id) {
+      navigate('/profile', { replace: true })
+      return
     }
-  })
+    reset({
+      qualityRating: review.qualityRating,
+      difficultyRating: review.difficultyRating,
+      wouldTakeAgain: review.wouldTakeAgain,
+      attendanceMandatory: review.attendanceMandatory,
+      courseCode: review.courseCode ?? '',
+      grade: review.grade ?? '',
+      year: review.year,
+      comment: review.comment,
+    })
+    setSelectedTags(review.tags ?? [])
+  }, [review, user, reset, navigate])
 
   function toggleTag(tag: string) {
     setSelectedTags(prev =>
@@ -59,25 +73,33 @@ export default function AddReviewPage() {
   }
 
   async function onSubmit(data: FormData) {
-    if (data.qualityRating === 0)    return setError('Kalite puanı seçiniz.')
+    if (!review) return
+    if (data.qualityRating === 0) return setError('Kalite puanı seçiniz.')
     if (data.difficultyRating === 0) return setError('Zorluk puanı seçiniz.')
     setError('')
     setSubmitting(true)
     try {
-      await reviewApi.create({
-        professorId: profId,
+      await reviewApi.update(reviewId, {
         ...data,
         tags: selectedTags,
         courseCode: data.courseCode || undefined,
         grade: data.grade || undefined,
       })
       await Promise.all([
-        qc.invalidateQueries({ queryKey: ['reviews', profId] }),
-        qc.invalidateQueries({ queryKey: ['professor', profId] }),
+        qc.invalidateQueries({ queryKey: ['reviews', review.professorId] }),
+        qc.invalidateQueries({ queryKey: ['professor', review.professorId] }),
+        qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
+        qc.invalidateQueries({ queryKey: ['auth', 'me'] }),
+        qc.invalidateQueries({ queryKey: ['review', reviewId] }),
       ])
-      navigate(`/professors/${profId}`, { replace: true, state: { reviewSuccess: true } })
+      const destination = fromPath ?? `/professors/${review.professorId}`
+      navigate(destination, { replace: true, state: destination === '/profile' ? { reviewUpdated: true } : undefined })
     } catch (e: any) {
-      setError(e.response?.data?.message || 'Bir hata oluştu.')
+      if (e.response?.status === 403) {
+        setError('Bu yorumu düzenleme yetkiniz yok.')
+      } else {
+        setError(e.response?.data?.message || 'Bir hata oluştu.')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -85,18 +107,27 @@ export default function AddReviewPage() {
 
   if (!hasHydrated || !isLoggedIn) return <Spinner />
   if (isLoading) return <Spinner />
-  if (!professor) return <div className="text-center py-20">Hoca bulunamadı.</div>
+  if (isError || !review) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <p className="text-text-muted">Yorum bulunamadı.</p>
+        <Link to={fromPath ?? '/profile'} className="btn-primary mt-4 inline-flex">Geri dön</Link>
+      </div>
+    )
+  }
+
+  const backTo = fromPath ?? `/professors/${review.professorId}`
+  const backLabel = backTo === '/profile' ? 'Profilim' : 'Hoca sayfası'
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link to={`/professors/${profId}`} className="text-sm text-text-muted hover:text-primary mb-4 inline-block">
-        ← {professor.title} {professor.firstName} {professor.lastName}
+      <Link to={backTo} className="text-sm text-text-muted hover:text-primary mb-4 inline-block">
+        ← {backLabel}
       </Link>
-      <h1 className="font-display text-3xl text-text mb-6">Yorum yaz</h1>
+      <h1 className="font-display text-3xl text-text mb-2">Yorumu düzenle</h1>
+      <p className="text-text-muted text-sm mb-6">{review.professorFullName}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-
-        {/* Puanlar */}
         <div className="card p-5">
           <h2 className="font-semibold text-text mb-4">Puanlar</h2>
           <div className="flex flex-col sm:flex-row gap-6">
@@ -127,7 +158,6 @@ export default function AddReviewPage() {
           </div>
         </div>
 
-        {/* Evet/Hayır */}
         <div className="card p-5">
           <h2 className="font-semibold text-text mb-4">Genel sorular</h2>
           <div className="flex flex-col gap-4">
@@ -176,7 +206,6 @@ export default function AddReviewPage() {
           </div>
         </div>
 
-        {/* Ders bilgisi */}
         <div className="card p-5">
           <h2 className="font-semibold text-text mb-4">Ders bilgisi (isteğe bağlı)</h2>
           <div className="grid sm:grid-cols-3 gap-3">
@@ -195,7 +224,6 @@ export default function AddReviewPage() {
           </div>
         </div>
 
-        {/* Etiketler */}
         <div className="card p-5">
           <h2 className="font-semibold text-text mb-4">Etiketler</h2>
           <div className="flex flex-wrap gap-2">
@@ -217,7 +245,6 @@ export default function AddReviewPage() {
           </div>
         </div>
 
-        {/* Yorum */}
         <div className="card p-5">
           <h2 className="font-semibold text-text mb-3">
             Yorumun <span className="text-danger">*</span>
@@ -225,7 +252,6 @@ export default function AddReviewPage() {
           <textarea
             {...register('comment', { required: true, minLength: 20 })}
             rows={5}
-            placeholder="Hoca hakkındaki deneyimini paylaş. Sınav şekli, ders anlatımı, iletişim..."
             className="input resize-none"
           />
           {errors.comment && (
@@ -241,9 +267,9 @@ export default function AddReviewPage() {
 
         <div className="flex gap-3">
           <button type="submit" disabled={submitting} className="btn-primary flex-1 justify-center py-3">
-            {submitting ? 'Gönderiliyor...' : 'Yorumu gönder'}
+            {submitting ? 'Kaydediliyor...' : 'Değişiklikleri kaydet'}
           </button>
-          <Link to={`/professors/${profId}`} className="btn-outline px-6 py-3">
+          <Link to={backTo} className="btn-outline px-6 py-3">
             İptal
           </Link>
         </div>

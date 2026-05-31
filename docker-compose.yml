@@ -42,6 +42,8 @@ services:
       dockerfile: src/HocaPuan.API/Dockerfile
     container_name: hocapuan_api
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
@@ -49,6 +51,12 @@ services:
       JwtSettings__Issuer: ${JWT_ISSUER:-HocaPuanAPI}
       JwtSettings__Audience: ${JWT_AUDIENCE:-HocaPuanClient}
       JwtSettings__ExpirationHours: ${JWT_EXPIRATION_HOURS:-24}
+      App__FrontendUrl: ${APP_FRONTEND_URL:-http://localhost:5173}
+      Email__Host: ${EMAIL_HOST}
+      Email__Port: ${EMAIL_PORT:-2525}
+      Email__Username: ${EMAIL_USERNAME}
+      Email__Password: ${EMAIL_PASSWORD}
+      Email__From: ${EMAIL_FROM:-noreply@hocapuan.com}
     ports:
       - "${API_PORT:-5001}:8080"
     depends_on:

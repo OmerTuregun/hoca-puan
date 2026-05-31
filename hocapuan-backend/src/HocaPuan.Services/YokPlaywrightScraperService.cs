@@ -1138,11 +1138,8 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
         if (parts.Length < 2) return ("Öğr. Gör.", string.Empty, string.Empty);
 
         // Convert ALL-CAPS YÖK names to Title Case (e.g. "BURAK" → "Burak")
-        static string ToTitleCase(string s) =>
-            string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s[1..].ToLowerInvariant();
-
-        var firstName = ToTitleCase(parts[0]);
-        var lastName = string.Join(' ', parts.Skip(1).Select(ToTitleCase));
+        var firstName = ToTitleCaseTr(parts[0]);
+        var lastName = string.Join(' ', parts.Skip(1).Select(p => ToTitleCaseTr(p)));
         var title = matchedTitle ?? "Öğr. Gör.";
 
         return (title, firstName, lastName);

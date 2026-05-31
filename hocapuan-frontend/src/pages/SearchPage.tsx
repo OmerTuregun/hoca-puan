@@ -18,19 +18,26 @@ export default function SearchPage() {
 
   const query        = params.get('q') || ''
   const universityId = params.get('universityId') ? Number(params.get('universityId')) : undefined
+  const facultyId    = params.get('facultyId') ? Number(params.get('facultyId')) : undefined
   const sortBy       = params.get('sort') || 'quality'
 
   // URL değişince sayfayı sıfırla
-  useEffect(() => { setPage(1) }, [query, universityId, sortBy])
+  useEffect(() => { setPage(1) }, [query, universityId, facultyId, sortBy])
 
   const { data: universities } = useQuery({
     queryKey: ['universities'],
     queryFn:  () => universityApi.list(),
   })
 
+  const { data: faculties } = useQuery({
+    queryKey: ['faculties', universityId],
+    queryFn:  () => universityApi.faculties(universityId!),
+    enabled:  !!universityId,
+  })
+
   const { data, isLoading } = useQuery({
-    queryKey: ['professors', query, universityId, sortBy, page],
-    queryFn:  () => professorApi.search({ query, universityId, sortBy, page, pageSize: 12 }),
+    queryKey: ['professors', query, universityId, facultyId, sortBy, page],
+    queryFn:  () => professorApi.search({ query, universityId, facultyId, sortBy, page, pageSize: 12 }),
     placeholderData: prev => prev,
   })
 
@@ -58,15 +65,40 @@ export default function SearchPage() {
               <label className="text-xs font-medium text-text-muted mb-1.5 block">Üniversite</label>
               <select
                 value={universityId ?? ''}
-                onChange={e => setParam('universityId', e.target.value || undefined)}
+                onChange={e => {
+                  const next = new URLSearchParams(params)
+                  const val = e.target.value
+                  if (val) next.set('universityId', val)
+                  else next.delete('universityId')
+                  next.delete('facultyId')
+                  setParams(next)
+                }}
                 className="input text-sm py-2"
               >
                 <option value="">Tümü</option>
                 {universities?.map(u => (
-                  <option key={u.id} value={u.id}>{u.shortName} — {u.city}</option>
+                  <option key={u.id} value={u.id}>{u.name}</option>
                 ))}
               </select>
             </div>
+
+            {/* Fakülte */}
+            {universityId && (
+              <div className="mb-4">
+                <label className="text-xs font-medium text-text-muted mb-1.5 block">Fakülte</label>
+                <select
+                  value={facultyId ?? ''}
+                  onChange={e => setParam('facultyId', e.target.value || undefined)}
+                  className="input text-sm py-2"
+                  disabled={!faculties?.length}
+                >
+                  <option value="">Tüm Fakülteler</option>
+                  {faculties?.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Sıralama */}
             <div>
@@ -86,7 +118,7 @@ export default function SearchPage() {
               ))}
             </div>
 
-            {(query || universityId) && (
+            {(query || universityId || facultyId) && (
               <button
                 onClick={() => { setParams({}); setPage(1) }}
                 className="mt-4 text-xs text-text-muted hover:text-danger underline"

@@ -1,9 +1,13 @@
+using HocaPuan.API.Configuration;
 using HocaPuan.API.Extensions;
 using HocaPuan.API.Middleware;
+using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Data;
 using HocaPuan.Data.Seed;
 using HocaPuan.Services;
 using Microsoft.EntityFrameworkCore;
+
+EnvLoader.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<ImportJobStore>();
 builder.Services.AddSwagger();
 builder.Services.AddCorsPolicy();

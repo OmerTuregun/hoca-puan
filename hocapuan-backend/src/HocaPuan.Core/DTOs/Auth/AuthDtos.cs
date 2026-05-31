@@ -32,6 +32,26 @@ public class UserInfoDto
     public bool IsEmailVerified { get; set; }
 }
 
+public class UserProfileDto
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? UniversityName { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public int TotalReviews { get; set; }
+}
+
+public class ForgotPasswordDto
+{
+    public string Email { get; set; } = string.Empty;
+}
+
+public class ForgotPasswordResponseDto
+{
+    public string Message { get; set; } = string.Empty;
+}
+
 public class ResetPasswordDto
 {
     public string Token { get; set; } = string.Empty;

@@ -23,8 +23,8 @@ public class ReviewService : IReviewService
     {
         var review = await _db.Reviews
             .Include(r => r.User)
-            .Include(r => r.Professor)
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .Include(r => r.Professor).ThenInclude(p => p.University)
+            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
 
         return review == null ? null : MapDto(review, null);
     }
@@ -33,8 +33,8 @@ public class ReviewService : IReviewService
     {
         var query = _db.Reviews
             .Include(r => r.User)
-            .Include(r => r.Professor)
-            .Where(r => r.ProfessorId == professorId && r.Status == ReviewStatus.Approved)
+            .Include(r => r.Professor).ThenInclude(p => p.University)
+            .Where(r => r.ProfessorId == professorId && r.Status == ReviewStatus.Approved && !r.IsDeleted)
             .OrderByDescending(r => r.CreatedAt);
 
         var totalCount = await query.CountAsync();
@@ -93,6 +93,60 @@ public class ReviewService : IReviewService
         await _professorService.RecalculateStatsAsync(dto.ProfessorId);
 
         return (await GetByIdAsync(review.Id))!;
+    }
+
+    public async Task<ReviewDto?> UpdateAsync(int reviewId, int userId, UpdateReviewDto dto)
+    {
+        var review = await _db.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId && !r.IsDeleted);
+        if (review == null) return null;
+
+        if (review.UserId != userId)
+            throw new UnauthorizedAccessException("Bu yorumu düzenleme yetkiniz yok.");
+
+        if (dto.QualityRating < 1 || dto.QualityRating > 5)
+            throw new ArgumentException("Kalite puanı 1-5 arasında olmalıdır.");
+
+        if (dto.DifficultyRating < 1 || dto.DifficultyRating > 5)
+            throw new ArgumentException("Zorluk puanı 1-5 arasında olmalıdır.");
+
+        review.CourseCode = dto.CourseCode;
+        review.Grade = dto.Grade;
+        review.Year = dto.Year;
+        review.QualityRating = dto.QualityRating;
+        review.DifficultyRating = dto.DifficultyRating;
+        review.WouldTakeAgain = dto.WouldTakeAgain;
+        review.AttendanceMandatory = dto.AttendanceMandatory;
+        review.Comment = dto.Comment;
+        review.TagsJson = JsonSerializer.Serialize(dto.Tags);
+        review.UpdatedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+        await _professorService.RecalculateStatsAsync(review.ProfessorId);
+
+        return await GetByIdAsync(reviewId);
+    }
+
+    public async Task<PagedResultDto<ReviewDto>> GetByUserAsync(int userId, int page, int pageSize)
+    {
+        var query = _db.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Professor).ThenInclude(p => p.University)
+            .Where(r => r.UserId == userId && !r.IsDeleted)
+            .OrderByDescending(r => r.CreatedAt);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResultDto<ReviewDto>
+        {
+            Items = items.Select(r => MapDto(r, null)).ToList(),
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     public async Task<bool> DeleteAsync(int reviewId, int requestingUserId, bool isAdmin)
@@ -196,8 +250,10 @@ public class ReviewService : IReviewService
     private static ReviewDto MapDto(Review r, bool? currentUserVote) => new()
     {
         Id = r.Id,
+        UserId = r.UserId,
         ProfessorId = r.ProfessorId,
         ProfessorFullName = r.Professor?.FullName ?? "",
+        UniversityName = r.Professor?.University?.Name ?? "",
         Username = r.User?.Username ?? "Anonim",
         CourseCode = r.CourseCode,
         Grade = r.Grade,

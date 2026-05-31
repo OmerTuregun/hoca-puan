@@ -47,6 +47,7 @@ public class ProfessorSearchDto
 {
     public string? Query { get; set; }
     public int? UniversityId { get; set; }
+    public int? FacultyId { get; set; }
     public int? DepartmentId { get; set; }
     public string? SortBy { get; set; } = "quality";   // quality | difficulty | reviews
     public int Page { get; set; } = 1;

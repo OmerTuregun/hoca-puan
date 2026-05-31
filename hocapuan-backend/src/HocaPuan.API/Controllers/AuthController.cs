@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using HocaPuan.Core.DTOs.Auth;
 using HocaPuan.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HocaPuan.API.Controllers;
@@ -10,6 +12,8 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     public AuthController(IAuthService authService) => _authService = authService;
+
+    private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     /// <summary>Yeni kullanıcı kaydı</summary>
     [HttpPost("register")]
@@ -40,10 +44,10 @@ public class AuthController : ControllerBase
 
     /// <summary>Şifremi unuttum</summary>
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
     {
-        await _authService.ForgotPasswordAsync(email);
-        return Ok(new { message = "Şifre sıfırlama bağlantısı gönderildi (kayıtlı bir hesap varsa)." });
+        var result = await _authService.ForgotPasswordAsync(dto.Email);
+        return Ok(result);
     }
 
     /// <summary>Şifre sıfırla</summary>
@@ -53,5 +57,15 @@ public class AuthController : ControllerBase
         var success = await _authService.ResetPasswordAsync(dto);
         if (!success) return BadRequest(new { message = "Geçersiz veya süresi dolmuş token." });
         return Ok(new { message = "Şifreniz başarıyla güncellendi." });
+    }
+
+    /// <summary>Giriş yapmış kullanıcının profili</summary>
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMe()
+    {
+        var profile = await _authService.GetProfileAsync(CurrentUserId);
+        if (profile == null) return NotFound();
+        return Ok(profile);
     }
 }
