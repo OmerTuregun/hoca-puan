@@ -143,6 +143,8 @@ export interface Review {
   comment: string
   tags: string[]
   status: string
+  infoMessage?: string
+  manualReviewReasons?: string[]
   thumbsUp: number
   thumbsDown: number
   currentUserVote?: boolean | null
@@ -232,6 +234,10 @@ export const reviewApi = {
     api.post<VoteResult>(`/reviews/${id}/vote`, null, { params: { isUpvote } }).then(r => r.data),
   delete: (id: number) =>
     api.delete(`/reviews/${id}`).then(r => r.data),
+  pending: (page = 1, pageSize = 20) =>
+    api.get<PagedResult<Review>>('/reviews/pending', { params: { page, pageSize } }).then(r => r.data),
+  moderate: (id: number, data: { approve: boolean; moderatorNote?: string }) =>
+    api.post<Review>(`/reviews/${id}/moderate`, data).then(r => r.data),
 }
 
 export default api

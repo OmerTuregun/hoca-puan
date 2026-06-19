@@ -5,7 +5,17 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    strictPort: true,
     host: '0.0.0.0',
+    allowedHosts: true,
+    watch: {
+      usePolling: true,
+    },
+    hmr: {
+      host: '127.0.0.1',
+      port: 5173,
+      clientPort: 5173,
+    },
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL ?? 'http://localhost:5001',

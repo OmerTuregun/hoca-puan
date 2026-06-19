@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { GraduationCap, Search, LogOut, User, ChevronDown } from 'lucide-react'
+import { GraduationCap, Search, LogOut, User, ChevronDown, ShieldAlert } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { useState, useRef, useEffect } from 'react'
 
 export default function Navbar() {
-  const { isLoggedIn, user, logout, hasHydrated } = useAuthStore()
+  const { isLoggedIn, user, logout, hasHydrated, isAdmin } = useAuthStore()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -90,6 +90,17 @@ export default function Navbar() {
                     <User className="w-4 h-4" />
                     Profilim
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin/moderation"
+                      role="menuitem"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-text hover:bg-surface-alt transition-colors"
+                    >
+                      <ShieldAlert className="w-4 h-4" />
+                      Moderasyon
+                    </Link>
+                  )}
                   <button
                     type="button"
                     role="menuitem"

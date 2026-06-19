@@ -19,6 +19,12 @@ export default function ProfessorPage() {
   const [reviewSuccess, setReviewSuccess] = useState(
     () => !!(location.state as { reviewSuccess?: boolean } | null)?.reviewSuccess
   )
+  const [reviewPending, setReviewPending] = useState(
+    () => !!(location.state as { reviewPending?: boolean } | null)?.reviewPending
+  )
+  const [reviewInfoMessage, setReviewInfoMessage] = useState(
+    () => (location.state as { reviewInfoMessage?: string } | null)?.reviewInfoMessage ?? ''
+  )
 
   const reviewPath = `/professors/${profId}/review`
 
@@ -41,8 +47,15 @@ export default function ProfessorPage() {
   }, [professor])
 
   useEffect(() => {
-    if ((location.state as { reviewSuccess?: boolean } | null)?.reviewSuccess) {
+    const state = location.state as {
+      reviewSuccess?: boolean
+      reviewPending?: boolean
+      reviewInfoMessage?: string
+    } | null
+    if (state?.reviewSuccess) {
       setReviewSuccess(true)
+      setReviewPending(!!state.reviewPending)
+      setReviewInfoMessage(state.reviewInfoMessage ?? '')
       setPage(1)
       void Promise.all([
         qc.invalidateQueries({ queryKey: ['reviews', profId] }),
@@ -77,12 +90,23 @@ export default function ProfessorPage() {
       </nav>
 
       {reviewSuccess && (
-        <div className="mb-4 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800 flex items-start justify-between gap-3">
-          <span>Yorumun başarıyla gönderildi.</span>
+        <div
+          className={`mb-4 rounded-lg px-4 py-3 text-sm flex items-start justify-between gap-3 ${
+            reviewPending
+              ? 'bg-amber-50 border border-amber-200 text-amber-900'
+              : 'bg-green-50 border border-green-200 text-green-800'
+          }`}
+        >
+          <span>
+            {reviewInfoMessage ||
+              (reviewPending
+                ? 'Yorumunuz incelemeye alındı, onaylandığında yayınlanacaktır.'
+                : 'Yorumun başarıyla gönderildi.')}
+          </span>
           <button
             type="button"
             onClick={() => setReviewSuccess(false)}
-            className="text-green-700 hover:text-green-900 shrink-0"
+            className={`shrink-0 ${reviewPending ? 'text-amber-800 hover:text-amber-950' : 'text-green-700 hover:text-green-900'}`}
             aria-label="Kapat"
           >
             ×
@@ -200,6 +224,21 @@ export default function ProfessorPage() {
               review={r}
               onDelete={() => qc.invalidateQueries({ queryKey: ['reviews', profId] })}
               onVote={() => qc.invalidateQueries({ queryKey: ['reviews', profId] })}
+              onUpdate={(updated) => {
+                void Promise.all([
+                  qc.invalidateQueries({ queryKey: ['reviews', profId] }),
+                  qc.invalidateQueries({ queryKey: ['professor', profId] }),
+                  qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
+                ])
+                if (updated.status === 'Pending') {
+                  setReviewPending(true)
+                  setReviewInfoMessage(updated.infoMessage ?? 'Yorumunuz incelemeye alındı, onaylandığında yayınlanacaktır.')
+                } else {
+                  setReviewSuccess(true)
+                  setReviewPending(false)
+                  setReviewInfoMessage(updated.infoMessage ?? '')
+                }
+              }}
             />
           ))}
 

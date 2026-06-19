@@ -1,8 +1,10 @@
 using System.Text;
 using System.Net;
+using HocaPuan.Core.Interfaces.Moderation;
 using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Data;
 using HocaPuan.Services;
+using HocaPuan.Services.Moderation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -52,6 +54,8 @@ public static class ServiceExtensions
         services.AddScoped<IProfessorService, ProfessorService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IUniversityService, UniversityService>();
+        services.AddSingleton<IBannedWordsProvider, FileBannedWordsProvider>();
+        services.AddSingleton<IContentModerationService, ContentModerationService>();
         services.AddScoped<IYokPlaywrightScraperService, YokPlaywrightScraperService>();
         services.AddHttpClient<IYokScraperService, YokScraperService>(client =>
         {

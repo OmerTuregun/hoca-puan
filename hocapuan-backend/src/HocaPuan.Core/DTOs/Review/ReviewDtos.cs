@@ -18,6 +18,8 @@ public class ReviewDto
     public string Comment { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = new();
     public string Status { get; set; } = string.Empty;
+    public string? InfoMessage { get; set; }
+    public List<string> ManualReviewReasons { get; set; } = new();
     public int ThumbsUp { get; set; }
     public int ThumbsDown { get; set; }
     public bool? CurrentUserVote { get; set; }   // null=oy vermedi, true=up, false=down

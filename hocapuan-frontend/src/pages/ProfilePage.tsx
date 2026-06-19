@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { authApi, reviewApi } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 import RatingBadge from '../components/ui/RatingBadge'
@@ -9,8 +9,19 @@ import { Pencil } from 'lucide-react'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const qc = useQueryClient()
   const { isLoggedIn, hasHydrated } = useAuthStore()
   const [page, setPage] = useState(1)
+  const [reviewUpdated, setReviewUpdated] = useState(
+    () => !!(location.state as { reviewUpdated?: boolean } | null)?.reviewUpdated
+  )
+  const [reviewPending, setReviewPending] = useState(
+    () => !!(location.state as { reviewPending?: boolean } | null)?.reviewPending
+  )
+  const [reviewInfoMessage, setReviewInfoMessage] = useState(
+    () => (location.state as { reviewInfoMessage?: string } | null)?.reviewInfoMessage ?? ''
+  )
 
   useEffect(() => {
     if (!hasHydrated) return
@@ -18,6 +29,24 @@ export default function ProfilePage() {
       navigate('/login', { replace: true, state: { from: '/profile' } })
     }
   }, [hasHydrated, isLoggedIn, navigate])
+
+  useEffect(() => {
+    const state = location.state as {
+      reviewUpdated?: boolean
+      reviewPending?: boolean
+      reviewInfoMessage?: string
+    } | null
+    if (state?.reviewUpdated) {
+      setReviewUpdated(true)
+      setReviewPending(!!state.reviewPending)
+      setReviewInfoMessage(state.reviewInfoMessage ?? '')
+      void Promise.all([
+        qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
+        qc.invalidateQueries({ queryKey: ['auth', 'me'] }),
+      ])
+      window.history.replaceState({}, document.title, location.pathname)
+    }
+  }, [location.state, location.pathname, qc])
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['auth', 'me'],
@@ -45,6 +74,31 @@ export default function ProfilePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="font-display text-3xl text-text mb-6">Profilim</h1>
+
+      {reviewUpdated && (
+        <div
+          className={`mb-4 rounded-lg px-4 py-3 text-sm flex items-start justify-between gap-3 ${
+            reviewPending
+              ? 'bg-amber-50 border border-amber-200 text-amber-900'
+              : 'bg-green-50 border border-green-200 text-green-800'
+          }`}
+        >
+          <span>
+            {reviewInfoMessage ||
+              (reviewPending
+                ? 'Yorumunuz incelemeye alındı, onaylandığında yayınlanacaktır.'
+                : 'Yorumunuz başarıyla güncellendi.')}
+          </span>
+          <button
+            type="button"
+            onClick={() => setReviewUpdated(false)}
+            className={`shrink-0 ${reviewPending ? 'text-amber-800 hover:text-amber-950' : 'text-green-700 hover:text-green-900'}`}
+            aria-label="Kapat"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {profile && (
         <div className="card p-6 mb-8">
@@ -89,14 +143,26 @@ export default function ProfilePage() {
                   </Link>
                   <p className="text-sm text-text-muted mt-0.5">{r.universityName}</p>
                 </div>
-                <Link
-                  to={`/reviews/${r.id}/edit`}
-                  state={{ from: '/profile' }}
-                  className="btn-outline text-sm py-1.5 px-3 inline-flex items-center gap-1.5"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                  Düzenle
-                </Link>
+                <div className="flex items-center gap-2">
+                  {r.status === 'Pending' && (
+                    <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 rounded-full px-2 py-0.5">
+                      İnceleniyor
+                    </span>
+                  )}
+                  {r.status === 'Rejected' && (
+                    <span className="text-xs bg-red-50 text-red-700 border border-red-200 rounded-full px-2 py-0.5">
+                      Reddedildi
+                    </span>
+                  )}
+                  <Link
+                    to={`/reviews/${r.id}/edit`}
+                    state={{ from: '/profile' }}
+                    className="btn-outline text-sm py-1.5 px-3 inline-flex items-center gap-1.5"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    Düzenle
+                  </Link>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-4 mb-3">

@@ -6,7 +6,7 @@ namespace HocaPuan.Core.Interfaces.Services;
 public interface IReviewService
 {
     Task<ReviewDto?> GetByIdAsync(int id);
-    Task<PagedResultDto<ReviewDto>> GetByProfessorAsync(int professorId, int page, int pageSize);
+    Task<PagedResultDto<ReviewDto>> GetByProfessorAsync(int professorId, int page, int pageSize, int? currentUserId = null);
     Task<ReviewDto> CreateAsync(int userId, CreateReviewDto dto);
     Task<ReviewDto?> UpdateAsync(int reviewId, int userId, UpdateReviewDto dto);
     Task<PagedResultDto<ReviewDto>> GetByUserAsync(int userId, int page, int pageSize);

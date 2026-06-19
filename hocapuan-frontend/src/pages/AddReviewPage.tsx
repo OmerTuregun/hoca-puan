@@ -5,9 +5,14 @@ import { professorApi, reviewApi } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 import StarRating from '../components/ui/StarRating'
 import Spinner from '../components/ui/Spinner'
+import ReviewSubmitOverlay from '../components/ui/ReviewSubmitOverlay'
+import ReviewFormErrorAlert from '../components/review/ReviewFormErrorAlert'
+import ReviewSubmitButton from '../components/review/ReviewSubmitButton'
+import { parseReviewSubmitError, type ReviewSubmitErrorKind } from '../utils/reviewSubmitError'
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { REVIEW_TAGS } from '../constants/reviewTags'
+import { useCommentModerationHint } from '../hooks/useCommentModerationHint'
 
 interface FormData {
   qualityRating: number
@@ -29,6 +34,7 @@ export default function AddReviewPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [errorKind, setErrorKind] = useState<ReviewSubmitErrorKind>('general')
 
   useEffect(() => {
     if (!hasHydrated) return
@@ -42,7 +48,7 @@ export default function AddReviewPage() {
     queryFn:  () => professorApi.get(profId),
   })
 
-  const { register, control, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, control, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       qualityRating: 0,
       difficultyRating: 0,
@@ -52,19 +58,29 @@ export default function AddReviewPage() {
     }
   })
 
+  const commentValue = watch('comment') ?? ''
+  const moderationHint = useCommentModerationHint(commentValue)
+
   function toggleTag(tag: string) {
+    if (submitting) return
     setSelectedTags(prev =>
       prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     )
   }
 
   async function onSubmit(data: FormData) {
-    if (data.qualityRating === 0)    return setError('Kalite puanı seçiniz.')
-    if (data.difficultyRating === 0) return setError('Zorluk puanı seçiniz.')
+    if (data.qualityRating === 0) {
+      setErrorKind('general')
+      return setError('Kalite puanı seçiniz.')
+    }
+    if (data.difficultyRating === 0) {
+      setErrorKind('general')
+      return setError('Zorluk puanı seçiniz.')
+    }
     setError('')
     setSubmitting(true)
     try {
-      await reviewApi.create({
+      const created = await reviewApi.create({
         professorId: profId,
         ...data,
         tags: selectedTags,
@@ -74,10 +90,20 @@ export default function AddReviewPage() {
       await Promise.all([
         qc.invalidateQueries({ queryKey: ['reviews', profId] }),
         qc.invalidateQueries({ queryKey: ['professor', profId] }),
+        qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
       ])
-      navigate(`/professors/${profId}`, { replace: true, state: { reviewSuccess: true } })
-    } catch (e: any) {
-      setError(e.response?.data?.message || 'Bir hata oluştu.')
+      navigate(`/professors/${profId}`, {
+        replace: true,
+        state: {
+          reviewSuccess: true,
+          reviewPending: created.status === 'Pending',
+          reviewInfoMessage: created.infoMessage,
+        },
+      })
+    } catch (e: unknown) {
+      const parsed = parseReviewSubmitError(e)
+      setErrorKind(parsed.kind)
+      setError(parsed.message)
     } finally {
       setSubmitting(false)
     }
@@ -89,13 +115,17 @@ export default function AddReviewPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
+      {submitting && <ReviewSubmitOverlay />}
       <Link to={`/professors/${profId}`} className="text-sm text-text-muted hover:text-primary mb-4 inline-block">
         ← {professor.title} {professor.firstName} {professor.lastName}
       </Link>
       <h1 className="font-display text-3xl text-text mb-6">Yorum yaz</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-
+        <fieldset
+          disabled={submitting}
+          className="flex flex-col gap-6 border-0 p-0 m-0 min-w-0 disabled:opacity-70"
+        >
         {/* Puanlar */}
         <div className="card p-5">
           <h2 className="font-semibold text-text mb-4">Puanlar</h2>
@@ -108,7 +138,12 @@ export default function AddReviewPage() {
                 name="qualityRating"
                 control={control}
                 render={({ field }) => (
-                  <StarRating value={field.value} onChange={field.onChange} size={28} />
+                  <StarRating
+                    value={field.value}
+                    onChange={field.onChange}
+                    readonly={submitting}
+                    size={28}
+                  />
                 )}
               />
             </div>
@@ -120,7 +155,12 @@ export default function AddReviewPage() {
                 name="difficultyRating"
                 control={control}
                 render={({ field }) => (
-                  <StarRating value={field.value} onChange={field.onChange} size={28} />
+                  <StarRating
+                    value={field.value}
+                    onChange={field.onChange}
+                    readonly={submitting}
+                    size={28}
+                  />
                 )}
               />
             </div>
@@ -182,15 +222,15 @@ export default function AddReviewPage() {
           <div className="grid sm:grid-cols-3 gap-3">
             <div>
               <label className="text-xs font-medium text-text-muted mb-1 block">Ders kodu</label>
-              <input {...register('courseCode')} className="input" placeholder="BLM101" />
+              <input {...register('courseCode')} className="input" placeholder="BLM101" disabled={submitting} />
             </div>
             <div>
               <label className="text-xs font-medium text-text-muted mb-1 block">Not</label>
-              <input {...register('grade')} className="input" placeholder="AA, BA..." />
+              <input {...register('grade')} className="input" placeholder="AA, BA..." disabled={submitting} />
             </div>
             <div>
               <label className="text-xs font-medium text-text-muted mb-1 block">Yıl</label>
-              <input {...register('year', { valueAsNumber: true })} type="number" className="input" min={2000} max={2030} />
+              <input {...register('year', { valueAsNumber: true })} type="number" className="input" min={2000} max={2030} disabled={submitting} />
             </div>
           </div>
         </div>
@@ -227,23 +267,30 @@ export default function AddReviewPage() {
             rows={5}
             placeholder="Hoca hakkındaki deneyimini paylaş. Sınav şekli, ders anlatımı, iletişim..."
             className="input resize-none"
+            disabled={submitting}
           />
           {errors.comment && (
             <p className="text-xs text-danger mt-1">En az 20 karakter yazınız.</p>
           )}
+          {moderationHint && (
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2 mt-2">
+              ⚠️ Yorumunuz uygunsuz içerik barındırabilir, gönderildiğinde reddedilebilir.
+            </p>
+          )}
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
+        </fieldset>
+
+        {error && <ReviewFormErrorAlert message={error} kind={errorKind} />}
 
         <div className="flex gap-3">
-          <button type="submit" disabled={submitting} className="btn-primary flex-1 justify-center py-3">
-            {submitting ? 'Gönderiliyor...' : 'Yorumu gönder'}
-          </button>
-          <Link to={`/professors/${profId}`} className="btn-outline px-6 py-3">
+          <ReviewSubmitButton submitting={submitting} idleLabel="Yorumu gönder" />
+          <Link
+            to={`/professors/${profId}`}
+            className={clsx('btn-outline px-6 py-3', submitting && 'pointer-events-none opacity-50')}
+            tabIndex={submitting ? -1 : undefined}
+            aria-disabled={submitting}
+          >
             İptal
           </Link>
         </div>

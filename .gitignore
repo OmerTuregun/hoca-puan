@@ -19,3 +19,9 @@ hocapuan-frontend/dist/
 
 # Logs
 *.log
+
+# Moderation mining script cache (HF CSV ~tens of MB)
+scripts/.cache/
+scripts/output/candidates-for-review.json
+scripts/output/hizli-onay.json
+scripts/output/filtrenin-kacirdiklari.json

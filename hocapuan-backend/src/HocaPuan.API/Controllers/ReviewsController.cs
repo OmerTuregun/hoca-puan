@@ -1,8 +1,10 @@
 using System.Security.Claims;
+using HocaPuan.API.Extensions;
 using HocaPuan.Core.DTOs.Review;
 using HocaPuan.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace HocaPuan.API.Controllers;
 
@@ -34,11 +36,17 @@ public class ReviewsController : ControllerBase
         return Ok(result);
     }
 
+    private int? TryGetCurrentUserId()
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return id != null ? int.Parse(id) : null;
+    }
+
     /// <summary>Hocaya ait yorumları getir</summary>
     [HttpGet("professor/{professorId:int}")]
     public async Task<IActionResult> GetByProfessor(int professorId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var result = await _reviewService.GetByProfessorAsync(professorId, page, pageSize);
+        var result = await _reviewService.GetByProfessorAsync(professorId, page, pageSize, TryGetCurrentUserId());
         return Ok(result);
     }
 
@@ -54,6 +62,7 @@ public class ReviewsController : ControllerBase
     /// <summary>Yeni yorum ekle (Giriş gerekli)</summary>
     [HttpPost]
     [Authorize]
+    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
     public async Task<IActionResult> Create([FromBody] CreateReviewDto dto)
     {
         try
@@ -74,6 +83,7 @@ public class ReviewsController : ControllerBase
     /// <summary>Yorumu güncelle (sadece sahibi)</summary>
     [HttpPut("{id:int}")]
     [Authorize]
+    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
     public async Task<IActionResult> UpdateReview(int id, [FromBody] UpdateReviewDto dto)
     {
         try
@@ -112,6 +122,7 @@ public class ReviewsController : ControllerBase
     /// <summary>Yorum oyla (👍/👎)</summary>
     [HttpPost("{id:int}/vote")]
     [Authorize]
+    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
     public async Task<IActionResult> Vote(int id, [FromQuery] bool isUpvote)
     {
         try

@@ -77,9 +77,12 @@ services:
       - ./hocapuan-frontend:/app
       - /app/node_modules
     ports:
-      - "${FRONTEND_PORT:-5173}:5173"
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
     environment:
       - VITE_API_URL=http://api:8080
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    command: npm run dev -- --host 0.0.0.0 --port 5173
     depends_on:
       - api
     networks:

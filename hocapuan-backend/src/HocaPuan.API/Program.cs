@@ -5,6 +5,7 @@ using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Data;
 using HocaPuan.Data.Seed;
 using HocaPuan.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 EnvLoader.Load();
@@ -19,6 +20,14 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<ImportJobStore>();
 builder.Services.AddSwagger();
 builder.Services.AddCorsPolicy();
+builder.Services.AddHocaPuanRateLimiting(builder.Configuration);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,9 +35,10 @@ builder.Services.AddEndpointsApiExplorer();
 // ─── Uygulama pipeline ───────────────────────────────────────
 var app = builder.Build();
 
-// Otomatik migration + seed
-using (var scope = app.Services.CreateScope())
+// Otomatik migration + seed (test ortamında atlanır)
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
     await DatabaseSeeder.SeedAsync(db);
@@ -46,9 +56,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseForwardedHeaders();
 app.UseCors("HocaPuanCors");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

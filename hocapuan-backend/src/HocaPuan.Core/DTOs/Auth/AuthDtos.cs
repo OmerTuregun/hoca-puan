@@ -1,9 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+using HocaPuan.Core.Validation;
+
 namespace HocaPuan.Core.DTOs.Auth;
 
 public class RegisterDto
 {
     public string Username { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;       // .edu.tr zorunlu
+
+    [Required(ErrorMessage = "E-posta gerekli.")]
+    [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi girin.")]
+    [EduTrEmail]
+    public string Email { get; set; } = string.Empty;
+
     public string Password { get; set; } = string.Empty;
     public string? UniversityName { get; set; }
 }

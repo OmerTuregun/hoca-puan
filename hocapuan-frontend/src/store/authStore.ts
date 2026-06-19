@@ -26,9 +26,12 @@ function computeIsAdmin(user: User | null) {
   return user?.role === 'Admin' || user?.role === 'Moderator'
 }
 
+let finishHydrationRef: (() => void) | null = null
+
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set, get) => {
+      const state: AuthState = {
       user: null,
       token: null,
       isLoggedIn: false,
@@ -81,7 +84,11 @@ export const useAuthStore = create<AuthState>()(
           hasHydrated: true,
         })
       },
-    }),
+    }
+
+      finishHydrationRef = state.finishHydration
+      return state
+    },
     {
       name: 'hocapuan-auth',
       partialize: state => ({
@@ -92,7 +99,7 @@ export const useAuthStore = create<AuthState>()(
         if (error) {
           console.error('Auth persist rehydrate failed:', error)
         }
-        useAuthStore.getState().finishHydration()
+        finishHydrationRef?.()
       },
     }
   )

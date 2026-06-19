@@ -33,9 +33,6 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
-        // if (!dto.Email.EndsWith(".edu.tr", StringComparison.OrdinalIgnoreCase))
-        //     return new AuthResponseDto { Success = false, Message = "Sadece .edu.tr uzantılı e-posta adresleri kabul edilmektedir." };
-
         var emailExists = await _db.Users.AnyAsync(u => u.Email == dto.Email.ToLower());
         if (emailExists)
             return new AuthResponseDto { Success = false, Message = "Bu e-posta adresi zaten kullanımda." };

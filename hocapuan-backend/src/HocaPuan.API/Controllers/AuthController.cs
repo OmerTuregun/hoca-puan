@@ -3,6 +3,8 @@ using HocaPuan.Core.DTOs.Auth;
 using HocaPuan.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using HocaPuan.API.Extensions;
 
 namespace HocaPuan.API.Controllers;
 
@@ -17,6 +19,7 @@ public class AuthController : ControllerBase
 
     /// <summary>Yeni kullanıcı kaydı</summary>
     [HttpPost("register")]
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var result = await _authService.RegisterAsync(dto);
@@ -26,6 +29,7 @@ public class AuthController : ControllerBase
 
     /// <summary>Giriş yap, JWT token al</summary>
     [HttpPost("login")]
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var result = await _authService.LoginAsync(dto);
@@ -35,6 +39,7 @@ public class AuthController : ControllerBase
 
     /// <summary>E-posta doğrulama</summary>
     [HttpGet("verify-email/{token}")]
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     public async Task<IActionResult> VerifyEmail(string token)
     {
         var success = await _authService.VerifyEmailAsync(token);
@@ -44,6 +49,7 @@ public class AuthController : ControllerBase
 
     /// <summary>Şifremi unuttum</summary>
     [HttpPost("forgot-password")]
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
     {
         var result = await _authService.ForgotPasswordAsync(dto.Email);
@@ -52,6 +58,7 @@ public class AuthController : ControllerBase
 
     /// <summary>Şifre sıfırla</summary>
     [HttpPost("reset-password")]
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
     {
         var success = await _authService.ResetPasswordAsync(dto);

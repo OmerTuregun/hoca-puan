@@ -1,10 +1,11 @@
-import { ThumbsUp, ThumbsDown, Trash2 } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Trash2, Pencil } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Review } from '../../services/api'
 import { reviewApi } from '../../services/api'
 import { useAuthStore } from '../../store/authStore'
 import RatingBadge from '../ui/RatingBadge'
-import { useState } from 'react'
+import ReviewEditForm from './ReviewEditForm'
+import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 
 const TAGS: Record<string, string> = {
@@ -32,14 +33,21 @@ interface Props {
   review: Review
   onDelete?: () => void
   onVote?: () => void
+  onUpdate?: (updated: Review) => void
 }
 
-export default function ReviewCard({ review: r, onDelete, onVote }: Props) {
+export default function ReviewCard({ review: r, onDelete, onVote, onUpdate }: Props) {
   const { user, isLoggedIn } = useAuthStore()
   const [votes, setVotes] = useState({ up: r.thumbsUp, down: r.thumbsDown })
   const [userVote, setUserVote] = useState<boolean | null | undefined>(r.currentUserVote)
   const [voting, setVoting] = useState(false)
   const [voteError, setVoteError] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+
+  useEffect(() => {
+    setVotes({ up: r.thumbsUp, down: r.thumbsDown })
+    setUserVote(r.currentUserVote)
+  }, [r.id, r.thumbsUp, r.thumbsDown, r.currentUserVote])
 
   async function handleVote(isUpvote: boolean) {
     if (!isLoggedIn || voting) return
@@ -57,7 +65,29 @@ export default function ReviewCard({ review: r, onDelete, onVote }: Props) {
     }
   }
 
-  const canDelete = user?.username === r.username
+  const isOwner = user?.id === r.userId
+  const canDelete = isOwner && onDelete
+  const canEdit = isOwner
+
+  if (isEditing) {
+    return (
+      <div className="card p-5 animate-fadeUp">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-semibold text-text">Yorumu düzenle</p>
+          <p className="text-xs text-text-muted">{formatReviewDate(r.createdAt)}</p>
+        </div>
+        <ReviewEditForm
+          review={r}
+          compact
+          onCancel={() => setIsEditing(false)}
+          onSuccess={(updated) => {
+            setIsEditing(false)
+            onUpdate?.(updated)
+          }}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="card p-5 animate-fadeUp">
@@ -68,7 +98,20 @@ export default function ReviewCard({ review: r, onDelete, onVote }: Props) {
           <RatingBadge value={r.difficultyRating} size="sm" label="Zorluk" />
         </div>
         <div className="text-right">
-          <p className="text-sm font-semibold text-text">{r.username}</p>
+          <div className="flex items-center justify-end gap-2">
+            {canEdit && (
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary-dark transition-colors"
+                aria-label="Yorumu düzenle"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Düzenle
+              </button>
+            )}
+            <p className="text-sm font-semibold text-text">{r.username}</p>
+          </div>
           <p className="text-xs text-text-muted">{formatReviewDate(r.createdAt)}</p>
           {(r.courseCode || r.year) && (
             <p className="text-xs text-text-light mt-0.5">
@@ -151,7 +194,7 @@ export default function ReviewCard({ review: r, onDelete, onVote }: Props) {
               </Link>
             )}
 
-            {canDelete && onDelete && (
+            {canDelete && (
               <button
                 type="button"
                 onClick={onDelete}

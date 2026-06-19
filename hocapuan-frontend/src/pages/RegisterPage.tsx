@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { GraduationCap } from 'lucide-react'
 import { authApi, universityApi } from '../services/api'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getEduTrEmailWarning, parseApiErrorMessage } from '../utils/eduTrEmail'
 
 interface FormData {
   username: string
@@ -13,10 +14,19 @@ interface FormData {
 }
 
 export default function RegisterPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [registered, setRegistered] = useState(false)
+  const [eduTrWarning, setEduTrWarning] = useState<string | null>(null)
+  const email = watch('email')
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setEduTrWarning(getEduTrEmailWarning(email))
+    }, 400)
+    return () => window.clearTimeout(timer)
+  }, [email])
 
   const { data: universities } = useQuery({
     queryKey: ['universities'],
@@ -30,8 +40,8 @@ export default function RegisterPage() {
       const res = await authApi.register(data)
       if (!res.success) return setError(res.message || 'Kayıt başarısız.')
       setRegistered(true)
-    } catch (e: any) {
-      setError(e.response?.data?.message || 'Kayıt olunamadı.')
+    } catch (e: unknown) {
+      setError(parseApiErrorMessage(e, 'Kayıt olunamadı.'))
     } finally {
       setLoading(false)
     }
@@ -78,6 +88,9 @@ export default function RegisterPage() {
                 placeholder="ornek@uni.edu.tr"
                 autoComplete="email"
               />
+              {eduTrWarning && (
+                <p className="text-xs text-danger mt-1">{eduTrWarning}</p>
+              )}
             </div>
 
             <div>

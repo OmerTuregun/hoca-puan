@@ -13,6 +13,7 @@ import VerifyEmailPage from './pages/VerifyEmailPage'
 import AddReviewPage from './pages/AddReviewPage'
 import ProfilePage from './pages/ProfilePage'
 import EditReviewPage from './pages/EditReviewPage'
+import AdminModerationPage from './pages/AdminModerationPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/verify-email"       element={<VerifyEmailPage />} />
         <Route path="/profile"            element={<ProfilePage />} />
         <Route path="/reviews/:id/edit"   element={<EditReviewPage />} />
+        <Route path="/admin/moderation"  element={<AdminModerationPage />} />
         <Route path="*"                    element={<NotFoundPage />} />
       </Route>
     </Routes>
