@@ -13,9 +13,10 @@ HocaPuan.sln
 │   ├── HocaPuan.Data        → DbContext, EF Configurations, Seed
 │   ├── HocaPuan.Services    → İş mantığı (AuthService, ProfessorService...)
 │   └── HocaPuan.API         → Controllers, Middleware, Program.cs
-├── docker-compose.yml
+├── docker-compose.dev.yml   ← Proje kökünde (geliştirme)
+├── docker-compose.prod.yml  ← Proje kökünde (production)
 ├── .env.example
-└── .env                     ← Bunu kendin oluştur
+└── .env.development         ← Bunu kendin oluştur (bkz. DEPLOYMENT.md)
 ```
 
 ---
@@ -24,14 +25,18 @@ HocaPuan.sln
 
 ### 1. Ortam değişkenlerini ayarla
 ```bash
-cp .env.example .env
-# .env dosyasını düzenle (şifreleri değiştir)
+cp .env.example .env.development
+# .env.development dosyasını düzenle (şifreleri değiştir)
 ```
 
 ### 2. Docker ile ayağa kaldır
 ```bash
-docker-compose up -d --build
+# Proje kök dizininden:
+docker compose -f docker-compose.dev.yml up --build -d
 ```
+
+> `docker-compose.yml` kaldırıldı. Geliştirme yalnızca `docker-compose.dev.yml` ile çalıştırılır.
+> Ayrıntılar: [DEPLOYMENT.md](../DEPLOYMENT.md)
 
 ### 3. Servisleri kontrol et
 | Servis    | URL                          |

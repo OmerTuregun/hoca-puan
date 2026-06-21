@@ -1,0 +1,84 @@
+# Production (IP + HTTP) — kullanım:
+#   docker compose -f docker-compose.prod.yml up --build -d
+#
+# Önce .env.production içindeki CHANGE_ME ve SUNUCU_IP değerlerini güncelleyin.
+# Ayrıntılar: DEPLOYMENT.md
+
+services:
+  # ─── PostgreSQL ───────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: hocapuan_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    networks:
+      - hocapuan_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── ASP.NET Core API ─────────────────────────────────────────
+  api:
+    build:
+      context: ./hocapuan-backend
+      dockerfile: src/HocaPuan.API/Dockerfile
+    container_name: hocapuan_api
+    restart: always
+    env_file:
+      - .env.production
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
+      JwtSettings__SecretKey: ${JWT_SECRET}
+      JwtSettings__Issuer: ${JWT_ISSUER:-HocaPuanAPI}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-HocaPuanClient}
+      JwtSettings__ExpirationHours: ${JWT_EXPIRATION_HOURS:-24}
+      App__FrontendUrl: ${APP_FRONTEND_URL}
+      Email__Host: ${EMAIL_HOST}
+      Email__Port: ${EMAIL_PORT:-587}
+      Email__Username: ${EMAIL_USERNAME}
+      Email__Password: ${EMAIL_PASSWORD}
+      Email__From: ${EMAIL_FROM:-noreply@hocapuan.com}
+      AuthCookie__Secure: ${COOKIE_SECURE:-false}
+      AuthCookie__SameSite: ${AUTH_COOKIE_SAMESITE:-Lax}
+      Cors__AllowedOrigins__0: ${ALLOWED_ORIGIN}
+      USE_HTTPS: ${USE_HTTPS:-false}
+    ports:
+      - "${API_PORT:-5001}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - hocapuan_net
+
+  # ─── Frontend (nginx + static build) ──────────────────────────
+  # nginx.conf /api isteklerini api:8080'e proxy eder.
+  frontend:
+    build:
+      context: ./hocapuan-frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: hocapuan_frontend
+    restart: always
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - api
+    networks:
+      - hocapuan_net
+
+volumes:
+  postgres_data:
+
+networks:
+  hocapuan_net:
+    driver: bridge

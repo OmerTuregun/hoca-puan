@@ -2,7 +2,8 @@ namespace HocaPuan.API.Configuration;
 
 /// <summary>
 /// Proje kökündeki .env dosyasını okur ve ASP.NET Core yapılandırma anahtarlarına eşler.
-/// Docker Compose zaten ortam değişkenlerini geçirir; dotnet run için .env gerekir.
+/// Öncelik: .env.{ASPNETCORE_ENVIRONMENT} → .env
+/// Docker Compose ortam değişkenlerini doğrudan geçirir; dotnet run için .env.development gerekir.
 /// </summary>
 public static class EnvLoader
 {
@@ -25,13 +26,25 @@ public static class EnvLoader
 
     private static string? FindEnvFile(string startDirectory)
     {
+        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         var dir = new DirectoryInfo(startDirectory);
+
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, ".env");
-            if (File.Exists(candidate)) return candidate;
+            if (!string.IsNullOrWhiteSpace(environmentName))
+            {
+                var named = Path.Combine(dir.FullName, $".env.{environmentName.ToLowerInvariant()}");
+                if (File.Exists(named))
+                    return named;
+            }
+
+            var fallback = Path.Combine(dir.FullName, ".env");
+            if (File.Exists(fallback))
+                return fallback;
+
             dir = dir.Parent;
         }
+
         return null;
     }
 
@@ -68,6 +81,15 @@ public static class EnvLoader
         Map("EMAIL_FROM", "Email__From");
 
         Map("APP_FRONTEND_URL", "App__FrontendUrl");
+
+        Map("COOKIE_SECURE", "AuthCookie__Secure");
+        Map("ALLOWED_ORIGIN", "Cors__AllowedOrigins__0");
+
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AuthCookie__Secure")) &&
+            !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("USE_HTTPS")))
+        {
+            Map("USE_HTTPS", "AuthCookie__Secure");
+        }
     }
 
     private static void Map(string fromKey, string toKey)

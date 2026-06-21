@@ -2,8 +2,7 @@ namespace HocaPuan.API.Configuration;
 
 /// <summary>
 /// JWT access token httpOnly cookie ayarları.
-/// Production varsayılanları: Secure=true, SameSite=Strict (aynı origin proxy).
-/// Development için appsettings.Development.json'da Secure=false kullanılabilir.
+/// Secure ve SameSite: appsettings.{Environment}.json veya COOKIE_SECURE / USE_HTTPS ortam değişkenleri.
 /// </summary>
 public class AuthCookieSettings
 {

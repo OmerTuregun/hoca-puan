@@ -128,19 +128,31 @@ public static class ServiceExtensions
         return services;
     }
 
-    public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
+    public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration config)
     {
+        var corsSettings = config.GetSection(CorsSettings.SectionName).Get<CorsSettings>() ?? new CorsSettings();
+        var origins = corsSettings.AllowedOrigins
+            .Where(o => !string.IsNullOrWhiteSpace(o))
+            .ToArray();
+
+        var environment = config["ASPNETCORE_ENVIRONMENT"] ?? "Production";
+        if (origins.Length == 0 && environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
+        {
+            origins =
+            [
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://localhost:3000",
+                "http://localhost:4173"
+            ];
+        }
+
         services.AddCors(options =>
         {
             options.AddPolicy("HocaPuanCors", policy =>
             {
                 policy
-                    .WithOrigins(
-                        "http://localhost:5173",
-                        "http://127.0.0.1:5173",
-                        "http://localhost:3000",
-                        "http://localhost:4173"
-                    )
+                    .WithOrigins(origins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -152,13 +164,46 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddAuthCookieAndCsrf(this IServiceCollection services, IConfiguration config)
     {
-        services.Configure<AuthCookieSettings>(config.GetSection(AuthCookieSettings.SectionName));
+        services.AddOptions<AuthCookieSettings>()
+            .Bind(config.GetSection(AuthCookieSettings.SectionName))
+            .PostConfigure(settings => ApplyCookieSecurityFromEnvironment(config, settings));
+
         services.AddSingleton<AuthCookieService>();
+
+        var cookieSecure = ResolveCookieSecure(config) ?? false;
         services.AddAntiforgery(options =>
         {
             options.HeaderName = "X-CSRF-TOKEN";
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.Cookie.SecurePolicy = cookieSecure
+                ? CookieSecurePolicy.Always
+                : CookieSecurePolicy.SameAsRequest;
         });
+
         return services;
+    }
+
+    private static void ApplyCookieSecurityFromEnvironment(IConfiguration config, AuthCookieSettings settings)
+    {
+        if (ResolveCookieSecure(config) is { } secure)
+            settings.Secure = secure;
+
+        var explicitSameSite = config[$"{AuthCookieSettings.SectionName}:SameSite"];
+        if (string.IsNullOrWhiteSpace(explicitSameSite) &&
+            config.GetValue<bool>("USE_HTTPS"))
+        {
+            settings.SameSite = "Strict";
+        }
+    }
+
+    private static bool? ResolveCookieSecure(IConfiguration config)
+    {
+        if (bool.TryParse(config["COOKIE_SECURE"], out var cookieSecure))
+            return cookieSecure;
+
+        if (bool.TryParse(config["USE_HTTPS"], out var useHttps))
+            return useHttps;
+
+        var sectionValue = config.GetValue<bool?>($"{AuthCookieSettings.SectionName}:Secure");
+        return sectionValue;
     }
 }

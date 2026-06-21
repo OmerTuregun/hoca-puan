@@ -20,7 +20,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<ImportJobStore>();
 builder.Services.AddSwagger();
-builder.Services.AddCorsPolicy();
+builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.AddHocaPuanRateLimiting(builder.Configuration);
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
