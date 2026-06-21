@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { GraduationCap, Search, LogOut, User, ChevronDown, ShieldAlert } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
+import { authApi } from '../../services/api'
 import { useState, useRef, useEffect } from 'react'
 
 export default function Navbar() {
@@ -25,8 +26,13 @@ export default function Navbar() {
     if (query.trim()) navigate(`/search?q=${encodeURIComponent(query.trim())}`)
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     setMenuOpen(false)
+    try {
+      await authApi.logout()
+    } catch {
+      // Sunucu hatası olsa bile yerel oturumu kapat
+    }
     logout()
     navigate('/')
   }

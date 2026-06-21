@@ -46,6 +46,8 @@ public class UserProfileDto
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string? UniversityName { get; set; }
+    public string Role { get; set; } = string.Empty;
+    public bool IsEmailVerified { get; set; }
     public DateTime CreatedAt { get; set; }
     public int TotalReviews { get; set; }
 }

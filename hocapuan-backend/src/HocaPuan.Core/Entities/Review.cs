@@ -37,6 +37,7 @@ public class Review : BaseEntity
 
     // Navigation
     public ICollection<ReviewVote> Votes { get; set; } = new List<ReviewVote>();
+    public ICollection<ReviewReport> Reports { get; set; } = new List<ReviewReport>();
 }
 
 public enum ReviewStatus

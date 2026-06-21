@@ -14,4 +14,5 @@ public interface IReviewService
     Task<VoteResultDto> VoteAsync(int reviewId, int userId, bool isUpvote);
     Task<ReviewDto> ModerateAsync(int reviewId, ModerateReviewDto dto);
     Task<PagedResultDto<ReviewDto>> GetPendingAsync(int page, int pageSize);
+    Task<ReportReviewResultDto> ReportAsync(int reviewId, int reporterUserId);
 }

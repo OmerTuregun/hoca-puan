@@ -1,20 +1,34 @@
 import { useEffect } from 'react'
-import { useAuthStore } from '../store/authStore'
+import { authApi } from '../services/api'
+import { profileToUser, useAuthStore } from '../store/authStore'
 
-/** Sayfa yenilendiğinde Zustand persist + token senkronunu garanti eder. */
+/** Sayfa yüklendiğinde CSRF token alır ve cookie oturumunu /auth/me ile doğrular. */
 export default function AuthHydration() {
   useEffect(() => {
-    const finish = () => useAuthStore.getState().finishHydration()
+    let cancelled = false
 
-    if (useAuthStore.persist.hasHydrated()) {
-      finish()
-      return
+    async function hydrate() {
+      const { setCsrfToken, login, logout, finishHydration } = useAuthStore.getState()
+
+      try {
+        const { token } = await authApi.getCsrfToken()
+        if (!cancelled) setCsrfToken(token)
+      } catch {
+        if (!cancelled) setCsrfToken(null)
+      }
+
+      try {
+        const profile = await authApi.me()
+        if (!cancelled) login(profileToUser(profile))
+      } catch {
+        if (!cancelled) logout()
+      } finally {
+        if (!cancelled) finishHydration()
+      }
     }
 
-    const unsub = useAuthStore.persist.onFinishHydration(finish)
-    void useAuthStore.persist.rehydrate()
-
-    return unsub
+    void hydrate()
+    return () => { cancelled = true }
   }, [])
 
   return null

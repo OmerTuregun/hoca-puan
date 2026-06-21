@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using HocaPuan.API.Services;
 using HocaPuan.Core.DTOs.Auth;
 using HocaPuan.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -13,9 +15,23 @@ namespace HocaPuan.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    public AuthController(IAuthService authService) => _authService = authService;
+    private readonly AuthCookieService _authCookieService;
+
+    public AuthController(IAuthService authService, AuthCookieService authCookieService)
+    {
+        _authService = authService;
+        _authCookieService = authCookieService;
+    }
 
     private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    /// <summary>CSRF token al (state-değiştiren isteklerde X-CSRF-TOKEN header'ı gerekir)</summary>
+    [HttpGet("csrf-token")]
+    public IActionResult GetCsrfToken([FromServices] IAntiforgery antiforgery)
+    {
+        var tokens = antiforgery.GetAndStoreTokens(HttpContext);
+        return Ok(new { token = tokens.RequestToken });
+    }
 
     /// <summary>Yeni kullanıcı kaydı</summary>
     [HttpPost("register")]
@@ -24,17 +40,27 @@ public class AuthController : ControllerBase
     {
         var result = await _authService.RegisterAsync(dto);
         if (!result.Success) return BadRequest(result);
-        return Ok(result);
+        return Ok(new { result.Success, result.Message });
     }
 
-    /// <summary>Giriş yap, JWT token al</summary>
+    /// <summary>Giriş yap — JWT httpOnly cookie olarak set edilir</summary>
     [HttpPost("login")]
     [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var result = await _authService.LoginAsync(dto);
-        if (!result.Success) return Unauthorized(result);
-        return Ok(result);
+        if (!result.Success) return Unauthorized(new { result.Success, result.Message });
+
+        _authCookieService.SetAccessTokenCookie(Response, result.Token!);
+        return Ok(new { result.Success, result.User });
+    }
+
+    /// <summary>Çıkış yap — access token cookie'sini temizler</summary>
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        _authCookieService.DeleteAccessTokenCookie(Response);
+        return Ok(new { message = "Çıkış yapıldı." });
     }
 
     /// <summary>E-posta doğrulama</summary>

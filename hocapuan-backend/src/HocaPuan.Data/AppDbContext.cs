@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<ReviewVote> ReviewVotes => Set<ReviewVote>();
+    public DbSet<ReviewReport> ReviewReports => Set<ReviewReport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,5 +1,7 @@
 using System.Text;
 using System.Net;
+using HocaPuan.API.Configuration;
+using HocaPuan.API.Services;
 using HocaPuan.Core.Interfaces.Moderation;
 using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Data;
@@ -25,6 +27,8 @@ public static class ServiceExtensions
     {
         var jwtSettings = config.GetSection("JwtSettings");
         var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
+        var accessTokenCookieName = config.GetValue<string>($"{AuthCookieSettings.SectionName}:AccessTokenCookieName")
+            ?? "access_token";
 
         services.AddAuthentication(opts =>
         {
@@ -42,6 +46,19 @@ public static class ServiceExtensions
                 ValidIssuer = jwtSettings["Issuer"],
                 ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+
+            opts.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (string.IsNullOrEmpty(context.Token) &&
+                        context.Request.Cookies.TryGetValue(accessTokenCookieName, out var cookieToken))
+                    {
+                        context.Token = cookieToken;
+                    }
+                    return Task.CompletedTask;
+                }
             };
         });
 
@@ -119,9 +136,10 @@ public static class ServiceExtensions
             {
                 policy
                     .WithOrigins(
-                        "http://localhost:5173",   // Vite dev server
+                        "http://localhost:5173",
+                        "http://127.0.0.1:5173",
                         "http://localhost:3000",
-                        "http://localhost:4173"    // Vite preview
+                        "http://localhost:4173"
                     )
                     .AllowAnyHeader()
                     .AllowAnyMethod()
@@ -129,6 +147,18 @@ public static class ServiceExtensions
             });
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddAuthCookieAndCsrf(this IServiceCollection services, IConfiguration config)
+    {
+        services.Configure<AuthCookieSettings>(config.GetSection(AuthCookieSettings.SectionName));
+        services.AddSingleton<AuthCookieService>();
+        services.AddAntiforgery(options =>
+        {
+            options.HeaderName = "X-CSRF-TOKEN";
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        });
         return services;
     }
 }

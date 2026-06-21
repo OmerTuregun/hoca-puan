@@ -175,6 +175,8 @@ public class AuthService : IAuthService
             Username = user.Username,
             Email = user.Email,
             UniversityName = user.UniversityName,
+            Role = user.Role.ToString(),
+            IsEmailVerified = user.IsEmailVerified,
             CreatedAt = user.CreatedAt,
             TotalReviews = totalReviews
         };

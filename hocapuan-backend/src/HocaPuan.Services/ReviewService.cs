@@ -12,6 +12,8 @@ namespace HocaPuan.Services;
 
 public class ReviewService : IReviewService
 {
+    public const int ReportsRequiredForAutoPending = 3;
+
     private const string PendingReasonPrefix = "İnceleme nedeni: ";
     private const string PendingInfoMessage =
         "Yorumunuz incelemeye alındı, onaylandığında yayınlanacaktır.";
@@ -201,6 +203,15 @@ public class ReviewService : IReviewService
         if (!isAdmin && review.UserId != requestingUserId)
             throw new UnauthorizedAccessException("Bu yorumu silme yetkiniz yok.");
 
+        if (isAdmin && review.UserId != requestingUserId)
+        {
+            _logger.LogWarning(
+                "Admin review deletion: AdminUserId={AdminUserId} deleted ReviewId={ReviewId} owned by UserId={OwnerUserId}",
+                requestingUserId,
+                reviewId,
+                review.UserId);
+        }
+
         review.IsDeleted = true;
         review.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
@@ -290,6 +301,56 @@ public class ReviewService : IReviewService
         };
     }
 
+    public async Task<ReportReviewResultDto> ReportAsync(int reviewId, int reporterUserId)
+    {
+        var review = await _db.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId && !r.IsDeleted)
+            ?? throw new KeyNotFoundException("Yorum bulunamadı.");
+
+        if (review.UserId == reporterUserId)
+            throw new ArgumentException("Kendi yorumunuzu bildiremezsiniz.");
+
+        if (review.Status != ReviewStatus.Approved)
+            throw new ArgumentException("Sadece yayınlanmış yorumlar bildirilebilir.");
+
+        var alreadyReported = await _db.ReviewReports.AnyAsync(r =>
+            r.ReviewId == reviewId && r.ReporterUserId == reporterUserId);
+
+        if (alreadyReported)
+            throw new InvalidOperationException("Bu yorumu zaten bildirdiniz.");
+
+        try
+        {
+            _db.ReviewReports.Add(new ReviewReport
+            {
+                ReviewId = reviewId,
+                ReporterUserId = reporterUserId,
+            });
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (IsDuplicateReport(ex))
+        {
+            throw new InvalidOperationException("Bu yorumu zaten bildirdiniz.");
+        }
+
+        var reportCount = await _db.ReviewReports.CountAsync(r => r.ReviewId == reviewId);
+
+        if (reportCount >= ReportsRequiredForAutoPending && review.Status == ReviewStatus.Approved)
+        {
+            review.Status = ReviewStatus.Pending;
+            review.ModeratorNote = FormatPendingReasons(
+                [$"{reportCount} kullanıcı tarafından bildirildi"]);
+            review.UpdatedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+            await _professorService.RecalculateStatsAsync(review.ProfessorId);
+        }
+
+        return new ReportReviewResultDto
+        {
+            Message = "Bildiriminiz alındı.",
+            ReportCount = reportCount,
+        };
+    }
+
     // ────────────────────────────────────────────────────────────
     private ModerationResult EvaluateComment(string comment, int userId)
     {
@@ -318,6 +379,14 @@ public class ReviewService : IReviewService
         return moderatorNote[PendingReasonPrefix.Length..]
             .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToList();
+    }
+
+    private static bool IsDuplicateReport(DbUpdateException ex)
+    {
+        var message = ex.InnerException?.Message ?? ex.Message;
+        return message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) ||
+               message.Contains("unique constraint", StringComparison.OrdinalIgnoreCase) ||
+               message.Contains("duplicate", StringComparison.OrdinalIgnoreCase);
     }
 
     private static ReviewDto MapDto(Review r, int? currentUserId)

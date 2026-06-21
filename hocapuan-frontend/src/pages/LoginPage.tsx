@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { GraduationCap } from 'lucide-react'
 import { authApi } from '../services/api'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore, profileToUser } from '../store/authStore'
 import { useState, useEffect } from 'react'
 
 interface FormData { email: string; password: string }
@@ -41,7 +41,9 @@ export default function LoginPage() {
     try {
       const res = await authApi.login(data)
       if (!res.success) return setError(res.message || 'Giriş başarısız.')
-      login(res.user, res.token)
+      login(profileToUser(res.user))
+      const { token } = await authApi.getCsrfToken()
+      useAuthStore.getState().setCsrfToken(token)
       navigate(returnTo, { replace: true })
     } catch (e: any) {
       const msg = e.response?.data?.message

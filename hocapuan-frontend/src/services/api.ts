@@ -1,25 +1,27 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
+import { ensureCsrfToken } from '../utils/ensureCsrfToken'
+
+const MUTATING_METHODS = new Set(['post', 'put', 'patch', 'delete'])
 
 const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 })
 
-function getAuthToken(): string | null {
-  const fromStore = useAuthStore.getState().token
-  if (fromStore) return fromStore
-  return localStorage.getItem('token')
-}
-
-// JWT token'ı her isteğe ekle
-api.interceptors.request.use(config => {
-  const token = getAuthToken()
-  if (token) config.headers.Authorization = `Bearer ${token}`
+api.interceptors.request.use(async config => {
+  const method = config.method?.toLowerCase()
+  if (method && MUTATING_METHODS.has(method)) {
+    await ensureCsrfToken()
+    const csrfToken = useAuthStore.getState().csrfToken
+    if (csrfToken) {
+      config.headers['X-CSRF-TOKEN'] = csrfToken
+    }
+  }
   return config
 })
 
-// 401 → yalnızca geçerli oturumla yapılan isteklerde logout
 api.interceptors.response.use(
   res => res,
   err => {
@@ -28,17 +30,12 @@ api.interceptors.response.use(
     }
 
     const requestUrl = String(err.config?.url ?? '')
-    if (requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register')) {
+    if (requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register') || requestUrl.includes('/auth/me')) {
       return Promise.reject(err)
     }
 
-    const { hasHydrated } = useAuthStore.getState()
-    if (!hasHydrated) {
-      return Promise.reject(err)
-    }
-
-    const hadToken = Boolean(getAuthToken())
-    if (!hadToken) {
+    const { hasHydrated, isLoggedIn } = useAuthStore.getState()
+    if (!hasHydrated || !isLoggedIn) {
       return Promise.reject(err)
     }
 
@@ -122,6 +119,8 @@ export interface UserProfile {
   username: string
   email: string
   universityName?: string
+  role: string
+  isEmailVerified: boolean
   createdAt: string
   totalReviews: number
 }
@@ -153,10 +152,14 @@ export interface Review {
 
 // ─── Auth ────────────────────────────────────────────────────
 export const authApi = {
+  getCsrfToken: () =>
+    api.get<{ token: string }>('/auth/csrf-token').then(r => r.data),
   register: (data: { username: string; email: string; password: string; universityName?: string }) =>
     api.post('/auth/register', data).then(r => r.data),
   login: (data: { email: string; password: string }) =>
-    api.post('/auth/login', data).then(r => r.data),
+    api.post<{ success: boolean; user: UserProfile; message?: string }>('/auth/login', data).then(r => r.data),
+  logout: () =>
+    api.post('/auth/logout').then(r => r.data),
   forgotPassword: (email: string) =>
     api.post<{ message: string }>('/auth/forgot-password', { email }).then(r => r.data),
   resetPassword: (data: { token: string; newPassword: string }) =>
@@ -238,6 +241,8 @@ export const reviewApi = {
     api.get<PagedResult<Review>>('/reviews/pending', { params: { page, pageSize } }).then(r => r.data),
   moderate: (id: number, data: { approve: boolean; moderatorNote?: string }) =>
     api.post<Review>(`/reviews/${id}/moderate`, data).then(r => r.data),
+  report: (id: number) =>
+    api.post<{ message: string; reportCount: number }>(`/reviews/${id}/report`).then(r => r.data),
 }
 
 export default api

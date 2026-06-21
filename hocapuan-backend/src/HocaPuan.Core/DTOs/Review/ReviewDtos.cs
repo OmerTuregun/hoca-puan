@@ -65,3 +65,9 @@ public class VoteResultDto
     public int ThumbsDown { get; set; }
     public bool? UserVote { get; set; }
 }
+
+public class ReportReviewResultDto
+{
+    public string Message { get; set; } = string.Empty;
+    public int ReportCount { get; set; }
+}

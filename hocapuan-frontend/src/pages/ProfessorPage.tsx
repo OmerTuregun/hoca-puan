@@ -222,7 +222,12 @@ export default function ProfessorPage() {
             <ReviewCard
               key={r.id}
               review={r}
-              onDelete={() => qc.invalidateQueries({ queryKey: ['reviews', profId] })}
+              onDeleted={() => {
+                void Promise.all([
+                  qc.invalidateQueries({ queryKey: ['reviews', profId] }),
+                  qc.invalidateQueries({ queryKey: ['professor', profId] }),
+                ])
+              }}
               onVote={() => qc.invalidateQueries({ queryKey: ['reviews', profId] })}
               onUpdate={(updated) => {
                 void Promise.all([

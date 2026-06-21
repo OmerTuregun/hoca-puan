@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using HocaPuan.Core.Interfaces.Moderation;
 using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Core.Moderation;
+using Microsoft.Extensions.Logging;
 
 namespace HocaPuan.Services.Moderation;
 
@@ -50,13 +51,19 @@ public class ContentModerationService : IContentModerationService
     private static readonly Regex ExcessivePunctuationRegex = new(@"[!?]{3,}", RegexOptions.Compiled);
 
     private readonly IBannedWordsProvider _bannedWordsProvider;
+    private readonly ILogger<ContentModerationService> _logger;
     private readonly List<(string RawCategory, Regex Pattern)> _wordPatterns;
     private readonly List<(string RawCategory, Regex Pattern)> _phrasePatterns;
+    private readonly FuzzyWordIndex _fuzzyWordIndex;
 
-    public ContentModerationService(IBannedWordsProvider bannedWordsProvider)
+    public ContentModerationService(
+        IBannedWordsProvider bannedWordsProvider,
+        ILogger<ContentModerationService> logger)
     {
         _bannedWordsProvider = bannedWordsProvider;
+        _logger = logger;
         (_wordPatterns, _phrasePatterns) = BuildPatterns();
+        _fuzzyWordIndex = new FuzzyWordIndex(bannedWordsProvider);
     }
 
     public ModerationResult Moderate(string text)
@@ -78,7 +85,9 @@ public class ContentModerationService : IContentModerationService
             };
         }
 
-        var rawMatches = CollectRawCategoryMatches(text);
+        var (rawMatches, fuzzyMatches) = CollectRawCategoryMatches(text);
+
+        LogFuzzyMatches(fuzzyMatches);
 
         if (rawMatches.Contains("kufur_agir"))
         {
@@ -122,9 +131,10 @@ public class ContentModerationService : IContentModerationService
         return new ModerationResult { IsAllowed = true };
     }
 
-    private HashSet<string> CollectRawCategoryMatches(string text)
+    private (HashSet<string> Matches, List<FuzzyMatch> FuzzyMatches) CollectRawCategoryMatches(string text)
     {
         var matches = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var fuzzyMatches = new List<FuzzyMatch>();
         var variants = TextNormalizer.BuildMatchVariants(text).Distinct().ToList();
 
         foreach (var (rawCategory, pattern) in _wordPatterns)
@@ -139,7 +149,116 @@ public class ContentModerationService : IContentModerationService
                 matches.Add(rawCategory);
         }
 
-        return matches;
+        CollectFuzzyMatches(variants, matches, fuzzyMatches);
+        CollectRootMatches(variants, matches);
+
+        return (matches, fuzzyMatches);
+    }
+
+    private void CollectRootMatches(
+        IReadOnlyList<string> variants,
+        HashSet<string> matches)
+    {
+        if (matches.Contains("kufur_agir"))
+            return;
+
+        var tokens = CollectNormalizedTokens(variants);
+        var exactMatchedTokens = CollectExactMatchedTokens(variants);
+
+        foreach (var rootMatch in VulgarRootMatcher.FindMatches(tokens))
+        {
+            if (exactMatchedTokens.Contains(rootMatch.Token))
+                continue;
+
+            matches.Add(rootMatch.Category);
+
+            _logger.LogInformation(
+                "Root match: user token '{UserToken}' ~ vulgar root '{Root}' (category: {Category})",
+                rootMatch.Token,
+                rootMatch.Root,
+                rootMatch.Category);
+        }
+    }
+
+    private void CollectFuzzyMatches(
+        IReadOnlyList<string> variants,
+        HashSet<string> matches,
+        List<FuzzyMatch> fuzzyMatches)
+    {
+        var tokens = CollectNormalizedTokens(variants);
+        var exactMatchedTokens = CollectExactMatchedTokens(variants);
+
+        foreach (var token in tokens)
+        {
+            if (token.Length < 4)
+                continue;
+
+            if (exactMatchedTokens.Contains(token))
+                continue;
+
+            if (VulgarRootMatcher.IsWhitelistedToken(token))
+                continue;
+
+            foreach (var fuzzy in _fuzzyWordIndex.FindMatches(token))
+            {
+                matches.Add(fuzzy.Category);
+                fuzzyMatches.Add(fuzzy);
+            }
+        }
+    }
+
+    private static HashSet<string> CollectNormalizedTokens(IEnumerable<string> variants)
+    {
+        var tokens = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var variant in variants)
+        {
+            foreach (var raw in variant.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var normalized = TextNormalizer.NormalizeWord(raw);
+                if (normalized.Length > 0)
+                    tokens.Add(normalized);
+            }
+        }
+
+        return tokens;
+    }
+
+    private HashSet<string> CollectExactMatchedTokens(IReadOnlyList<string> variants)
+    {
+        var matched = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var variant in variants)
+        {
+            foreach (var raw in variant.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var normalized = TextNormalizer.NormalizeWord(raw);
+                if (normalized.Length == 0)
+                    continue;
+
+                foreach (var (_, pattern) in _wordPatterns)
+                {
+                    if (pattern.IsMatch(normalized) || pattern.IsMatch(variant))
+                    {
+                        matched.Add(normalized);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return matched;
+    }
+
+    private void LogFuzzyMatches(IReadOnlyList<FuzzyMatch> fuzzyMatches)
+    {
+        foreach (var fuzzy in fuzzyMatches)
+        {
+            _logger.LogInformation(
+                "Fuzzy match: user token '{UserToken}' ~ banned word '{BannedWord}' (category: {Category})",
+                fuzzy.UserToken,
+                fuzzy.BannedWord,
+                fuzzy.Category);
+        }
     }
 
     private static ModerationResult Reject(IEnumerable<string> rawMatches) =>

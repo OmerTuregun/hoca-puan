@@ -136,6 +136,31 @@ public class ReviewsController : ControllerBase
         }
     }
 
+    /// <summary>Yorumu uygunsuz olarak bildir</summary>
+    [HttpPost("{id:int}/report")]
+    [Authorize]
+    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
+    public async Task<IActionResult> Report(int id)
+    {
+        try
+        {
+            var result = await _reviewService.ReportAsync(id, CurrentUserId);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
     /// <summary>Moderasyon — yorum onayla/reddet (Admin)</summary>
     [HttpPost("{id:int}/moderate")]
     [Authorize(Roles = "Admin,Moderator")]

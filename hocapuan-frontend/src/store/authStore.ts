@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 interface User {
   id: number
@@ -12,12 +11,12 @@ interface User {
 
 interface AuthState {
   user: User | null
-  token: string | null
-  login: (user: User, token: string) => void
+  csrfToken: string | null
+  login: (user: User) => void
   logout: () => void
+  setCsrfToken: (token: string | null) => void
   isLoggedIn: boolean
   isAdmin: boolean
-  /** persist rehydrate bitene kadar false — ilk render'da yanlış "girişsiz" UI önlenir */
   hasHydrated: boolean
   finishHydration: () => void
 }
@@ -26,81 +25,51 @@ function computeIsAdmin(user: User | null) {
   return user?.role === 'Admin' || user?.role === 'Moderator'
 }
 
-let finishHydrationRef: (() => void) | null = null
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  csrfToken: null,
+  isLoggedIn: false,
+  isAdmin: false,
+  hasHydrated: false,
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => {
-      const state: AuthState = {
+  finishHydration: () => set({ hasHydrated: true }),
+
+  login: (user) => {
+    set({
+      user,
+      isLoggedIn: true,
+      isAdmin: computeIsAdmin(user),
+      hasHydrated: true,
+    })
+  },
+
+  logout: () => {
+    set({
       user: null,
-      token: null,
+      csrfToken: null,
       isLoggedIn: false,
       isAdmin: false,
-      hasHydrated: false,
+      hasHydrated: true,
+    })
+  },
 
-      finishHydration: () => {
-        const { user, token } = get()
-        const storedToken = token || localStorage.getItem('token')
+  setCsrfToken: (token) => set({ csrfToken: token }),
+}))
 
-        if (user && storedToken) {
-          localStorage.setItem('token', storedToken)
-          set({
-            token: storedToken,
-            isLoggedIn: true,
-            isAdmin: computeIsAdmin(user),
-            hasHydrated: true,
-          })
-          return
-        }
-
-        localStorage.removeItem('token')
-        set({
-          user: null,
-          token: null,
-          isLoggedIn: false,
-          isAdmin: false,
-          hasHydrated: true,
-        })
-      },
-
-      login: (user, token) => {
-        localStorage.setItem('token', token)
-        set({
-          user,
-          token,
-          isLoggedIn: true,
-          isAdmin: computeIsAdmin(user),
-          hasHydrated: true,
-        })
-      },
-
-      logout: () => {
-        localStorage.removeItem('token')
-        set({
-          user: null,
-          token: null,
-          isLoggedIn: false,
-          isAdmin: false,
-          hasHydrated: true,
-        })
-      },
-    }
-
-      finishHydrationRef = state.finishHydration
-      return state
-    },
-    {
-      name: 'hocapuan-auth',
-      partialize: state => ({
-        user: state.user,
-        token: state.token,
-      }),
-      onRehydrateStorage: () => (_state, error) => {
-        if (error) {
-          console.error('Auth persist rehydrate failed:', error)
-        }
-        finishHydrationRef?.()
-      },
-    }
-  )
-)
+export function profileToUser(profile: {
+  id: number
+  username: string
+  email: string
+  role: string
+  universityName?: string
+  isEmailVerified: boolean
+}): User {
+  return {
+    id: profile.id,
+    username: profile.username,
+    email: profile.email,
+    role: profile.role,
+    universityName: profile.universityName,
+    isEmailVerified: profile.isEmailVerified,
+  }
+}

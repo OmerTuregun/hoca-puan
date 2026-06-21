@@ -69,3 +69,21 @@ public class ReviewVoteConfiguration : IEntityTypeConfiguration<ReviewVote>
                .OnDelete(DeleteBehavior.Restrict);
     }
 }
+
+public class ReviewReportConfiguration : IEntityTypeConfiguration<ReviewReport>
+{
+    public void Configure(EntityTypeBuilder<ReviewReport> builder)
+    {
+        builder.HasIndex(r => new { r.ReviewId, r.ReporterUserId }).IsUnique();
+
+        builder.HasOne(r => r.Review)
+               .WithMany(rv => rv.Reports)
+               .HasForeignKey(r => r.ReviewId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(r => r.Reporter)
+               .WithMany()
+               .HasForeignKey(r => r.ReporterUserId)
+               .OnDelete(DeleteBehavior.Restrict);
+    }
+}

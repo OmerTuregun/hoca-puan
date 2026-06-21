@@ -12,7 +12,7 @@ public class ContentModerationServiceTests
     private static ContentModerationService CreateService()
     {
         var provider = new FileBannedWordsProvider(NullLogger<FileBannedWordsProvider>.Instance);
-        return new ContentModerationService(provider);
+        return new ContentModerationService(provider, NullLogger<ContentModerationService>.Instance);
     }
 
     [Fact]
@@ -176,6 +176,116 @@ public class ContentModerationServiceTests
         var result = _sut.Moderate("Bu hoca için siktir git demek istemem ama kötüydü.");
 
         Assert.False(result.IsAllowed);
+        Assert.False(result.RequiresManualReview);
+    }
+
+    [Fact]
+    public void Moderate_FuzzyGerizekali_RequiresManualReview()
+    {
+        var result = _sut.Moderate("Bu hoca tam bir gerzekalı çıktı.");
+
+        Assert.True(result.RequiresManualReview);
+        Assert.Contains("Orta düzey küfür", result.ManualReviewReasons);
+    }
+
+    [Fact]
+    public void Moderate_FuzzyAptal_RequiresManualReview()
+    {
+        var result = _sut.Moderate("Bu aptl hoca ders anlatmıyor.");
+
+        Assert.True(result.RequiresManualReview);
+        Assert.Contains("Orta düzey küfür", result.ManualReviewReasons);
+    }
+
+    [Fact]
+    public void Moderate_FuzzySikerTypo_IsRejected()
+    {
+        // "sier" → "siker" (1 harf eksik)
+        var result = _sut.Moderate("Bu ne biçim sier davranış.");
+
+        Assert.False(result.IsAllowed);
+        Assert.Contains("Küfür", result.MatchedCategories);
+    }
+
+    [Fact]
+    public void Moderate_ShortProfanity_NoFuzzyMatch_ExactOnly()
+    {
+        // "sik" 3 karakter — fuzzy devreye girmez; tam eşleşme kelime sınırıyla çalışır
+        var exactMatch = _sut.Moderate("Bu ders sik kadar zordu.");
+        var fuzzyOnly = _sut.Moderate("Bu ders si kadar zordu.");
+
+        Assert.False(exactMatch.IsAllowed);
+        Assert.True(fuzzyOnly.IsAllowed);
+    }
+
+    [Fact]
+    public void Moderate_UnrelatedWord_NoFuzzyFalsePositive()
+    {
+        var result = _sut.Moderate("Merhaba, bugün hava çok güzel ve ders gayet verimli geçti.");
+
+        Assert.True(result.IsAllowed);
+        Assert.False(result.RequiresManualReview);
+        Assert.Empty(result.MatchedCategories);
+    }
+
+    [Theory]
+    [InlineData("Hocanın anlatımı çok akıcıydı, sınavlar adildi.")]
+    [InlineData("Laboratuvar çalışmaları faydalı oldu, ödevler makul seviyedeydi.")]
+    [InlineData("Üniversite kampüsü güzel, kütüphane sessiz ve verimli.")]
+    public void Moderate_NormalSentences_NoFalsePositive(string text)
+    {
+        var result = _sut.Moderate(text);
+
+        Assert.True(result.IsAllowed);
+        Assert.False(result.RequiresManualReview);
+    }
+
+    [Fact]
+    public void Moderate_LongText_FuzzyMatchingCompletesQuickly()
+    {
+        const string word = "verimli ";
+        var longText = string.Concat(Enumerable.Repeat(word, 220)) +
+                       "sonunda gerzekalı bir davranış gösterdi.";
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var result = _sut.Moderate(longText);
+        sw.Stop();
+
+        Assert.True(result.RequiresManualReview);
+        Assert.True(sw.ElapsedMilliseconds < 3000, $"Fuzzy matching took {sw.ElapsedMilliseconds}ms");
+    }
+
+    [Theory]
+    [InlineData("Bu hoca skyor gibi davranıyor.")]
+    [InlineData("Bu ne biçim sikior davranış.")]
+    public void Moderate_VulgarRootConjugation_IsRejected(string text)
+    {
+        var result = _sut.Moderate(text);
+
+        Assert.False(result.IsAllowed);
+        Assert.Contains("Küfür", result.MatchedCategories);
+    }
+
+    [Theory]
+    [InlineData("Osmanlı döneminde sikke para birimi kullanılırdı.")]
+    [InlineData("Polonyalı komutan Sikorski hakkında makale okuduk.")]
+    [InlineData("Fizik dersinde vektörleri işledik.")]
+    public void Moderate_VulgarRootExceptions_AreAllowed(string text)
+    {
+        var result = _sut.Moderate(text);
+
+        Assert.True(result.IsAllowed);
+        Assert.False(result.RequiresManualReview);
+    }
+
+    [Theory]
+    [InlineData("Hocanın anlatımı çok akıcıydı, sınavlar adildi.")]
+    [InlineData("Laboratuvar çalışmaları faydalı oldu.")]
+    public void Moderate_CleanCommentsWithRootLikeSubstrings_AreAllowed(string text)
+    {
+        var result = _sut.Moderate(text);
+
+        Assert.True(result.IsAllowed);
         Assert.False(result.RequiresManualReview);
     }
 }

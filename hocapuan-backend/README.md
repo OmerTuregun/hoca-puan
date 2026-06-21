@@ -118,6 +118,26 @@ Yardımsever | Ulaşılması Zor | Online Kaynaklar Sağlıyor
 
 ---
 
+---
+
+## 🔐 Kimlik Doğrulama (httpOnly Cookie)
+
+JWT, `access_token` adlı **httpOnly** cookie'de taşınır; JavaScript erişemez. State-değiştiren istekler `X-CSRF-TOKEN` header'ı gerektirir.
+
+**Manuel doğrulama (tarayıcı):**
+1. Giriş yaptıktan sonra DevTools → Application → Cookies
+2. `access_token` satırında **HttpOnly** işaretli olmalı
+3. DevTools → Console'da `document.cookie` çalıştırın — `access_token` görünmemeli
+
+Development'ta `AuthCookie.Secure=false` (HTTP); production'da `Secure=true`.
+
+**Manuel doğrulama — yorum silme:**
+1. Kendi yorumunuzun olduğu hoca sayfasında çöp kutusuna tıklayın
+2. DevTools → Network: `DELETE /api/reviews/{id}` isteği gitmeli, yanıt **204 No Content**
+3. Kart listeden kaybolmalı; hata olursa kart altında kırmızı mesaj görünür
+
+---
+
 ## 🔮 Roadmap
 
 - [ ] E-posta doğrulaması (SMTP entegrasyonu)

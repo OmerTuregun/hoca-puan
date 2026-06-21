@@ -5,7 +5,9 @@ import { authApi, reviewApi } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 import RatingBadge from '../components/ui/RatingBadge'
 import Spinner from '../components/ui/Spinner'
-import { Pencil } from 'lucide-react'
+import ConfirmModal from '../components/ui/ConfirmModal'
+import { Pencil, Trash2 } from 'lucide-react'
+import { parseReviewDeleteError } from '../utils/reviewDeleteError'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -22,6 +24,9 @@ export default function ProfilePage() {
   const [reviewInfoMessage, setReviewInfoMessage] = useState(
     () => (location.state as { reviewInfoMessage?: string } | null)?.reviewInfoMessage ?? ''
   )
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [deleteError, setDeleteError] = useState('')
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null)
 
   useEffect(() => {
     if (!hasHydrated) return
@@ -71,8 +76,36 @@ export default function ProfilePage() {
       })
     : '—'
 
+  async function confirmDeleteReview() {
+    if (pendingDeleteId == null) return
+
+    setDeletingId(pendingDeleteId)
+    setDeleteError('')
+    try {
+      await reviewApi.delete(pendingDeleteId)
+      setPendingDeleteId(null)
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
+        qc.invalidateQueries({ queryKey: ['auth', 'me'] }),
+      ])
+    } catch (error: unknown) {
+      setDeleteError(parseReviewDeleteError(error))
+      setPendingDeleteId(null)
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <ConfirmModal
+        open={pendingDeleteId != null}
+        title="Yorumu sil"
+        message="Bu yorumu silmek istediğinize emin misiniz?"
+        loading={deletingId != null}
+        onCancel={() => deletingId == null && setPendingDeleteId(null)}
+        onConfirm={() => void confirmDeleteReview()}
+      />
       <h1 className="font-display text-3xl text-text mb-6">Profilim</h1>
 
       {reviewUpdated && (
@@ -122,6 +155,12 @@ export default function ProfilePage() {
 
       <h2 className="font-display text-xl text-text mb-4">Yorumlarım</h2>
 
+      {deleteError && (
+        <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+          {deleteError}
+        </div>
+      )}
+
       {reviewsLoading ? (
         <Spinner />
       ) : reviews?.items.length === 0 ? (
@@ -162,6 +201,16 @@ export default function ProfilePage() {
                     <Pencil className="w-3.5 h-3.5" />
                     Düzenle
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => setPendingDeleteId(r.id)}
+                    disabled={deletingId === r.id}
+                    className="btn-outline text-sm py-1.5 px-3 inline-flex items-center gap-1.5 text-red-600 border-red-200 hover:bg-red-50 disabled:opacity-50"
+                    aria-label="Yorumu sil"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Sil
+                  </button>
                 </div>
               </div>
 

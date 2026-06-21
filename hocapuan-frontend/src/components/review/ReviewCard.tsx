@@ -1,10 +1,12 @@
-import { ThumbsUp, ThumbsDown, Trash2, Pencil } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Trash2, Pencil, Flag } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Review } from '../../services/api'
 import { reviewApi } from '../../services/api'
 import { useAuthStore } from '../../store/authStore'
 import RatingBadge from '../ui/RatingBadge'
 import ReviewEditForm from './ReviewEditForm'
+import ConfirmModal from '../ui/ConfirmModal'
+import { buildDeleteConfirmMessage, parseReviewDeleteError } from '../../utils/reviewDeleteError'
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 
@@ -31,18 +33,25 @@ function formatReviewDate(iso: string) {
 
 interface Props {
   review: Review
-  onDelete?: () => void
+  onDeleted?: () => void
   onVote?: () => void
   onUpdate?: (updated: Review) => void
 }
 
-export default function ReviewCard({ review: r, onDelete, onVote, onUpdate }: Props) {
-  const { user, isLoggedIn } = useAuthStore()
+export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: Props) {
+  const { user, isLoggedIn, isAdmin } = useAuthStore()
   const [votes, setVotes] = useState({ up: r.thumbsUp, down: r.thumbsDown })
   const [userVote, setUserVote] = useState<boolean | null | undefined>(r.currentUserVote)
   const [voting, setVoting] = useState(false)
   const [voteError, setVoteError] = useState('')
   const [isEditing, setIsEditing] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [reporting, setReporting] = useState(false)
+  const [reportMessage, setReportMessage] = useState('')
+  const [reportError, setReportError] = useState('')
+  const [showReportModal, setShowReportModal] = useState(false)
 
   useEffect(() => {
     setVotes({ up: r.thumbsUp, down: r.thumbsDown })
@@ -66,8 +75,43 @@ export default function ReviewCard({ review: r, onDelete, onVote, onUpdate }: Pr
   }
 
   const isOwner = user?.id === r.userId
-  const canDelete = isOwner && onDelete
+  const canDelete = isLoggedIn && (isOwner || isAdmin)
   const canEdit = isOwner
+  const canReport = isLoggedIn && !isOwner
+
+  async function confirmReport() {
+    setReporting(true)
+    setReportError('')
+    setReportMessage('')
+    try {
+      const res = await reviewApi.report(r.id)
+      setShowReportModal(false)
+      setReportMessage(res.message || 'Bildiriminiz alındı.')
+    } catch (error: unknown) {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+        ?? 'Bildirim gönderilemedi.'
+      setReportError(message)
+      setShowReportModal(false)
+    } finally {
+      setReporting(false)
+    }
+  }
+
+  async function confirmDelete() {
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await reviewApi.delete(r.id)
+      setShowDeleteModal(false)
+      onDeleted?.()
+    } catch (error: unknown) {
+      setDeleteError(parseReviewDeleteError(error))
+      setShowDeleteModal(false)
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   if (isEditing) {
     return (
@@ -90,6 +134,24 @@ export default function ReviewCard({ review: r, onDelete, onVote, onUpdate }: Pr
   }
 
   return (
+    <>
+      <ConfirmModal
+        open={showDeleteModal}
+        title="Yorumu sil"
+        message={buildDeleteConfirmMessage(r.username, isOwner, isAdmin)}
+        loading={deleting}
+        onCancel={() => !deleting && setShowDeleteModal(false)}
+        onConfirm={() => void confirmDelete()}
+      />
+      <ConfirmModal
+        open={showReportModal}
+        title="Yorumu bildir"
+        message="Bu yorumu uygunsuz olarak bildirmek istediğinize emin misiniz?"
+        confirmLabel="Bildir"
+        loading={reporting}
+        onCancel={() => !reporting && setShowReportModal(false)}
+        onConfirm={() => void confirmReport()}
+      />
     <div className="card p-5 animate-fadeUp">
       {/* Üst satır */}
       <div className="flex items-start justify-between gap-3">
@@ -113,9 +175,9 @@ export default function ReviewCard({ review: r, onDelete, onVote, onUpdate }: Pr
             <p className="text-sm font-semibold text-text">{r.username}</p>
           </div>
           <p className="text-xs text-text-muted">{formatReviewDate(r.createdAt)}</p>
-          {(r.courseCode || r.year) && (
+          {r.courseCode && (
             <p className="text-xs text-text-light mt-0.5">
-              {r.courseCode ? `${r.courseCode} · ` : ''}{r.year}
+              {r.courseCode}{r.year ? ` · ${r.year}` : ''}
             </p>
           )}
         </div>
@@ -197,17 +259,44 @@ export default function ReviewCard({ review: r, onDelete, onVote, onUpdate }: Pr
             {canDelete && (
               <button
                 type="button"
-                onClick={onDelete}
-                className="p-1 rounded hover:bg-red-50 text-text-light hover:text-red-500 transition-colors"
+                onClick={() => setShowDeleteModal(true)}
+                disabled={deleting}
+                className={clsx(
+                  'p-1 rounded hover:bg-red-50 text-text-light hover:text-red-500 transition-colors',
+                  deleting && 'opacity-50 cursor-not-allowed'
+                )}
                 aria-label="Yorumu sil"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
+
+            {canReport && (
+              <button
+                type="button"
+                onClick={() => setShowReportModal(true)}
+                disabled={reporting}
+                className={clsx(
+                  'p-1 rounded hover:bg-amber-50 text-text-light hover:text-amber-600 transition-colors',
+                  reporting && 'opacity-50 cursor-not-allowed'
+                )}
+                aria-label="Yorumu bildir"
+              >
+                <Flag className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
-          {voteError && <p className="text-xs text-danger">{voteError}</p>}
+          {(voteError || deleteError || reportError || reportMessage) && (
+            <p className={clsx(
+              'text-xs',
+              reportMessage ? 'text-green-600' : 'text-danger'
+            )}>
+              {reportMessage || deleteError || reportError || voteError}
+            </p>
+          )}
         </div>
       </div>
     </div>
+    </>
   )
 }

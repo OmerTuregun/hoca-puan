@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ─── Servisler ───────────────────────────────────────────────
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthCookieAndCsrf(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<ImportJobStore>();
@@ -60,6 +61,7 @@ app.UseForwardedHeaders();
 app.UseCors("HocaPuanCors");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<CsrfValidationMiddleware>();
 app.UseRateLimiter();
 app.MapControllers();
 
