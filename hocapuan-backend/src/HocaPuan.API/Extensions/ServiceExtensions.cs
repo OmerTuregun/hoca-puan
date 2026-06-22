@@ -187,12 +187,14 @@ public static class ServiceExtensions
         if (ResolveCookieSecure(config) is { } secure)
             settings.Secure = secure;
 
-        var explicitSameSite = config[$"{AuthCookieSettings.SectionName}:SameSite"];
-        if (string.IsNullOrWhiteSpace(explicitSameSite) &&
-            config.GetValue<bool>("USE_HTTPS"))
+        if (!string.IsNullOrWhiteSpace(config["AUTH_COOKIE_SAMESITE"]))
         {
-            settings.SameSite = "Strict";
+            settings.SameSite = config["AUTH_COOKIE_SAMESITE"]!;
+            return;
         }
+
+        if (bool.TryParse(config["USE_HTTPS"], out var useHttps))
+            settings.SameSite = useHttps ? "Strict" : "Lax";
     }
 
     private static bool? ResolveCookieSecure(IConfiguration config)

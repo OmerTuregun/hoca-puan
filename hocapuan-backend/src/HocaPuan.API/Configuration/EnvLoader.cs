@@ -83,6 +83,7 @@ public static class EnvLoader
         Map("APP_FRONTEND_URL", "App__FrontendUrl");
 
         Map("COOKIE_SECURE", "AuthCookie__Secure");
+        Map("AUTH_COOKIE_SAMESITE", "AuthCookie__SameSite");
         Map("ALLOWED_ORIGIN", "Cors__AllowedOrigins__0");
 
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AuthCookie__Secure")) &&

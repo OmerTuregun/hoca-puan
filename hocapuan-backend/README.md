@@ -1,4 +1,4 @@
-# 🎓 HocaPuan Backend
+# 🎓 Hocanı Yorumla Backend
 
 Türkiye üniversitelerindeki hocaları değerlendirme platformu — ASP.NET Core 8 + PostgreSQL + Docker.
 

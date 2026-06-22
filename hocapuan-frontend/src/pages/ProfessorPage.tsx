@@ -42,8 +42,8 @@ export default function ProfessorPage() {
 
   useEffect(() => {
     if (!professor) return
-    document.title = `${professor.firstName} ${professor.lastName} — HocaPuan`
-    return () => { document.title = 'HocaPuan' }
+    document.title = `${professor.firstName} ${professor.lastName} — Hocanı Yorumla`
+    return () => { document.title = 'Hocanı Yorumla' }
   }, [professor])
 
   useEffect(() => {

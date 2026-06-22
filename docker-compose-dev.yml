@@ -1,5 +1,5 @@
 # Local geliştirme — kullanım:
-#   docker compose -f docker-compose.dev.yml up --build -d
+#   docker compose --env-file .env.development -f docker-compose.dev.yml up --build -d
 #
 # Ortam dosyası: .env.development (bkz. .env.example, DEPLOYMENT.md)
 # Not: docker-compose.yml kaldırıldı; geliştirme yalnızca bu dosya ile çalıştırılır.
@@ -10,6 +10,8 @@ services:
     image: postgres:16-alpine
     container_name: hocapuan_db
     restart: unless-stopped
+    env_file:
+      - .env.development
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -21,7 +23,7 @@ services:
     networks:
       - hocapuan_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -1,4 +1,17 @@
-# HocaPuan yardımcı scriptleri
+# Hocanı Yorumla yardımcı scriptleri
+
+## Mobil responsive tarama
+
+```bash
+cd scripts
+npm install
+npx playwright install chromium   # ilk çalıştırmada
+FRONTEND_URL=http://127.0.0.1:8089 npm run mobile-scan
+```
+
+Çıktılar:
+- `scripts/output/mobile-screenshots/` — sayfa + viewport ekran görüntüleri
+- `scripts/output/mobile-scan-report.json` — otomatik kontrol bulguları
 
 Bu klasördeki Python araçları **build/CI sürecine dahil değildir**; yalnızca manuel test ve referans amaçlıdır.
 

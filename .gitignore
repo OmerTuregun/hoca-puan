@@ -25,3 +25,5 @@ scripts/.cache/
 scripts/output/candidates-for-review.json
 scripts/output/hizli-onay.json
 scripts/output/filtrenin-kacirdiklari.json
+scripts/output/mobile-screenshots/
+scripts/output/mobile-scan-report.json

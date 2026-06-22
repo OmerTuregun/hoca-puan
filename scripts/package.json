@@ -1,0 +1,11 @@
+{
+  "name": "hocapuan-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "mobile-scan": "node mobile-scan.js"
+  },
+  "dependencies": {
+    "playwright": "^1.61.0"
+  }
+}

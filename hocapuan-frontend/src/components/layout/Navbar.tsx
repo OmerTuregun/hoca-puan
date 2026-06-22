@@ -45,7 +45,7 @@ export default function Navbar() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
-          <span className="font-display text-xl text-text hidden sm:block">HocaPuan</span>
+          <span className="font-display text-xl text-text hidden sm:block">Hocanı Yorumla</span>
         </Link>
 
         <form onSubmit={handleSearch} className="flex-1 max-w-md">

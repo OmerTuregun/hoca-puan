@@ -1,27 +1,31 @@
 # Production (IP + HTTP) — kullanım:
-#   docker compose -f docker-compose.prod.yml up --build -d
+#   docker compose --env-file .env.production -f docker-compose.prod.yml up --build -d
 #
 # Önce .env.production içindeki CHANGE_ME ve SUNUCU_IP değerlerini güncelleyin.
 # Ayrıntılar: DEPLOYMENT.md
+#
+# Dev ile aynı sunucuda çalışabilir: farklı container adları, volume ve portlar.
 
 services:
   # ─── PostgreSQL ───────────────────────────────────────────────
   db:
     image: postgres:16-alpine
-    container_name: hocapuan_db
-    restart: always
+    container_name: hocapuan_prod_db
+    restart: unless-stopped
+    env_file:
+      - .env.production
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT:-5433}:5432"
+      - "${DB_PORT:-5435}:5432"
     networks:
-      - hocapuan_net
+      - hocapuan_prod_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,8 +35,8 @@ services:
     build:
       context: ./hocapuan-backend
       dockerfile: src/HocaPuan.API/Dockerfile
-    container_name: hocapuan_api
-    restart: always
+    container_name: hocapuan_prod_api
+    restart: unless-stopped
     env_file:
       - .env.production
     environment:
@@ -48,37 +52,40 @@ services:
       Email__Username: ${EMAIL_USERNAME}
       Email__Password: ${EMAIL_PASSWORD}
       Email__From: ${EMAIL_FROM:-noreply@hocapuan.com}
-      AuthCookie__Secure: ${COOKIE_SECURE:-false}
-      AuthCookie__SameSite: ${AUTH_COOKIE_SAMESITE:-Lax}
       Cors__AllowedOrigins__0: ${ALLOWED_ORIGIN}
       USE_HTTPS: ${USE_HTTPS:-false}
     ports:
-      - "${API_PORT:-5001}:8080"
+      - "${API_PORT:-5011}:8080"
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - hocapuan_net
+      - hocapuan_prod_net
 
-  # ─── Frontend (nginx + static build) ──────────────────────────
-  # nginx.conf /api isteklerini api:8080'e proxy eder.
+  # ─── React + Vite Frontend ────────────────────────────────────
+  # TODO: Production nginx + static build burada eklenecek, şu an dev build kullanılıyor.
   frontend:
     build:
       context: ./hocapuan-frontend
       dockerfile: Dockerfile
-      target: production
-    container_name: hocapuan_frontend
-    restart: always
+      target: dev
+    container_name: hocapuan_prod_frontend
+    restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "${FRONTEND_PORT:-8089}:5173"
+    environment:
+      - VITE_API_URL=http://api:8080
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    command: npm run dev -- --host 0.0.0.0 --port 5173
     depends_on:
       - api
     networks:
-      - hocapuan_net
+      - hocapuan_prod_net
 
 volumes:
-  postgres_data:
+  postgres_data_prod:
 
 networks:
-  hocapuan_net:
+  hocapuan_prod_net:
     driver: bridge

@@ -9,6 +9,8 @@ namespace HocaPuan.Services;
 
 public class EmailService : IEmailService
 {
+    private const string BrandName = "Hocanı Yorumla";
+
     private readonly IConfiguration _config;
     private readonly ILogger<EmailService> _logger;
 
@@ -21,13 +23,13 @@ public class EmailService : IEmailService
     public Task SendVerificationEmailAsync(string toEmail, string verificationLink) =>
         SendAsync(
             toEmail,
-            "HocaPuan — E-posta Doğrulama",
+            $"{BrandName} — E-posta Doğrulama",
             BuildVerificationHtml(verificationLink));
 
     public Task SendPasswordResetEmailAsync(string toEmail, string resetLink) =>
         SendAsync(
             toEmail,
-            "HocaPuan — Şifre Sıfırlama",
+            $"{BrandName} — Şifre Sıfırlama",
             BuildPasswordResetHtml(resetLink));
 
     private async Task SendAsync(string toEmail, string subject, string htmlBody)
@@ -37,10 +39,11 @@ public class EmailService : IEmailService
         var port = int.Parse(_config["Email:Port"] ?? "587");
         var username = _config["Email:Username"];
         var password = _config["Email:Password"];
-        var from = _config["Email:From"] ?? "noreply@hocapuan.com";
+        var fromAddress = _config["Email:From"] ?? "noreply@hocapuan.com";
+        var parsedFrom = MailboxAddress.Parse(fromAddress);
 
         var message = new MimeMessage();
-        message.From.Add(MailboxAddress.Parse(from));
+        message.From.Add(new MailboxAddress(BrandName, parsedFrom.Address));
         message.To.Add(MailboxAddress.Parse(toEmail));
         message.Subject = subject;
         message.Body = new TextPart("html") { Text = htmlBody };
@@ -68,7 +71,7 @@ public class EmailService : IEmailService
 <head><meta charset=""utf-8""/></head>
 <body style=""font-family: Arial, sans-serif; background: #f5f5f5; padding: 24px;"">
   <div style=""max-width: 480px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 32px;"">
-    <h1 style=""color: #1e3a5f; font-size: 22px; margin: 0 0 16px;"">HocaPuan</h1>
+    <h1 style=""color: #1e3a5f; font-size: 22px; margin: 0 0 16px;"">{BrandName}</h1>
     <p style=""color: #444; line-height: 1.6;"">Hesabınızı etkinleştirmek için aşağıdaki butona tıklayın:</p>
     <p style=""text-align: center; margin: 28px 0;"">
       <a href=""{link}"" style=""display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold;"">E-postamı doğrula</a>
@@ -84,7 +87,7 @@ public class EmailService : IEmailService
 <head><meta charset=""utf-8""/></head>
 <body style=""font-family: Arial, sans-serif; background: #f5f5f5; padding: 24px;"">
   <div style=""max-width: 480px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 32px;"">
-    <h1 style=""color: #1e3a5f; font-size: 22px; margin: 0 0 16px;"">HocaPuan</h1>
+    <h1 style=""color: #1e3a5f; font-size: 22px; margin: 0 0 16px;"">{BrandName}</h1>
     <p style=""color: #444; line-height: 1.6;"">Şifrenizi sıfırlamak için aşağıdaki butona tıklayın:</p>
     <p style=""text-align: center; margin: 28px 0;"">
       <a href=""{link}"" style=""display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold;"">Şifremi sıfırla</a>
