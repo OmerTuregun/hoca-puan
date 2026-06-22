@@ -44,3 +44,14 @@ public class CreateUniversityDto
     public string? Website { get; set; }
     public string? EmailDomain { get; set; }
 }
+
+public class TopProfessorDto
+{
+    public int Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string FacultyName { get; set; } = string.Empty;
+    public string DepartmentName { get; set; } = string.Empty;
+    public double AverageQuality { get; set; }
+    public int TotalReviews { get; set; }
+}

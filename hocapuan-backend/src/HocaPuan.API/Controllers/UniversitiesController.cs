@@ -37,6 +37,17 @@ public class UniversitiesController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>En çok yorum alan hocalar (onaylı yorum sayısına göre)</summary>
+    [HttpGet("{id:int}/top-professors")]
+    public async Task<IActionResult> GetTopProfessors(int id, [FromQuery] int limit = 10)
+    {
+        var exists = await _universityService.GetByIdAsync(id);
+        if (exists == null) return NotFound();
+
+        var result = await _universityService.GetTopProfessorsAsync(id, limit);
+        return Ok(result);
+    }
+
     /// <summary>Bölümleri getir</summary>
     [HttpGet("faculties/{facultyId:int}/departments")]
     public async Task<IActionResult> GetDepartments(int facultyId)

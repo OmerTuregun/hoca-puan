@@ -1,9 +1,10 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Globe, MapPin, Star } from 'lucide-react'
+import { Globe, MapPin, Star, TrendingUp } from 'lucide-react'
 import { universityApi, professorApi } from '../services/api'
 import ProfessorCard from '../components/professor/ProfessorCard'
 import Spinner from '../components/ui/Spinner'
+import RatingBadge from '../components/ui/RatingBadge'
 
 export default function UniversityPage() {
   const { id } = useParams<{ id: string }>()
@@ -18,6 +19,12 @@ export default function UniversityPage() {
   const { data: professors } = useQuery({
     queryKey: ['professors-uni', uniId],
     queryFn:  () => professorApi.search({ universityId: uniId, pageSize: 12 }),
+    enabled: !!uniId,
+  })
+
+  const { data: topProfessors } = useQuery({
+    queryKey: ['university-top-professors', uniId],
+    queryFn: () => universityApi.topProfessors(uniId, 10),
     enabled: !!uniId,
   })
 
@@ -68,6 +75,40 @@ export default function UniversityPage() {
           </div>
         </div>
       </div>
+
+      {topProfessors && topProfessors.length > 0 && (
+        <div className="card p-5 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-primary" />
+            <h2 className="font-display text-lg text-text">En Çok Yorumlanan Hocalar</h2>
+          </div>
+          <div className="flex flex-col gap-2">
+            {topProfessors.map((prof, index) => (
+              <Link
+                key={prof.id}
+                to={`/professors/${prof.id}`}
+                className="flex items-center gap-3 p-3 rounded-xl border border-surface-border hover:border-primary hover:bg-primary-light/30 transition-colors min-h-[44px]"
+              >
+                <span className="w-7 h-7 rounded-full bg-surface-alt text-text-muted text-sm font-semibold flex items-center justify-center shrink-0">
+                  {index + 1}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-text truncate">{prof.fullName}</p>
+                  <p className="text-xs text-text-muted truncate">
+                    {[prof.facultyName, prof.departmentName].filter(Boolean).join(' · ')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <RatingBadge value={prof.averageQuality} size="sm" />
+                  <span className="text-xs text-text-muted whitespace-nowrap">
+                    {prof.totalReviews} yorum
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Hocalar */}
       <div className="flex items-center justify-between mb-4">

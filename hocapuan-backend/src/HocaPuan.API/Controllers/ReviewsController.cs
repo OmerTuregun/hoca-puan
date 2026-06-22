@@ -44,9 +44,15 @@ public class ReviewsController : ControllerBase
 
     /// <summary>Hocaya ait yorumları getir</summary>
     [HttpGet("professor/{professorId:int}")]
-    public async Task<IActionResult> GetByProfessor(int professorId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetByProfessor(
+        int professorId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string sortBy = "newest",
+        [FromQuery] string? tag = null)
     {
-        var result = await _reviewService.GetByProfessorAsync(professorId, page, pageSize, TryGetCurrentUserId());
+        var result = await _reviewService.GetByProfessorAsync(
+            professorId, page, pageSize, TryGetCurrentUserId(), sortBy, tag);
         return Ok(result);
     }
 

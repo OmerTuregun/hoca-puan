@@ -46,12 +46,23 @@ public class ReviewService : IReviewService
     }
 
     public async Task<PagedResultDto<ReviewDto>> GetByProfessorAsync(
-        int professorId, int page, int pageSize, int? currentUserId = null)
+        int professorId,
+        int page,
+        int pageSize,
+        int? currentUserId = null,
+        string sortBy = "newest",
+        string? tag = null)
     {
         var query = _db.Reviews
             .Include(r => r.User)
             .Include(r => r.Professor).ThenInclude(p => p.University)
             .Where(r => r.ProfessorId == professorId && r.Status == ReviewStatus.Approved && !r.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(tag))
+        {
+            var tagJson = JsonSerializer.Serialize(tag.Trim());
+            query = query.Where(r => r.TagsJson.Contains(tagJson));
+        }
 
         if (currentUserId.HasValue)
         {
@@ -59,8 +70,8 @@ public class ReviewService : IReviewService
         }
 
         var totalCount = await query.CountAsync();
-        var items = await query
-            .OrderByDescending(r => r.CreatedAt)
+        var ordered = ApplyProfessorReviewSort(query, sortBy);
+        var items = await ordered
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -350,6 +361,16 @@ public class ReviewService : IReviewService
             ReportCount = reportCount,
         };
     }
+
+    private static IQueryable<Review> ApplyProfessorReviewSort(IQueryable<Review> query, string sortBy) =>
+        sortBy.Trim().ToLowerInvariant() switch
+        {
+            "oldest" => query.OrderBy(r => r.CreatedAt),
+            "mosthelpful" => query.OrderByDescending(r => r.ThumbsUp - r.ThumbsDown).ThenByDescending(r => r.CreatedAt),
+            "highestrating" => query.OrderByDescending(r => r.QualityRating).ThenByDescending(r => r.CreatedAt),
+            "lowestrating" => query.OrderBy(r => r.QualityRating).ThenByDescending(r => r.CreatedAt),
+            _ => query.OrderByDescending(r => r.CreatedAt),
+        };
 
     // ────────────────────────────────────────────────────────────
     private ModerationResult EvaluateComment(string comment, int userId)

@@ -111,6 +111,30 @@ public class UniversityService : IUniversityService
             .ToListAsync();
     }
 
+    public async Task<List<TopProfessorDto>> GetTopProfessorsAsync(int universityId, int limit = 10)
+    {
+        var take = Math.Clamp(limit, 1, 10);
+
+        return await _db.Professors
+            .AsNoTracking()
+            .Include(p => p.Department).ThenInclude(d => d.Faculty)
+            .Where(p => p.UniversityId == universityId && !p.IsDeleted && p.TotalReviews > 0)
+            .OrderByDescending(p => p.TotalReviews)
+            .ThenByDescending(p => p.AverageQuality)
+            .Take(take)
+            .Select(p => new TopProfessorDto
+            {
+                Id = p.Id,
+                FullName = (p.Title + " " + p.FirstName + " " + p.LastName).Trim(),
+                Title = p.Title,
+                FacultyName = p.Department != null ? p.Department.Faculty.Name : "",
+                DepartmentName = p.Department != null ? p.Department.Name : "",
+                AverageQuality = p.AverageQuality,
+                TotalReviews = p.TotalReviews,
+            })
+            .ToListAsync();
+    }
+
     // ────────────────────────────────────────────────────────────
     private static UniversityListItemDto MapListItem(University u) => new()
     {

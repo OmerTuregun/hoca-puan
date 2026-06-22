@@ -6,7 +6,20 @@ import { useAuthStore } from '../store/authStore'
 import RatingBadge from '../components/ui/RatingBadge'
 import ReviewCard from '../components/review/ReviewCard'
 import Spinner from '../components/ui/Spinner'
+import ShareProfessorButton from '../components/professor/ShareProfessorButton'
+import { REVIEW_TAGS } from '../constants/reviewTags'
 import { useState, useEffect } from 'react'
+import clsx from 'clsx'
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'En Yeni' },
+  { value: 'oldest', label: 'En Eski' },
+  { value: 'mostHelpful', label: 'En Faydalı' },
+  { value: 'highestRating', label: 'En Yüksek Puan' },
+  { value: 'lowestRating', label: 'En Düşük Puan' },
+] as const
+
+type ReviewSort = (typeof SORT_OPTIONS)[number]['value']
 
 export default function ProfessorPage() {
   const { id } = useParams<{ id: string }>()
@@ -16,6 +29,8 @@ export default function ProfessorPage() {
   const qc = useQueryClient()
   const location = useLocation()
   const [page, setPage] = useState(1)
+  const [sortBy, setSortBy] = useState<ReviewSort>('newest')
+  const [tagFilter, setTagFilter] = useState<string | null>(null)
   const [reviewSuccess, setReviewSuccess] = useState(
     () => !!(location.state as { reviewSuccess?: boolean } | null)?.reviewSuccess
   )
@@ -35,10 +50,17 @@ export default function ProfessorPage() {
   })
 
   const { data: reviews, isLoading: revLoading } = useQuery({
-    queryKey: ['reviews', profId, page],
-    queryFn:  () => reviewApi.byProfessor(profId, page, 10),
+    queryKey: ['reviews', profId, page, sortBy, tagFilter],
+    queryFn:  () => reviewApi.byProfessor(profId, page, 10, {
+      sortBy,
+      tag: tagFilter ?? undefined,
+    }),
     enabled:  !!profId,
   })
+
+  useEffect(() => {
+    setPage(1)
+  }, [sortBy, tagFilter])
 
   useEffect(() => {
     if (!professor) return
@@ -156,7 +178,11 @@ export default function ProfessorPage() {
           </div>
 
           {/* Yorum butonu */}
-          <div className="shrink-0">
+          <div className="shrink-0 flex flex-col sm:flex-row gap-2">
+            <ShareProfessorButton
+              professorName={`${p.firstName} ${p.lastName}`}
+              universityName={p.universityName}
+            />
             {!hasHydrated ? (
               <span className="btn-outline opacity-60 cursor-wait">Yükleniyor...</span>
             ) : authed ? (
@@ -199,7 +225,39 @@ export default function ProfessorPage() {
       </div>
 
       {/* ─── Yorumlar ─── */}
-      <h2 className="font-display text-xl text-text mb-4">Yorumlar</h2>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4">
+        <h2 className="font-display text-xl text-text">Yorumlar</h2>
+        <label className="flex flex-col gap-1 text-sm text-text-muted sm:min-w-[200px]">
+          <span className="font-medium">Sırala</span>
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as ReviewSort)}
+            className="input py-2 text-sm"
+          >
+            {SORT_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {REVIEW_TAGS.map(tag => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => setTagFilter(prev => (prev === tag ? null : tag))}
+            className={clsx(
+              'px-3 py-1.5 rounded-full text-sm border transition-all min-h-[44px] sm:min-h-0',
+              tagFilter === tag
+                ? 'bg-primary border-primary text-white'
+                : 'border-surface-border text-text-muted hover:border-primary hover:text-primary'
+            )}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
 
       {revLoading ? (
         <Spinner />

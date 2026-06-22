@@ -11,4 +11,5 @@ public interface IUniversityService
     Task<bool> DeleteAsync(int id);
     Task<List<FacultyDto>> GetFacultiesAsync(int universityId);
     Task<List<DepartmentDto>> GetDepartmentsAsync(int facultyId);
+    Task<List<TopProfessorDto>> GetTopProfessorsAsync(int universityId, int limit = 10);
 }

@@ -88,6 +88,16 @@ export interface Department {
   facultyId: number
 }
 
+export interface TopProfessor {
+  id: number
+  fullName: string
+  title: string
+  facultyName: string
+  departmentName: string
+  averageQuality: number
+  totalReviews: number
+}
+
 export interface Professor {
   id: number
   fullName: string
@@ -180,6 +190,8 @@ export const universityApi = {
     api.get<Faculty[]>(`/universities/${id}/faculties`).then(r => r.data),
   departments: (facultyId: number) =>
     api.get<Department[]>(`/universities/faculties/${facultyId}/departments`).then(r => r.data),
+  topProfessors: (id: number, limit = 10) =>
+    api.get<TopProfessor[]>(`/universities/${id}/top-professors`, { params: { limit } }).then(r => r.data),
 }
 
 // ─── Professors ───────────────────────────────────────────────
@@ -206,8 +218,20 @@ export const professorApi = {
 export const reviewApi = {
   get: (id: number) =>
     api.get<Review>(`/reviews/${id}`).then(r => r.data),
-  byProfessor: (professorId: number, page = 1, pageSize = 10) =>
-    api.get<PagedResult<Review>>(`/reviews/professor/${professorId}`, { params: { page, pageSize } }).then(r => r.data),
+  byProfessor: (
+    professorId: number,
+    page = 1,
+    pageSize = 10,
+    options?: { sortBy?: string; tag?: string },
+  ) =>
+    api.get<PagedResult<Review>>(`/reviews/professor/${professorId}`, {
+      params: {
+        page,
+        pageSize,
+        sortBy: options?.sortBy,
+        tag: options?.tag || undefined,
+      },
+    }).then(r => r.data),
   myReviews: (page = 1, pageSize = 10) =>
     api.get<PagedResult<Review>>('/reviews/my', { params: { page, pageSize } }).then(r => r.data),
   create: (data: {
