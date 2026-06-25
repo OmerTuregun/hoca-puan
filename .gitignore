@@ -20,6 +20,11 @@ hocapuan-frontend/dist/
 # Logs
 *.log
 
+# Backup aracı (scripts/backup)
+scripts/backup/venv/
+scripts/backup/*.dump
+scripts/backup/*.dump.gz
+
 # Moderation mining script cache (HF CSV ~tens of MB)
 scripts/.cache/
 scripts/node_modules/
@@ -28,3 +33,4 @@ scripts/output/hizli-onay.json
 scripts/output/filtrenin-kacirdiklari.json
 scripts/output/mobile-screenshots/
 scripts/output/mobile-scan-report.json
+scripts/backup/__pycache__/
