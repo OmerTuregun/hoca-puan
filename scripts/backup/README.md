@@ -9,35 +9,34 @@ Production PostgreSQL veritabanının günlük yedeğini alır, sıkıştırır 
 - **rclone** kurulu ve yapılandırılmış olmalı:
   - Remote adı: `gdrive`
   - OAuth ile **kendi Google hesabınız** olarak yetkilendirilmiş
-  - Hedef klasör: `HocaPuan-Backups` (Drive'da otomatik oluşur veya önceden oluşturulabilir)
+  - Hedef klasör (varsayılan): `Ömer Bireysel/Hocanı Yorumla/HocaPuan-Backups`
 
 ### rclone ilk kurulum (bir kez)
 
 ```bash
 rclone config
-# n) New remote
-# name: gdrive
-# Storage: drive (Google Drive)
-# client_id / client_secret: boş bırakılabilir (varsayılan)
-# scope: drive (tam erişim) veya drive.file
-# OAuth ile tarayıcıda giriş yapın
+# n) New remote → name: gdrive → Storage: drive → OAuth ile giriş
 ```
 
-Yapılandırmayı doğrulayın:
+Drive'da klasör yapısını oluşturun (veya Drive arayüzünden taşıyın):
 
 ```bash
-rclone lsd gdrive:
-rclone mkdir gdrive:HocaPuan-Backups   # isteğe bağlı, yoksa copy sırasında oluşur
+rclone mkdir "gdrive:Ömer Bireysel/Hocanı Yorumla/HocaPuan-Backups"
 ```
 
 ## Ortam değişkenleri
 
-`.env.production` içinde (veya cron ortamında):
+`.env.production` içinde:
 
 ```bash
+# rclone hedef yolu (Drive kökünden, / ile ayrılmış)
+RCLONE_BACKUP_PATH=Ömer Bireysel/Hocanı Yorumla/HocaPuan-Backups
+
 # Başarısız yedek uyarısı (önerilir)
 BACKUP_ALERT_EMAIL=you@example.com
 ```
+
+Klasörü Drive'da taşırsanız yalnızca `RCLONE_BACKUP_PATH` değerini güncellemeniz yeterli.
 
 Mevcut `DB_*` ve `EMAIL_*` değişkenleri `.env.production`'dan otomatik okunur.
 
@@ -51,7 +50,6 @@ DB_CONTAINER=hocapuan_prod_db   # varsayılan
 
 ```bash
 cd /root/hoca-puan/scripts/backup
-python3 -m venv venv    # isteğe bağlı; script stdlib ile çalışır
 chmod +x backup_to_drive.py
 ```
 
@@ -59,51 +57,31 @@ chmod +x backup_to_drive.py
 
 ```bash
 cd /root/hoca-puan/scripts/backup
-export BACKUP_ALERT_EMAIL="sizin@email.com"   # isteğe bağlı, hata bildirimi için
-./venv/bin/python backup_to_drive.py
-# veya: python3 backup_to_drive.py
+python3 backup_to_drive.py
 ```
-
-Başarılıysa:
-
-- `backup.log` içinde `Yedekleme işlemi tamamlandı.` görünür
-- Drive'da `hocapuan_backup_YYYY-MM-DD_HH-MM.dump.gz` dosyası oluşur
 
 Doğrulama:
 
 ```bash
-rclone lsjson gdrive:HocaPuan-Backups/
+rclone ls "gdrive:Ömer Bireysel/Hocanı Yorumla/HocaPuan-Backups/"
 ```
+
+Drive web arayüzü (aynı klasör):
+
+https://drive.google.com/drive/folders/1pIPsv8CakIU5QBRhJQxxMGrTLNUcCHAk
 
 ## Cron (her gece 03:00)
 
-```bash
-crontab -e
-```
-
-Ekleyin:
-
 ```cron
-0 3 * * * cd /root/hoca-puan/scripts/backup && BACKUP_ALERT_EMAIL=sizin@email.com /root/hoca-puan/scripts/backup/venv/bin/python /root/hoca-puan/scripts/backup/backup_to_drive.py >> /root/hoca-puan/scripts/backup/backup_cron.log 2>&1
+0 3 * * * cd /root/hoca-puan/scripts/backup && BACKUP_ALERT_EMAIL=sizin@email.com python3 /root/hoca-puan/scripts/backup/backup_to_drive.py >> /root/hoca-puan/scripts/backup/backup_cron.log 2>&1
 ```
-
-`BACKUP_ALERT_EMAIL` değerini kendi adresinizle değiştirin.
-
-## Log dosyaları
-
-| Dosya | Açıklama |
-|-------|----------|
-| `scripts/backup/backup.log` | Script'in kendi logu |
-| `scripts/backup/backup_cron.log` | Cron stdout/stderr |
 
 ## Geri yükleme (restore)
-
-**DİKKAT:** Geri yükleme mevcut veritabanının üzerine yazar. Önce bakım penceresi planlayın ve mümkünse anlık bir ek yedek alın.
 
 ### 1. Yedeği Drive'dan indirin
 
 ```bash
-rclone copy gdrive:HocaPuan-Backups/hocapuan_backup_YYYY-MM-DD_HH-MM.dump.gz /tmp/
+rclone copy "gdrive:Ömer Bireysel/Hocanı Yorumla/HocaPuan-Backups/hocapuan_backup_YYYY-MM-DD_HH-MM.dump.gz" /tmp/
 ```
 
 ### 2. API'yi durdurun (önerilir)
@@ -126,17 +104,10 @@ gunzip -c /tmp/hocapuan_backup_YYYY-MM-DD_HH-MM.dump.gz | docker exec -i \
 ### 4. Servisleri tekrar başlatın
 
 ```bash
-cd /root/hoca-puan
 docker compose --env-file .env.production -f docker-compose-prod.yml up -d api frontend
-```
-
-### 5. Doğrulama
-
-```bash
-docker exec hocapuan_prod_db psql -U hocapuan_user -d hocapuan -c "SELECT count(*) FROM \"Users\";"
 ```
 
 ## Güvenlik notları
 
 - `pg_dump` salt okunur bir işlemdir; production verisini değiştirmez.
-- rclone OAuth token'ı `~/.config/rclone/rclone.conf` içinde saklanır; dosya izinlerini koruyun.
+- rclone OAuth token'ı `~/.config/rclone/rclone.conf` içinde saklanır.

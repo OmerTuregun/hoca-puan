@@ -28,8 +28,22 @@ LOG_FILE = SCRIPT_DIR / "backup.log"
 RETENTION_DAYS = 30
 
 RCLONE_REMOTE = "gdrive"
-BACKUP_FOLDER = "HocaPuan-Backups"
-REMOTE_DIR = f"{RCLONE_REMOTE}:{BACKUP_FOLDER}/"
+DEFAULT_BACKUP_FOLDER = "Ömer Bireysel/Hocanı Yorumla/HocaPuan-Backups"
+
+
+def get_backup_folder(cfg: dict[str, str]) -> str:
+    path = (
+        os.environ.get("RCLONE_BACKUP_PATH")
+        or cfg.get("RCLONE_BACKUP_PATH")
+        or DEFAULT_BACKUP_FOLDER
+    ).strip().strip("/")
+    if not path:
+        raise ValueError("RCLONE_BACKUP_PATH boş olamaz.")
+    return path
+
+
+def remote_dir(backup_folder: str) -> str:
+    return f"{RCLONE_REMOTE}:{backup_folder}/"
 
 
 def setup_logging() -> logging.Logger:
@@ -172,9 +186,10 @@ def compress_dump(dump_path: Path, gz_path: Path, logger: logging.Logger) -> Non
     logger.info("Sıkıştırma başarılı (%s bayt)", gz_path.stat().st_size)
 
 
-def upload_via_rclone(local_path: Path, logger: logging.Logger) -> None:
-    logger.info("rclone ile yükleme başlıyor: %s → %s", local_path.name, REMOTE_DIR)
-    run_rclone(["copy", str(local_path), REMOTE_DIR, "-v"], logger, "copy")
+def upload_via_rclone(local_path: Path, backup_folder: str, logger: logging.Logger) -> None:
+    target = remote_dir(backup_folder)
+    logger.info("rclone ile yükleme başlıyor: %s → %s", local_path.name, target)
+    run_rclone(["copy", str(local_path), target, "-v"], logger, "copy")
     logger.info("rclone yükleme başarılı: %s", local_path.name)
 
 
@@ -184,9 +199,9 @@ def parse_rclone_modtime(mod_time: str) -> datetime:
     return datetime.fromisoformat(mod_time).astimezone(timezone.utc)
 
 
-def prune_old_backups_rclone(logger: logging.Logger) -> None:
+def prune_old_backups_rclone(backup_folder: str, logger: logging.Logger) -> None:
     cutoff = datetime.now(timezone.utc) - timedelta(days=RETENTION_DAYS)
-    remote_list_path = f"{RCLONE_REMOTE}:{BACKUP_FOLDER}/"
+    remote_list_path = remote_dir(backup_folder)
     logger.info(
         "Eski yedekler temizleniyor (>%s gün, ModTime < %s)",
         RETENTION_DAYS,
@@ -210,7 +225,7 @@ def prune_old_backups_rclone(logger: logging.Logger) -> None:
         modified_at = parse_rclone_modtime(mod_time)
         if modified_at >= cutoff:
             continue
-        remote_file = f"{RCLONE_REMOTE}:{BACKUP_FOLDER}/{name}"
+        remote_file = f"{RCLONE_REMOTE}:{backup_folder}/{name}"
         run_rclone(["deletefile", remote_file], logger, f"deletefile {name}")
         deleted += 1
         logger.info("Silindi: %s (ModTime=%s)", name, mod_time)
@@ -239,11 +254,14 @@ def main() -> int:
     gz_path = tmpdir / archive_name
 
     try:
+        backup_folder = get_backup_folder(cfg)
+        logger.info("Yedek klasörü: %s", backup_folder)
+
         check_rclone(logger)
         run_pg_dump(cfg, dump_path, logger)
         compress_dump(dump_path, gz_path, logger)
-        upload_via_rclone(gz_path, logger)
-        prune_old_backups_rclone(logger)
+        upload_via_rclone(gz_path, backup_folder, logger)
+        prune_old_backups_rclone(backup_folder, logger)
 
         logger.info("Yedekleme işlemi tamamlandı.")
         return 0
