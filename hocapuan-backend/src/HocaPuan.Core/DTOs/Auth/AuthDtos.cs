@@ -12,6 +12,8 @@ public class RegisterDto
     [EduTrEmail]
     public string Email { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Şifre gerekli.")]
+    [StrongPassword]
     public string Password { get; set; } = string.Empty;
     public string? UniversityName { get; set; }
 }
@@ -25,6 +27,7 @@ public class LoginDto
 public class AuthResponseDto
 {
     public bool Success { get; set; }
+    public bool IsLockedOut { get; set; }
     public string? Token { get; set; }
     public string? Message { get; set; }
     public UserInfoDto? User { get; set; }
@@ -65,5 +68,8 @@ public class ForgotPasswordResponseDto
 public class ResetPasswordDto
 {
     public string Token { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Şifre gerekli.")]
+    [StrongPassword]
     public string NewPassword { get; set; } = string.Empty;
 }

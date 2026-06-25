@@ -5,6 +5,9 @@ import { authApi, universityApi } from '../services/api'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { getEduTrEmailWarning, parseApiErrorMessage } from '../utils/eduTrEmail'
+import { isStrongPassword, STRONG_PASSWORD_MESSAGE } from '../utils/passwordStrength'
+import PasswordStrengthChecklist from '../components/auth/PasswordStrengthChecklist'
+import { useDebounce } from '../hooks/useDebounce'
 
 interface FormData {
   username: string
@@ -19,7 +22,13 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [registered, setRegistered] = useState(false)
   const [eduTrWarning, setEduTrWarning] = useState<string | null>(null)
+  const [passwordWarning, setPasswordWarning] = useState<string | null>(null)
   const email = watch('email')
+  const password = watch('password') ?? ''
+  const debouncedPassword = useDebounce(password, 400)
+
+  const passwordValid = isStrongPassword(password)
+  const canSubmit = passwordValid && !eduTrWarning && !loading
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -27,6 +36,18 @@ export default function RegisterPage() {
     }, 400)
     return () => window.clearTimeout(timer)
   }, [email])
+
+  useEffect(() => {
+    if (!debouncedPassword) {
+      setPasswordWarning(null)
+      return
+    }
+    if (!isStrongPassword(debouncedPassword)) {
+      setPasswordWarning(STRONG_PASSWORD_MESSAGE)
+    } else {
+      setPasswordWarning(null)
+    }
+  }, [debouncedPassword])
 
   const { data: universities } = useQuery({
     queryKey: ['universities'],
@@ -96,13 +117,26 @@ export default function RegisterPage() {
             <div>
               <label className="text-sm font-medium text-text mb-1.5 block">Şifre</label>
               <input
-                {...register('password', { required: true, minLength: 6 })}
+                {...register('password', {
+                  required: 'Şifre gerekli.',
+                  validate: v => isStrongPassword(v) || STRONG_PASSWORD_MESSAGE,
+                })}
                 type="password"
                 className="input"
-                placeholder="En az 6 karakter"
+                placeholder="En az 8 karakter, büyük/küçük harf ve sayı"
                 autoComplete="new-password"
+                aria-invalid={Boolean(password && !passwordValid)}
+                aria-describedby="password-rules"
               />
-              {errors.password && <p className="text-xs text-danger mt-1">En az 6 karakter</p>}
+              <div id="password-rules">
+                <PasswordStrengthChecklist password={password} />
+              </div>
+              {passwordWarning && (
+                <p className="text-xs text-danger mt-1">{passwordWarning}</p>
+              )}
+              {errors.password && !passwordWarning && (
+                <p className="text-xs text-danger mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             <div>
@@ -123,7 +157,11 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3">
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="btn-primary w-full justify-center py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {loading ? 'Kayıt olunuyor...' : 'Kayıt ol'}
             </button>
           </form>

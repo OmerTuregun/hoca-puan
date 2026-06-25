@@ -71,6 +71,7 @@ public static class ServiceExtensions
         services.AddScoped<IProfessorService, ProfessorService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IUniversityService, UniversityService>();
+        services.AddScoped<ISearchService, SearchService>();
         services.AddSingleton<IBannedWordsProvider, FileBannedWordsProvider>();
         services.AddSingleton<IContentModerationService, ContentModerationService>();
         services.AddScoped<IYokPlaywrightScraperService, YokPlaywrightScraperService>();

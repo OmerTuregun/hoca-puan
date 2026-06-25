@@ -48,6 +48,17 @@ public class UniversitiesController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Üniversiteye ait tüm bölümleri listele</summary>
+    [HttpGet("{id:int}/departments")]
+    public async Task<IActionResult> GetUniversityDepartments(int id)
+    {
+        var exists = await _universityService.GetByIdAsync(id);
+        if (exists == null) return NotFound();
+
+        var result = await _universityService.GetUniversityDepartmentsAsync(id);
+        return Ok(result);
+    }
+
     /// <summary>Bölümleri getir</summary>
     [HttpGet("faculties/{facultyId:int}/departments")]
     public async Task<IActionResult> GetDepartments(int facultyId)

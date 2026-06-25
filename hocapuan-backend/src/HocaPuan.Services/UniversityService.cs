@@ -93,6 +93,15 @@ public class UniversityService : IUniversityService
             .Select(u => u.Name)
             .FirstOrDefaultAsync();
 
+        if (hostUniversity == null) return [];
+
+        var professorCountsByDepartment = await _db.Professors
+            .AsNoTracking()
+            .Where(p => p.UniversityId == universityId && !p.IsDeleted)
+            .GroupBy(p => p.DepartmentId)
+            .Select(g => new { DepartmentId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.DepartmentId, x => x.Count);
+
         var faculties = await _db.Faculties
             .Include(f => f.Departments)
             .Where(f => f.UniversityId == universityId && !f.IsDeleted)
@@ -100,16 +109,63 @@ public class UniversityService : IUniversityService
 
         return faculties
             .Where(f => FacultyDepartmentNameValidator.IsDisplayableFacultyName(f.Name, hostUniversity))
-            .Select(f => new FacultyDto
+            .Select(f =>
             {
-                Id = f.Id,
-                Name = f.Name,
-                UniversityId = f.UniversityId,
-                Departments = f.Departments
+                var departments = f.Departments
                     .Where(d => !d.IsDeleted && FacultyDepartmentNameValidator.IsDisplayableDepartmentName(d.Name))
-                .Select(d => new DepartmentDto { Id = d.Id, Name = d.Name, FacultyId = d.FacultyId })
-                .ToList()
-        }).ToList();
+                    .Select(d => new DepartmentDto { Id = d.Id, Name = d.Name, FacultyId = d.FacultyId })
+                    .ToList();
+
+                return new FacultyDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    UniversityId = f.UniversityId,
+                    TotalProfessors = departments.Sum(d => professorCountsByDepartment.GetValueOrDefault(d.Id, 0)),
+                    Departments = departments,
+                };
+            })
+            .OrderBy(f => f.Name)
+            .ToList();
+    }
+
+    public async Task<List<UniversityDepartmentListItemDto>> GetUniversityDepartmentsAsync(int universityId)
+    {
+        var hostUniversity = await _db.Universities
+            .AsNoTracking()
+            .Where(u => u.Id == universityId)
+            .Select(u => u.Name)
+            .FirstOrDefaultAsync();
+
+        if (hostUniversity == null) return [];
+
+        var professorCountsByDepartment = await _db.Professors
+            .AsNoTracking()
+            .Where(p => p.UniversityId == universityId && !p.IsDeleted)
+            .GroupBy(p => p.DepartmentId)
+            .Select(g => new { DepartmentId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.DepartmentId, x => x.Count);
+
+        var departments = await _db.Departments
+            .AsNoTracking()
+            .Include(d => d.Faculty)
+            .Where(d => d.Faculty.UniversityId == universityId && !d.IsDeleted && !d.Faculty.IsDeleted)
+            .ToListAsync();
+
+        return departments
+            .Where(d =>
+                FacultyDepartmentNameValidator.IsDisplayableDepartmentName(d.Name) &&
+                FacultyDepartmentNameValidator.IsDisplayableFacultyName(d.Faculty.Name, hostUniversity))
+            .Select(d => new UniversityDepartmentListItemDto
+            {
+                Id = d.Id,
+                Name = d.Name,
+                FacultyId = d.FacultyId,
+                FacultyName = d.Faculty.Name,
+                TotalProfessors = professorCountsByDepartment.GetValueOrDefault(d.Id, 0),
+            })
+            .OrderBy(d => d.Name)
+            .ToList();
     }
 
     public async Task<List<DepartmentDto>> GetDepartmentsAsync(int facultyId)

@@ -90,6 +90,8 @@ namespace HocaPuan.Data.Migrations
 
                     b.HasIndex("FacultyId");
 
+                    b.HasIndex("Name");
+
                     b.ToTable("Departments");
                 });
 
@@ -186,6 +188,10 @@ namespace HocaPuan.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("FirstName");
+
+                    b.HasIndex("LastName");
 
                     b.HasIndex("UniversityId");
 
@@ -458,6 +464,9 @@ namespace HocaPuan.Data.Migrations
                     b.Property<DateTime?>("EmailVerificationTokenExpiry")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsBanned")
                         .HasColumnType("boolean");
 
@@ -466,6 +475,9 @@ namespace HocaPuan.Data.Migrations
 
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()

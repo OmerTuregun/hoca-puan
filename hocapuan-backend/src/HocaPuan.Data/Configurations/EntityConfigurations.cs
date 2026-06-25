@@ -35,6 +35,16 @@ public class ProfessorConfiguration : IEntityTypeConfiguration<Professor>
         builder.Property(p => p.LastName).HasMaxLength(100).IsRequired();
         builder.Property(p => p.Title).HasMaxLength(50).IsRequired();
         builder.HasIndex(p => new { p.FirstName, p.LastName, p.UniversityId, p.DepartmentId });
+        builder.HasIndex(p => p.FirstName);
+        builder.HasIndex(p => p.LastName);
+    }
+}
+
+public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
+{
+    public void Configure(EntityTypeBuilder<Department> builder)
+    {
+        builder.HasIndex(d => d.Name);
     }
 }
 

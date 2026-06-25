@@ -79,6 +79,7 @@ export interface Faculty {
   id: number
   name: string
   universityId: number
+  totalProfessors: number
   departments: Department[]
 }
 
@@ -86,6 +87,14 @@ export interface Department {
   id: number
   name: string
   facultyId: number
+}
+
+export interface UniversityDepartment {
+  id: number
+  name: string
+  facultyId: number
+  facultyName: string
+  totalProfessors: number
 }
 
 export interface TopProfessor {
@@ -201,6 +210,20 @@ export interface FreshnessVoteResult {
   isFlaggedAsOutdated: boolean
 }
 
+export interface SearchSuggestion {
+  id: number
+  name: string
+  type: 'professor' | 'university' | 'department'
+  context?: string
+  universityId?: number
+}
+
+// ─── Search ───────────────────────────────────────────────────
+export const searchApi = {
+  suggestions: (query: string) =>
+    api.get<SearchSuggestion[]>('/search/suggestions', { params: { query } }).then(r => r.data),
+}
+
 // ─── Auth ────────────────────────────────────────────────────
 export const authApi = {
   getCsrfToken: () =>
@@ -229,6 +252,8 @@ export const universityApi = {
     api.get<University>(`/universities/${id}`).then(r => r.data),
   faculties: (id: number) =>
     api.get<Faculty[]>(`/universities/${id}/faculties`).then(r => r.data),
+  universityDepartments: (id: number) =>
+    api.get<UniversityDepartment[]>(`/universities/${id}/departments`).then(r => r.data),
   departments: (facultyId: number) =>
     api.get<Department[]>(`/universities/faculties/${facultyId}/departments`).then(r => r.data),
   topProfessors: (id: number, limit = 10) =>

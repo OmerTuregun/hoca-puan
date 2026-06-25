@@ -25,6 +25,7 @@ public class FacultyDto
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public int UniversityId { get; set; }
+    public int TotalProfessors { get; set; }
     public List<DepartmentDto> Departments { get; set; } = new();
 }
 
@@ -33,6 +34,15 @@ public class DepartmentDto
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public int FacultyId { get; set; }
+}
+
+public class UniversityDepartmentListItemDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int FacultyId { get; set; }
+    public string FacultyName { get; set; } = string.Empty;
+    public int TotalProfessors { get; set; }
 }
 
 public class CreateUniversityDto

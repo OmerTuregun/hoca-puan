@@ -10,6 +10,9 @@ export function parseApiErrorMessage(error: unknown, fallback: string): string {
     const emailErrors = errors.Email ?? errors.email
     if (emailErrors?.[0]) return emailErrors[0]
 
+    const passwordErrors = errors.Password ?? errors.password ?? errors.NewPassword ?? errors.newPassword
+    if (passwordErrors?.[0]) return passwordErrors[0]
+
     const first = Object.values(errors).flat()[0]
     if (typeof first === 'string' && first) return first
   }

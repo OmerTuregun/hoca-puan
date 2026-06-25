@@ -1,27 +1,38 @@
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
-import { Globe, MapPin, TrendingUp, ChevronRight } from 'lucide-react'
-import { universityApi, professorApi, type Professor } from '../services/api'
-import { slugify } from '../utils/slugify'
+import { Globe, MapPin, TrendingUp, Building2, BookOpen } from 'lucide-react'
+import { universityApi } from '../services/api'
 import { displayProfessorName } from '../utils/professorDisplay'
-import ProfessorCard from '../components/professor/ProfessorCard'
 import Spinner from '../components/ui/Spinner'
 import RatingBadge from '../components/ui/RatingBadge'
+
+const FACULTY_INITIAL = 3
+const FACULTY_STEP = 3
+const DEPARTMENT_INITIAL = 6
+const DEPARTMENT_STEP = 6
 
 export default function UniversityPage() {
   const { id } = useParams<{ id: string }>()
   const uniId = Number(id)
-  const navigate = useNavigate()
+  const [visibleFaculties, setVisibleFaculties] = useState(FACULTY_INITIAL)
+  const [visibleDepartments, setVisibleDepartments] = useState(DEPARTMENT_INITIAL)
 
   const { data: university, isLoading } = useQuery({
     queryKey: ['university', uniId],
     queryFn:  () => universityApi.get(uniId),
   })
 
-  const { data: professors } = useQuery({
-    queryKey: ['professors-uni', uniId],
-    queryFn:  () => professorApi.search({ universityId: uniId, pageSize: 50 }),
+  const { data: faculties, isLoading: facultiesLoading } = useQuery({
+    queryKey: ['university-faculties', uniId],
+    queryFn: () => universityApi.faculties(uniId),
+    enabled: !!uniId,
+  })
+
+  const { data: departments, isLoading: departmentsLoading } = useQuery({
+    queryKey: ['university-departments', uniId],
+    queryFn: () => universityApi.universityDepartments(uniId),
     enabled: !!uniId,
   })
 
@@ -35,21 +46,13 @@ export default function UniversityPage() {
   if (!university) return <div className="text-center py-20">Üniversite bulunamadı.</div>
 
   const u = university
+  const facultyList = faculties ?? []
+  const departmentList = departments ?? []
+  const shownFaculties = facultyList.slice(0, visibleFaculties)
+  const shownDepartments = departmentList.slice(0, visibleDepartments)
 
   const pageTitle = `${u.name} Hocaları | Hocanı Yorumla`
-  const pageDescription = `${u.name} bünyesinde ${u.totalProfessors} hoca ve ${u.totalReviews} öğrenci yorumu. Hoca puanlarını karşılaştır, bölümlere göre filtrele.`
-
-  // Group professors by department
-  const byDepartment = new Map<number, { deptId: number; deptName: string; professors: Professor[] }>()
-  professors?.items.forEach(p => {
-    if (!byDepartment.has(p.departmentId)) {
-      byDepartment.set(p.departmentId, { deptId: p.departmentId, deptName: p.departmentName || 'Diğer', professors: [] })
-    }
-    byDepartment.get(p.departmentId)!.professors.push(p)
-  })
-  const departmentGroups = Array.from(byDepartment.values()).sort((a, b) =>
-    a.deptName.localeCompare(b.deptName, 'tr')
-  )
+  const pageDescription = `${u.name} bünyesinde ${u.totalProfessors} hoca ve ${u.totalReviews} öğrenci yorumu. Fakülte ve bölümlere göre keşfet.`
 
   return (
     <>
@@ -137,66 +140,98 @@ export default function UniversityPage() {
           </div>
         )}
 
-        {/* Bölümlere göre hocalar */}
-        {departmentGroups.length > 0 ? (
-          <div>
-            {departmentGroups.map(group => (
-              <div key={group.deptId} className="mb-8">
-                <div className="flex items-center justify-between mb-3">
-                  <Link
-                    to={`/universite/${slugify(u.name)}/bolum/${slugify(group.deptName)}`}
-                    className="flex items-center gap-1.5 group"
-                  >
-                    <h2 className="font-display text-lg text-text group-hover:text-primary transition-colors">
-                      {group.deptName}
-                    </h2>
-                    <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-primary transition-colors" />
-                  </Link>
-                  <span className="text-xs text-text-muted">{group.professors.length} hoca</span>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {group.professors.map(p => (
-                    <ProfessorCard key={p.id} professor={p} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl text-text">Hocalar</h2>
-              <button
-                onClick={() => navigate(`/search?universityId=${uniId}`)}
-                className="text-sm text-primary hover:underline"
-              >
-                Tümünü gör →
-              </button>
-            </div>
-            <div className="card p-10 text-center text-text-muted">
-              Bu üniversitede henüz hoca kaydı yok.
-            </div>
-          </>
-        )}
-
         {/* Fakülteler */}
-        {u.faculties && u.faculties.length > 0 && (
-          <div className="mt-8">
-            <h2 className="font-display text-xl text-text mb-4">Fakülteler</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {u.faculties.map(f => (
-                <div key={f.id} className="card px-4 py-3">
-                  <p className="text-sm font-medium text-text">{f.name}</p>
-                  {f.departments?.length > 0 && (
-                    <p className="text-xs text-text-muted mt-0.5">
-                      {f.departments.length} bölüm
-                    </p>
-                  )}
-                </div>
-              ))}
+        <section className="mb-8">
+          <h2 className="font-display text-xl text-text mb-4">Fakülteler</h2>
+          {facultiesLoading ? (
+            <Spinner />
+          ) : facultyList.length === 0 ? (
+            <div className="card p-8 text-center text-text-muted text-sm">
+              Bu üniversitede henüz fakülte kaydı yok.
             </div>
-          </div>
-        )}
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {shownFaculties.map(f => (
+                  <Link
+                    key={f.id}
+                    to={`/universities/${uniId}/faculties/${f.id}`}
+                    className="card-hover p-4 text-left"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary-light flex items-center justify-center text-primary shrink-0">
+                        <Building2 className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-text text-sm leading-tight">{f.name}</p>
+                        <p className="text-xs text-text-muted mt-1">
+                          {f.departments?.length ?? 0} bölüm · {f.totalProfessors} hoca
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              {visibleFaculties < facultyList.length && (
+                <div className="mt-4 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setVisibleFaculties(v => v + FACULTY_STEP)}
+                    className="text-sm text-primary hover:underline font-medium"
+                  >
+                    Devamını Gör
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+
+        {/* Bölümler */}
+        <section>
+          <h2 className="font-display text-xl text-text mb-4">Bölümler</h2>
+          {departmentsLoading ? (
+            <Spinner />
+          ) : departmentList.length === 0 ? (
+            <div className="card p-8 text-center text-text-muted text-sm">
+              Bu üniversitede henüz bölüm kaydı yok.
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {shownDepartments.map(d => (
+                  <Link
+                    key={d.id}
+                    to={`/universities/${uniId}/departments/${d.id}`}
+                    className="card-hover p-4 text-left"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary-light flex items-center justify-center text-primary shrink-0">
+                        <BookOpen className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-text text-sm leading-tight">{d.name}</p>
+                        <p className="text-xs text-text-muted mt-1 truncate">{d.facultyName}</p>
+                        <p className="text-xs text-text-muted mt-0.5">{d.totalProfessors} hoca</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              {visibleDepartments < departmentList.length && (
+                <div className="mt-4 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setVisibleDepartments(v => v + DEPARTMENT_STEP)}
+                    className="text-sm text-primary hover:underline font-medium"
+                  >
+                    Devamını Gör
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </section>
       </div>
     </>
   )

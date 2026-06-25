@@ -49,7 +49,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var result = await _authService.LoginAsync(dto);
-        if (!result.Success) return Unauthorized(new { result.Success, result.Message });
+        if (!result.Success)
+        {
+            if (result.IsLockedOut)
+                return StatusCode(423, new { result.Success, result.Message });
+            return Unauthorized(new { result.Success, result.Message });
+        }
 
         _authCookieService.SetAccessTokenCookie(Response, result.Token!);
         return Ok(new { result.Success, result.User });

@@ -14,6 +14,9 @@ namespace HocaPuan.Services;
 
 public class AuthService : IAuthService
 {
+    private const int MaxFailedLoginAttempts = 5;
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
+
     private readonly AppDbContext _db;
     private readonly IConfiguration _config;
     private readonly IEmailService _emailService;
@@ -83,14 +86,57 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email.ToLower());
+
+        if (user != null && user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
+        {
+            var remainingMinutes = Math.Max(1, (int)Math.Ceiling((user.LockoutEnd.Value - DateTime.UtcNow).TotalMinutes));
+            return new AuthResponseDto
+            {
+                Success = false,
+                IsLockedOut = true,
+                Message = $"Hesabınız çok fazla başarısız giriş denemesi nedeniyle geçici olarak kilitlendi. Lütfen {remainingMinutes} dakika sonra tekrar deneyin.",
+            };
+        }
+
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+        {
+            if (user != null)
+            {
+                user.FailedLoginAttempts++;
+                if (user.FailedLoginAttempts >= MaxFailedLoginAttempts)
+                {
+                    user.LockoutEnd = DateTime.UtcNow.Add(LockoutDuration);
+                    user.FailedLoginAttempts = 0;
+                    await _db.SaveChangesAsync();
+
+                    _logger.LogWarning(
+                        "Hesap kilitlendi: {Email} — {Time}",
+                        user.Email,
+                        DateTime.UtcNow);
+
+                    return new AuthResponseDto
+                    {
+                        Success = false,
+                        IsLockedOut = true,
+                        Message = $"Hesabınız çok fazla başarısız giriş denemesi nedeniyle geçici olarak kilitlendi. Lütfen {(int)LockoutDuration.TotalMinutes} dakika sonra tekrar deneyin.",
+                    };
+                }
+
+                await _db.SaveChangesAsync();
+            }
+
             return new AuthResponseDto { Success = false, Message = "E-posta veya şifre hatalı." };
+        }
 
         if (user.IsBanned)
             return new AuthResponseDto { Success = false, Message = "Hesabınız askıya alınmıştır." };
 
         if (!user.IsEmailVerified)
             return new AuthResponseDto { Success = false, Message = "Önce e-posta adresinizi doğrulayın." };
+
+        user.FailedLoginAttempts = 0;
+        user.LockoutEnd = null;
+        await _db.SaveChangesAsync();
 
         var token = GenerateJwtToken(user);
         return new AuthResponseDto

@@ -3,6 +3,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { GraduationCap } from 'lucide-react'
 import { authApi } from '../services/api'
 import { useState } from 'react'
+import { isStrongPassword, STRONG_PASSWORD_MESSAGE } from '../utils/passwordStrength'
+import PasswordStrengthChecklist from '../components/auth/PasswordStrengthChecklist'
+import { parseApiErrorMessage } from '../utils/eduTrEmail'
 
 interface FormData {
   newPassword: string
@@ -11,6 +14,7 @@ interface FormData {
 
 export default function ResetPasswordPage() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>()
+  const newPassword = watch('newPassword')
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token') ?? ''
   const navigate = useNavigate()
@@ -27,8 +31,8 @@ export default function ResetPasswordPage() {
     try {
       await authApi.resetPassword({ token, newPassword: data.newPassword })
       navigate('/login', { replace: true, state: { passwordReset: true } })
-    } catch (e: any) {
-      setError(e.response?.data?.message || 'Şifre güncellenemedi.')
+    } catch (e: unknown) {
+      setError(parseApiErrorMessage(e, 'Şifre güncellenemedi.'))
     } finally {
       setLoading(false)
     }
@@ -62,13 +66,19 @@ export default function ResetPasswordPage() {
           <div>
             <label className="text-sm font-medium text-text mb-1.5 block">Yeni şifre</label>
             <input
-              {...register('newPassword', { required: true, minLength: 6 })}
+              {...register('newPassword', {
+                required: 'Şifre gerekli.',
+                validate: v => isStrongPassword(v) || STRONG_PASSWORD_MESSAGE,
+              })}
               type="password"
               className="input"
-              placeholder="En az 6 karakter"
+              placeholder="En az 8 karakter"
               autoComplete="new-password"
             />
-            {errors.newPassword && <p className="text-xs text-danger mt-1">En az 6 karakter</p>}
+            <PasswordStrengthChecklist password={newPassword ?? ''} />
+            {errors.newPassword && (
+              <p className="text-xs text-danger mt-1">{errors.newPassword.message}</p>
+            )}
           </div>
           <div>
             <label className="text-sm font-medium text-text mb-1.5 block">Şifre tekrar</label>

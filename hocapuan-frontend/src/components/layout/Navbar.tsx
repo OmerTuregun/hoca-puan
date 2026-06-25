@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import {
   GraduationCap,
-  Search,
   ChevronDown,
   Menu,
   X,
@@ -9,6 +8,7 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { authApi } from '../../services/api'
+import NavbarSearch from './NavbarSearch'
 import {
   getDesktopDropdownNavItems,
   getDesktopInlineNavItems,
@@ -22,7 +22,6 @@ import clsx from 'clsx'
 export default function Navbar() {
   const { isLoggedIn, user, logout, hasHydrated, isAdmin } = useAuthStore()
   const navigate = useNavigate()
-  const [query, setQuery] = useState('')
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
@@ -74,9 +73,7 @@ export default function Navbar() {
     }
   }, [mobileMenuOpen, closeMobileMenu])
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (query.trim()) navigate(`/search?q=${encodeURIComponent(query.trim())}`)
+  function handleSearchNavigate() {
     closeMobileMenu()
   }
 
@@ -148,18 +145,7 @@ export default function Navbar() {
           <span className="font-display text-xl text-text hidden sm:block">Hocanı Yorumla</span>
         </Link>
 
-        <form onSubmit={handleSearch} className="flex-1 max-w-md min-w-0">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" />
-            <input
-              type="text"
-              placeholder="Hoca veya üniversite ara..."
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              className="input pl-9 py-2 text-sm"
-            />
-          </div>
-        </form>
+        <NavbarSearch onNavigate={handleSearchNavigate} />
 
         {/* Desktop nav — mevcut davranış korunur */}
         <nav className="hidden md:flex items-center gap-2 ml-auto shrink-0">

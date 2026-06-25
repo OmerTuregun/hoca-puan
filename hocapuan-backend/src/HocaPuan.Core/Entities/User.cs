@@ -13,6 +13,8 @@ public class User : BaseEntity
     public DateTime? PasswordResetTokenExpiry { get; set; }
     public UserRole Role { get; set; } = UserRole.Student;
     public bool IsBanned { get; set; } = false;
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LockoutEnd { get; set; }
 
     // Navigation
     public ICollection<Review> Reviews { get; set; } = new List<Review>();

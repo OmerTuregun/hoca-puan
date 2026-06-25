@@ -45,9 +45,10 @@ export default function LoginPage() {
       const { token } = await authApi.getCsrfToken()
       useAuthStore.getState().setCsrfToken(token)
       navigate(returnTo, { replace: true })
-    } catch (e: any) {
-      const msg = e.response?.data?.message
-      if (e.response?.status === 401 && msg) {
+    } catch (e: unknown) {
+      const status = (e as { response?: { status?: number } })?.response?.status
+      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message
+      if ((status === 401 || status === 423) && msg) {
         setError(msg)
       } else {
         setError(msg || 'Giriş yapılamadı.')
