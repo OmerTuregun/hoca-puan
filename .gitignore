@@ -1,26 +1,61 @@
+# ─── Ortam / gizli dosyalar ───────────────────────────────────
 .env
 .env.*
 !.env.example
 !**/.env.example
 
-# OS / IDE
+# Servis hesabı anahtarları (repoya asla eklenmemeli)
+**/secrets/
+**/*-key.json
+**/*service-account*.json
+
+# ─── OS / IDE ─────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Frontend
+# ─── Frontend ─────────────────────────────────────────────────
 hocapuan-frontend/node_modules/
 hocapuan-frontend/dist/
 
-# Backend (.NET)
+# ─── Backend (.NET) ───────────────────────────────────────────
 **/bin/
 **/obj/
+**/.vs/
+*.user
+*.suo
+*.userprefs
 
-# Logs
+# ─── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# ─── Loglar ───────────────────────────────────────────────────
 *.log
+logs/
 
-# Moderation mining script cache (HF CSV ~tens of MB)
+# ─── Veritabanı yedekleri (yerel) ─────────────────────────────
+*.dump
+*.dump.gz
+full_data.dump
+
+# ─── Backup aracı (scripts/backup) ─────────────────────────────
+scripts/backup/venv/
+scripts/backup/.venv/
+scripts/backup/__pycache__/
+
+# ─── Script çıktıları / cache ─────────────────────────────────
 scripts/.cache/
 scripts/node_modules/
 scripts/output/candidates-for-review.json
@@ -28,3 +63,6 @@ scripts/output/hizli-onay.json
 scripts/output/filtrenin-kacirdiklari.json
 scripts/output/mobile-screenshots/
 scripts/output/mobile-scan-report.json
+
+# ─── Docker ───────────────────────────────────────────────────
+docker-compose.override.yml
