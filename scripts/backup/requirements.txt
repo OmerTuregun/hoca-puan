@@ -1,0 +1,2 @@
+# Bu script yalnızca Python standart kütüphanesi kullanır.
+# Google Drive yüklemesi için sunucuda yapılandırılmış rclone gerekir.
