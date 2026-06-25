@@ -1,4 +1,2 @@
-google-api-python-client
-google-auth
-google-auth-httplib2
-google-auth-oauthlib
+# Bu script yalnızca Python standart kütüphanesi kullanır.
+# Google Drive yüklemesi için sunucuda yapılandırılmış rclone gerekir.
