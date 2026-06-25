@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using HocaPuan.Core.DTOs.Import;
 using HocaPuan.Core.Entities;
 using HocaPuan.Core.Interfaces.Services;
+using HocaPuan.Core.Utils;
 using HocaPuan.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -676,6 +677,14 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
             return ("Bilinmiyor", "Bilinmiyor");
 
         var cleaned = NormalizePathForFacultyDepartment(rawPath);
+
+        if (FacultyDepartmentNameValidator.IsObviouslyJunk(cleaned) || cleaned.Length > 250)
+        {
+            if (FacultyDepartmentNameValidator.TrySalvage(cleaned, out var salvagedFaculty, out var salvagedDept))
+                return (salvagedFaculty, salvagedDept);
+            return (FacultyDepartmentNameValidator.Unknown, FacultyDepartmentNameValidator.Unknown);
+        }
+
         var parts = cleaned.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
 
         string faculty;
@@ -708,10 +717,9 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
                 return (faculty, dept);
             }
 
-            var faculty2 = ToTitleCaseTr(parts[0]);
-            var dept2 = ToTitleCaseTr(parts[1]);
-            return (string.IsNullOrWhiteSpace(faculty2) ? "Bilinmiyor" : faculty2,
-                string.IsNullOrWhiteSpace(dept2) ? "Bilinmiyor" : dept2);
+            var faculty2 = FacultyDepartmentNameValidator.SanitizeFacultyName(ToTitleCaseTr(parts[0]));
+            var dept2 = FacultyDepartmentNameValidator.SanitizeDepartmentName(ToTitleCaseTr(parts[1]));
+            return (faculty2, dept2);
         }
 
         if (parts.Count == 2)
@@ -769,6 +777,9 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
         if (n.Contains("YÜKSEKOKUL", StringComparison.Ordinal) || n.Contains("YUKSEKOKUL", StringComparison.OrdinalIgnoreCase))
             return true;
         if (n.Contains("MESLEK YÜKSEK", StringComparison.OrdinalIgnoreCase)) return true;
+        if (n.Contains("REKTÖRLÜK", StringComparison.Ordinal) || n.Contains("REKTORLUK", StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (n.Contains("KONSERVATUVAR", StringComparison.OrdinalIgnoreCase)) return true;
         var t = n.Trim();
         if (t.EndsWith(" MYO", StringComparison.OrdinalIgnoreCase) || t == "MYO") return true;
         return false;
@@ -787,8 +798,8 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
     }
 
     private static bool IsUsableFacultyDept(string faculty, string dept) =>
-        faculty != "Bilinmiyor" && dept != "Bilinmiyor"
-        && !string.IsNullOrWhiteSpace(faculty) && !string.IsNullOrWhiteSpace(dept);
+        FacultyDepartmentNameValidator.IsDisplayableFacultyName(faculty)
+        && FacultyDepartmentNameValidator.IsDisplayableDepartmentName(dept);
 
     /// <summary>
     /// YÖK bazen tek satırda veya slash olmadan "… FAKÜLTESİ … BÖLÜMÜ" verir; slash parse yetmezse kullanılır.
@@ -820,22 +831,8 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
         return faculty != "Bilinmiyor" || department != "Bilinmiyor";
     }
 
-    private static string ToDisplayTitle(string rawTitle)
-    {
-        // Keep YÖK titles readable
-        var t = Normalize1(rawTitle);
-        if (string.IsNullOrWhiteSpace(t)) return "Öğr. Gör.";
-        // Convert common all-caps titles to canonical display
-        return t switch
-        {
-            "DOKTOR ÖĞRETİM ÜYESİ" => "Dr. Öğr. Üyesi",
-            "DOÇENT" => "Doç. Dr.",
-            "PROFESÖR" => "Prof. Dr.",
-            "ÖĞRETİM GÖREVLİSİ" => "Öğr. Gör.",
-            "ARAŞTIRMA GÖREVLİSİ" => "Arş. Gör.",
-            _ => ToTitleCaseTr(t)
-        };
-    }
+    private static string ToDisplayTitle(string rawTitle) =>
+        ProfessorNameValidator.NormalizeTitle(rawTitle);
 
     private static string ToTitleCaseTr(string s)
     {
@@ -943,7 +940,11 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
 
         async Task<int> GetOrCreateFacultyIdAsync(string facultyName)
         {
-            var name = string.IsNullOrWhiteSpace(facultyName) ? "Bilinmiyor" : facultyName.Trim();
+            var name = FacultyDepartmentNameValidator.SanitizeFacultyName(facultyName);
+            if (name == FacultyDepartmentNameValidator.Unknown
+                && FacultyDepartmentNameValidator.TrySalvage(facultyName, out var salvaged, out _))
+                name = salvaged;
+
             if (facultyByName.TryGetValue(name, out var existingFaculty))
                 return existingFaculty.Id;
 
@@ -956,7 +957,11 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
 
         async Task<int> GetOrCreateDepartmentIdAsync(int facultyId, string departmentName)
         {
-            var name = string.IsNullOrWhiteSpace(departmentName) ? "Bilinmiyor" : departmentName.Trim();
+            var name = FacultyDepartmentNameValidator.SanitizeDepartmentName(departmentName);
+            if (name == FacultyDepartmentNameValidator.Unknown
+                && FacultyDepartmentNameValidator.TrySalvage(departmentName, out _, out var salvagedDept))
+                name = salvagedDept;
+
             var key = $"{facultyId}\u001f{name}";
             if (deptByFacultyAndName.TryGetValue(key, out var existingDept))
                 return existingDept.Id;

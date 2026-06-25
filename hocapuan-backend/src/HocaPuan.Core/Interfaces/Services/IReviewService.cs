@@ -1,11 +1,13 @@
 using HocaPuan.Core.DTOs.Common;
 using HocaPuan.Core.DTOs.Review;
+using HocaPuan.Core.DTOs.User;
 
 namespace HocaPuan.Core.Interfaces.Services;
 
 public interface IReviewService
 {
     Task<ReviewDto?> GetByIdAsync(int id);
+    Task<ContributionHistoryDto> GetContributionHistoryAsync(int userId, int page, int pageSize);
     Task<PagedResultDto<ReviewDto>> GetByProfessorAsync(
         int professorId,
         int page,
@@ -21,4 +23,5 @@ public interface IReviewService
     Task<ReviewDto> ModerateAsync(int reviewId, ModerateReviewDto dto);
     Task<PagedResultDto<ReviewDto>> GetPendingAsync(int page, int pageSize);
     Task<ReportReviewResultDto> ReportAsync(int reviewId, int reporterUserId);
+    Task<FreshnessVoteResultDto> VoteFreshnessAsync(int reviewId, int voterUserId, bool isStillValid);
 }

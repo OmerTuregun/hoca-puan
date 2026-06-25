@@ -182,4 +182,25 @@ public class ReviewsController : ControllerBase
             return NotFound();
         }
     }
+
+    /// <summary>Yorum güncellik oyu — 1+ yıllık yorumlar için "hâlâ geçerli mi?"</summary>
+    [HttpPost("{id:int}/freshness-vote")]
+    [Authorize]
+    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
+    public async Task<IActionResult> FreshnessVote(int id, [FromBody] FreshnessVoteDto dto)
+    {
+        try
+        {
+            var result = await _reviewService.VoteFreshnessAsync(id, CurrentUserId, dto.IsStillValid);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

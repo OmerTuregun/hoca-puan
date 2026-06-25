@@ -10,6 +10,12 @@ import { buildDeleteConfirmMessage, parseReviewDeleteError } from '../../utils/r
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 
+type FreshnessState = {
+  isFlaggedAsOutdated: boolean
+  freshnessStillValidPercentage?: number | null
+  currentUserFreshnessVote?: boolean | null
+}
+
 const TAGS: Record<string, string> = {
   'Çok Ödev Verir':        '#EEF1FD',
   'Az Ödev Verir':          '#F0FDF4',
@@ -52,11 +58,22 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
   const [reportMessage, setReportMessage] = useState('')
   const [reportError, setReportError] = useState('')
   const [showReportModal, setShowReportModal] = useState(false)
+  const [freshness, setFreshness] = useState<FreshnessState>({
+    isFlaggedAsOutdated: r.isFlaggedAsOutdated,
+    freshnessStillValidPercentage: r.freshnessStillValidPercentage,
+    currentUserFreshnessVote: r.currentUserFreshnessVote,
+  })
+  const [freshnessVoting, setFreshnessVoting] = useState(false)
 
   useEffect(() => {
     setVotes({ up: r.thumbsUp, down: r.thumbsDown })
     setUserVote(r.currentUserVote)
-  }, [r.id, r.thumbsUp, r.thumbsDown, r.currentUserVote])
+    setFreshness({
+      isFlaggedAsOutdated: r.isFlaggedAsOutdated,
+      freshnessStillValidPercentage: r.freshnessStillValidPercentage,
+      currentUserFreshnessVote: r.currentUserFreshnessVote,
+    })
+  }, [r.id, r.thumbsUp, r.thumbsDown, r.currentUserVote, r.isFlaggedAsOutdated, r.freshnessStillValidPercentage, r.currentUserFreshnessVote])
 
   async function handleVote(isUpvote: boolean) {
     if (!isLoggedIn || voting) return
@@ -74,10 +91,33 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
     }
   }
 
+  async function handleFreshnessVote(isStillValid: boolean) {
+    if (!isLoggedIn || freshnessVoting) return
+    setFreshnessVoting(true)
+    try {
+      const res = await reviewApi.freshnessVote(r.id, isStillValid)
+      setFreshness({
+        isFlaggedAsOutdated: res.isFlaggedAsOutdated,
+        freshnessStillValidPercentage: res.freshnessStillValidPercentage,
+        currentUserFreshnessVote: res.currentUserFreshnessVote,
+      })
+      onVote?.()
+    } catch {
+      // silently ignore; voting may not be open yet
+    } finally {
+      setFreshnessVoting(false)
+    }
+  }
+
   const isOwner = user?.id === r.userId
   const canDelete = isLoggedIn && (isOwner || isAdmin)
   const canEdit = isOwner
   const canReport = isLoggedIn && !isOwner
+  const canFreshnessVote =
+    r.isFreshnessVotingOpen &&
+    isLoggedIn &&
+    !isOwner &&
+    freshness.currentUserFreshnessVote == null
 
   async function confirmReport() {
     setReporting(true)
@@ -200,6 +240,42 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
 
       {/* Yorum */}
       <p className="mt-3 text-sm text-text leading-relaxed">{r.comment}</p>
+
+      {/* Güncellik uyarısı */}
+      {freshness.isFlaggedAsOutdated && (
+        <div className="mt-3 flex items-center gap-1.5 rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700">
+          <span>⚠️</span>
+          <span>Bazı kullanıcılar bu bilginin güncelliğini sorguluyor</span>
+          {freshness.freshnessStillValidPercentage != null && (
+            <span className="ml-auto font-medium">
+              %{Math.round(freshness.freshnessStillValidPercentage)} güncel
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Güncellik oylaması */}
+      {canFreshnessVote && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md bg-surface border border-surface-border px-3 py-2 text-xs text-text-muted">
+          <span className="font-medium text-text">Bu bilgi hâlâ geçerli mi?</span>
+          <button
+            type="button"
+            onClick={() => void handleFreshnessVote(true)}
+            disabled={freshnessVoting}
+            className="flex items-center gap-1 px-2 py-1 rounded bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:opacity-50"
+          >
+            Evet
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleFreshnessVote(false)}
+            disabled={freshnessVoting}
+            className="flex items-center gap-1 px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+          >
+            Hayır
+          </button>
+        </div>
+      )}
 
       {/* Alt satır */}
       <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

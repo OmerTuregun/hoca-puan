@@ -1,4 +1,5 @@
 using HocaPuan.Core.DTOs.University;
+using HocaPuan.Core.Utils;
 using HocaPuan.Core.Entities;
 using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Data;
@@ -86,18 +87,26 @@ public class UniversityService : IUniversityService
 
     public async Task<List<FacultyDto>> GetFacultiesAsync(int universityId)
     {
+        var hostUniversity = await _db.Universities
+            .AsNoTracking()
+            .Where(u => u.Id == universityId)
+            .Select(u => u.Name)
+            .FirstOrDefaultAsync();
+
         var faculties = await _db.Faculties
             .Include(f => f.Departments)
             .Where(f => f.UniversityId == universityId && !f.IsDeleted)
             .ToListAsync();
 
-        return faculties.Select(f => new FacultyDto
-        {
-            Id = f.Id,
-            Name = f.Name,
-            UniversityId = f.UniversityId,
-            Departments = f.Departments
-                .Where(d => !d.IsDeleted)
+        return faculties
+            .Where(f => FacultyDepartmentNameValidator.IsDisplayableFacultyName(f.Name, hostUniversity))
+            .Select(f => new FacultyDto
+            {
+                Id = f.Id,
+                Name = f.Name,
+                UniversityId = f.UniversityId,
+                Departments = f.Departments
+                    .Where(d => !d.IsDeleted && FacultyDepartmentNameValidator.IsDisplayableDepartmentName(d.Name))
                 .Select(d => new DepartmentDto { Id = d.Id, Name = d.Name, FacultyId = d.FacultyId })
                 .ToList()
         }).ToList();
@@ -135,6 +144,51 @@ public class UniversityService : IUniversityService
             .ToListAsync();
     }
 
+    public async Task<DepartmentDetailDto?> GetDepartmentDetailAsync(int universityId, int departmentId)
+    {
+        var dept = await _db.Departments
+            .AsNoTracking()
+            .Include(d => d.Faculty).ThenInclude(f => f.University)
+            .Include(d => d.Professors.Where(p => !p.IsDeleted))
+            .FirstOrDefaultAsync(d =>
+                d.Id == departmentId &&
+                !d.IsDeleted &&
+                d.Faculty.UniversityId == universityId);
+
+        if (dept == null) return null;
+
+        var profs = dept.Professors.ToList();
+        var reviewedProfs = profs.Where(p => p.TotalReviews > 0).ToList();
+
+        return new DepartmentDetailDto
+        {
+            Id = dept.Id,
+            Name = dept.Name,
+            FacultyId = dept.FacultyId,
+            FacultyName = dept.Faculty.Name,
+            UniversityId = universityId,
+            UniversityName = dept.Faculty.University.Name,
+            AvgQuality = reviewedProfs.Count > 0 ? reviewedProfs.Average(p => p.AverageQuality) : 0,
+            AvgDifficulty = reviewedProfs.Count > 0 ? reviewedProfs.Average(p => p.AverageDifficulty) : 0,
+            TotalProfessors = profs.Count,
+            TotalReviews = profs.Sum(p => p.TotalReviews),
+            Professors = profs
+                .OrderByDescending(p => p.TotalReviews)
+                .ThenByDescending(p => p.AverageQuality)
+                .Select(p => new DepartmentProfessorDto
+                {
+                    Id = p.Id,
+                    FullName = $"{p.Title} {p.FirstName} {p.LastName}".Trim(),
+                    Title = p.Title,
+                    AverageQuality = p.AverageQuality,
+                    AverageDifficulty = p.AverageDifficulty,
+                    WouldTakeAgainPercent = p.WouldTakeAgainPercent,
+                    TotalReviews = p.TotalReviews,
+                })
+                .ToList()
+        };
+    }
+
     // ────────────────────────────────────────────────────────────
     private static UniversityListItemDto MapListItem(University u) => new()
     {
@@ -163,14 +217,14 @@ public class UniversityService : IUniversityService
         TotalReviews = u.TotalReviews,
         LogoUrl = u.LogoUrl,
         Faculties = u.Faculties
-            .Where(f => !f.IsDeleted)
+            .Where(f => !f.IsDeleted && FacultyDepartmentNameValidator.IsDisplayableFacultyName(f.Name, u.Name))
             .Select(f => new FacultyDto
             {
                 Id = f.Id,
                 Name = f.Name,
                 UniversityId = f.UniversityId,
                 Departments = f.Departments
-                    .Where(d => !d.IsDeleted)
+                    .Where(d => !d.IsDeleted && FacultyDepartmentNameValidator.IsDisplayableDepartmentName(d.Name))
                     .Select(d => new DepartmentDto { Id = d.Id, Name = d.Name, FacultyId = d.FacultyId })
                     .ToList()
             }).ToList()

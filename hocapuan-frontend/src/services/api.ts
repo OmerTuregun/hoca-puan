@@ -98,6 +98,30 @@ export interface TopProfessor {
   totalReviews: number
 }
 
+export interface DepartmentProfessor {
+  id: number
+  fullName: string
+  title: string
+  averageQuality: number
+  averageDifficulty: number
+  wouldTakeAgainPercent: number
+  totalReviews: number
+}
+
+export interface DepartmentDetail {
+  id: number
+  name: string
+  facultyId: number
+  facultyName: string
+  universityId: number
+  universityName: string
+  avgQuality: number
+  avgDifficulty: number
+  totalProfessors: number
+  totalReviews: number
+  professors: DepartmentProfessor[]
+}
+
 export interface Professor {
   id: number
   fullName: string
@@ -135,6 +159,12 @@ export interface UserProfile {
   totalReviews: number
 }
 
+export interface ContributionHistory {
+  totalReviews: number
+  totalHelpfulVotes: number
+  reviews: PagedResult<Review>
+}
+
 export interface Review {
   id: number
   userId: number
@@ -158,6 +188,17 @@ export interface Review {
   thumbsDown: number
   currentUserVote?: boolean | null
   createdAt: string
+  isFreshnessVotingOpen: boolean
+  freshnessStillValidPercentage?: number | null
+  isFlaggedAsOutdated: boolean
+  currentUserFreshnessVote?: boolean | null
+}
+
+export interface FreshnessVoteResult {
+  message: string
+  currentUserFreshnessVote?: boolean | null
+  freshnessStillValidPercentage?: number | null
+  isFlaggedAsOutdated: boolean
 }
 
 // ─── Auth ────────────────────────────────────────────────────
@@ -192,6 +233,8 @@ export const universityApi = {
     api.get<Department[]>(`/universities/faculties/${facultyId}/departments`).then(r => r.data),
   topProfessors: (id: number, limit = 10) =>
     api.get<TopProfessor[]>(`/universities/${id}/top-professors`, { params: { limit } }).then(r => r.data),
+  departmentDetail: (universityId: number, departmentId: number) =>
+    api.get<DepartmentDetail>(`/universities/${universityId}/departments/${departmentId}`).then(r => r.data),
 }
 
 // ─── Professors ───────────────────────────────────────────────
@@ -267,6 +310,14 @@ export const reviewApi = {
     api.post<Review>(`/reviews/${id}/moderate`, data).then(r => r.data),
   report: (id: number) =>
     api.post<{ message: string; reportCount: number }>(`/reviews/${id}/report`).then(r => r.data),
+  freshnessVote: (id: number, isStillValid: boolean) =>
+    api.post<FreshnessVoteResult>(`/reviews/${id}/freshness-vote`, { isStillValid }).then(r => r.data),
+}
+
+// ─── Users ────────────────────────────────────────────────────
+export const userApi = {
+  contributions: (page = 1, pageSize = 10) =>
+    api.get<ContributionHistory>('/users/me/contributions', { params: { page, pageSize } }).then(r => r.data),
 }
 
 export default api

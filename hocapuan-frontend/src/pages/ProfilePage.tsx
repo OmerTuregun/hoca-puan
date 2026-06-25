@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { authApi, reviewApi } from '../services/api'
+import { authApi, reviewApi, userApi } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 import RatingBadge from '../components/ui/RatingBadge'
 import Spinner from '../components/ui/Spinner'
@@ -46,7 +46,7 @@ export default function ProfilePage() {
       setReviewPending(!!state.reviewPending)
       setReviewInfoMessage(state.reviewInfoMessage ?? '')
       void Promise.all([
-        qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
+        qc.invalidateQueries({ queryKey: ['users', 'me', 'contributions'] }),
         qc.invalidateQueries({ queryKey: ['auth', 'me'] }),
       ])
       window.history.replaceState({}, document.title, location.pathname)
@@ -59,9 +59,9 @@ export default function ProfilePage() {
     enabled: hasHydrated && isLoggedIn,
   })
 
-  const { data: reviews, isLoading: reviewsLoading } = useQuery({
-    queryKey: ['reviews', 'my', page],
-    queryFn: () => reviewApi.myReviews(page, 10),
+  const { data: contributions, isLoading: reviewsLoading } = useQuery({
+    queryKey: ['users', 'me', 'contributions', page],
+    queryFn: () => userApi.contributions(page, 10),
     enabled: hasHydrated && isLoggedIn,
   })
 
@@ -85,7 +85,7 @@ export default function ProfilePage() {
       await reviewApi.delete(pendingDeleteId)
       setPendingDeleteId(null)
       await Promise.all([
-        qc.invalidateQueries({ queryKey: ['reviews', 'my'] }),
+        qc.invalidateQueries({ queryKey: ['users', 'me', 'contributions'] }),
         qc.invalidateQueries({ queryKey: ['auth', 'me'] }),
       ])
     } catch (error: unknown) {
@@ -147,7 +147,11 @@ export default function ProfilePage() {
             </div>
             <div>
               <span className="text-text-muted block">Toplam yorum</span>
-              <span className="font-medium text-text">{profile.totalReviews}</span>
+              <span className="font-medium text-text">{contributions?.totalReviews ?? profile.totalReviews}</span>
+            </div>
+            <div>
+              <span className="text-text-muted block">Faydalı bulundu</span>
+              <span className="font-medium text-text">{contributions?.totalHelpfulVotes ?? '—'}</span>
             </div>
           </div>
         </div>
@@ -163,14 +167,14 @@ export default function ProfilePage() {
 
       {reviewsLoading ? (
         <Spinner />
-      ) : reviews?.items.length === 0 ? (
+      ) : contributions?.reviews.items.length === 0 ? (
         <div className="card p-10 text-center text-text-muted">
           <p>Henüz yorum yazmadınız.</p>
           <Link to="/search" className="btn-primary mt-4 inline-flex">Hoca ara</Link>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {reviews?.items.map(r => (
+          {contributions?.reviews.items.map(r => (
             <article key={r.id} className="card p-5">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
@@ -185,7 +189,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2">
                   {r.status === 'Pending' && (
                     <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 rounded-full px-2 py-0.5">
-                      İnceleniyor
+                      İncelemede
                     </span>
                   )}
                   {r.status === 'Rejected' && (
@@ -221,31 +225,36 @@ export default function ProfilePage() {
 
               <p className="text-sm text-text leading-relaxed">{r.comment}</p>
 
-              <p className="text-xs text-text-muted mt-3">
-                {new Date(r.createdAt).toLocaleDateString('tr-TR', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
+              <div className="flex items-center justify-between mt-3">
+                <p className="text-xs text-text-muted">
+                  {new Date(r.createdAt).toLocaleDateString('tr-TR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+                <p className="text-xs text-text-muted">
+                  👍 {r.thumbsUp} · 👎 {r.thumbsDown}
+                </p>
+              </div>
             </article>
           ))}
 
-          {reviews && reviews.totalPages > 1 && (
+          {contributions && contributions.reviews.totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               <button
                 type="button"
                 onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={!reviews.hasPreviousPage}
+                disabled={!contributions.reviews.hasPreviousPage}
                 className="btn-outline disabled:opacity-40"
               >
                 Önceki
               </button>
-              <span className="btn-ghost cursor-default">{page} / {reviews.totalPages}</span>
+              <span className="btn-ghost cursor-default">{page} / {contributions.reviews.totalPages}</span>
               <button
                 type="button"
                 onClick={() => setPage(p => p + 1)}
-                disabled={!reviews.hasNextPage}
+                disabled={!contributions.reviews.hasNextPage}
                 className="btn-outline disabled:opacity-40"
               >
                 Sonraki

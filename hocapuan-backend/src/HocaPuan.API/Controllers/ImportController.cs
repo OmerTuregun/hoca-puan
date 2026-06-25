@@ -1,5 +1,6 @@
 using HocaPuan.Core.DTOs.Import;
 using HocaPuan.Core.Interfaces.Services;
+using HocaPuan.Data;
 using HocaPuan.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +15,20 @@ public class ImportController : ControllerBase
     private readonly IYokPlaywrightScraperService _yokPlaywrightScraperService;
     private readonly ImportJobStore _jobStore;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly AppDbContext _db;
 
     public ImportController(
         IYokScraperService yokScraperService,
         IYokPlaywrightScraperService yokPlaywrightScraperService,
         ImportJobStore jobStore,
-        IServiceScopeFactory scopeFactory)
+        IServiceScopeFactory scopeFactory,
+        AppDbContext db)
     {
         _yokScraperService = yokScraperService;
         _yokPlaywrightScraperService = yokPlaywrightScraperService;
         _jobStore = jobStore;
         _scopeFactory = scopeFactory;
+        _db = db;
     }
 
     /// <summary>
@@ -152,5 +156,35 @@ public class ImportController : ControllerBase
         var job = _jobStore.Get(id);
         if (job == null) return NotFound();
         return Ok(job);
+    }
+
+    /// <summary>Hatalı fakülte/bölüm adlarını düzeltir veya Bilinmiyor'a taşır.</summary>
+    [HttpPost("cleanup-faculty-names")]
+    [Authorize(Roles = "Admin,Moderator")]
+    public async Task<IActionResult> CleanupFacultyNames(CancellationToken cancellationToken)
+    {
+        var service = new FacultyDepartmentCleanupService(_db);
+        var result = await service.CleanupAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Hatalı hoca ünvanlarını kısaltır (Unvan:Doçent → Doç. Dr. vb.).</summary>
+    [HttpPost("cleanup-professor-names")]
+    [Authorize(Roles = "Admin,Moderator")]
+    public async Task<IActionResult> CleanupProfessorNames(CancellationToken cancellationToken)
+    {
+        var service = new ProfessorNameCleanupService(_db);
+        var result = await service.CleanupAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Tüm üniversitelerde sorunlu fakülte, bölüm ve hoca kayıtlarını tarar.</summary>
+    [HttpGet("data-quality-report")]
+    [Authorize(Roles = "Admin,Moderator")]
+    public async Task<IActionResult> DataQualityReport(CancellationToken cancellationToken)
+    {
+        var service = new DataQualityReportService(_db);
+        var report = await service.ScanAsync(samplePerCategory: 8, cancellationToken);
+        return Ok(report);
     }
 }

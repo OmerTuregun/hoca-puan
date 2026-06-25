@@ -11,11 +11,13 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    hmr: {
-      host: '127.0.0.1',
-      port: 5173,
-      clientPort: 5173,
-    },
+    hmr: process.env.VITE_DISABLE_HMR === 'true'
+      ? false
+      : {
+          protocol: 'ws',
+          host: process.env.VITE_HMR_HOST ?? 'localhost',
+          clientPort: Number(process.env.VITE_HMR_CLIENT_PORT ?? 5173),
+        },
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL ?? 'http://localhost:5001',

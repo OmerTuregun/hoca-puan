@@ -12,4 +12,5 @@ public interface IUniversityService
     Task<List<FacultyDto>> GetFacultiesAsync(int universityId);
     Task<List<DepartmentDto>> GetDepartmentsAsync(int facultyId);
     Task<List<TopProfessorDto>> GetTopProfessorsAsync(int universityId, int limit = 10);
+    Task<DepartmentDetailDto?> GetDepartmentDetailAsync(int universityId, int departmentId);
 }

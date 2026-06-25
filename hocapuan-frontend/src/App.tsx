@@ -5,6 +5,7 @@ import SearchPage from './pages/SearchPage'
 import ProfessorPage from './pages/ProfessorPage'
 import UniversityPage from './pages/UniversityPage'
 import UniversitiesPage from './pages/UniversitiesPage'
+import DepartmentPage from './pages/DepartmentPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/professors/:id"      element={<ProfessorPage />} />
         <Route path="/universities"        element={<UniversitiesPage />} />
         <Route path="/universities/:id"    element={<UniversityPage />} />
+        <Route path="/universite/:universityId/bolum/:departmentId" element={<DepartmentPage />} />
         <Route path="/professors/:id/review" element={<AddReviewPage />} />
         <Route path="/login"               element={<LoginPage />} />
         <Route path="/register"            element={<RegisterPage />} />

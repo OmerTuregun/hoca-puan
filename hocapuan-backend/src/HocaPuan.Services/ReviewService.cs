@@ -1,6 +1,8 @@
 using System.Text.Json;
+using HocaPuan.Core.Constants;
 using HocaPuan.Core.DTOs.Common;
 using HocaPuan.Core.DTOs.Review;
+using HocaPuan.Core.DTOs.User;
 using HocaPuan.Core.Entities;
 using HocaPuan.Core.Interfaces.Services;
 using HocaPuan.Core.Moderation;
@@ -40,6 +42,7 @@ public class ReviewService : IReviewService
         var review = await _db.Reviews
             .Include(r => r.User)
             .Include(r => r.Professor).ThenInclude(p => p.University)
+            .Include(r => r.FreshnessVotes)
             .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
 
         return review == null ? null : MapDto(review, null);
@@ -56,6 +59,7 @@ public class ReviewService : IReviewService
         var query = _db.Reviews
             .Include(r => r.User)
             .Include(r => r.Professor).ThenInclude(p => p.University)
+            .Include(r => r.FreshnessVotes)
             .Where(r => r.ProfessorId == professorId && r.Status == ReviewStatus.Approved && !r.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(tag))
@@ -203,6 +207,40 @@ public class ReviewService : IReviewService
             TotalCount = totalCount,
             Page = page,
             PageSize = pageSize
+        };
+    }
+
+    public async Task<ContributionHistoryDto> GetContributionHistoryAsync(int userId, int page, int pageSize)
+    {
+        var baseQuery = _db.Reviews.Where(r => r.UserId == userId && !r.IsDeleted);
+
+        var totalReviews = await baseQuery.CountAsync();
+        var totalHelpfulVotes = totalReviews > 0
+            ? await baseQuery.SumAsync(r => r.ThumbsUp)
+            : 0;
+
+        var reviewQuery = _db.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Professor).ThenInclude(p => p.University)
+            .Where(r => r.UserId == userId && !r.IsDeleted)
+            .OrderByDescending(r => r.CreatedAt);
+
+        var items = await reviewQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new ContributionHistoryDto
+        {
+            TotalReviews = totalReviews,
+            TotalHelpfulVotes = totalHelpfulVotes,
+            Reviews = new PagedResultDto<ReviewDto>
+            {
+                Items = items.Select(r => MapDto(r, null)).ToList(),
+                TotalCount = totalReviews,
+                Page = page,
+                PageSize = pageSize,
+            },
         };
     }
 
@@ -362,6 +400,62 @@ public class ReviewService : IReviewService
         };
     }
 
+    public async Task<FreshnessVoteResultDto> VoteFreshnessAsync(int reviewId, int voterUserId, bool isStillValid)
+    {
+        var review = await _db.Reviews
+            .Include(r => r.FreshnessVotes)
+            .FirstOrDefaultAsync(r => r.Id == reviewId && !r.IsDeleted)
+            ?? throw new KeyNotFoundException("Yorum bulunamadı.");
+
+        if (DateTime.UtcNow - review.CreatedAt < FreshnessVotingConstants.MinAgeForVoting)
+            throw new ArgumentException(
+                "Bu yorum henüz 1 yıldan eski değil; güncellik oylaması henüz açık değil.");
+
+        if (review.UserId == voterUserId)
+            throw new ArgumentException("Kendi yorumunuz için güncellik oyu kullanamazsınız.");
+
+        var existingVote = review.FreshnessVotes.FirstOrDefault(v => v.VoterUserId == voterUserId);
+        if (existingVote != null)
+        {
+            existingVote.IsStillValid = isStillValid;
+            existingVote.UpdatedAt = DateTime.UtcNow;
+        }
+        else
+        {
+            _db.ReviewFreshnessVotes.Add(new ReviewFreshnessVote
+            {
+                ReviewId = reviewId,
+                VoterUserId = voterUserId,
+                IsStillValid = isStillValid,
+            });
+        }
+
+        await _db.SaveChangesAsync();
+
+        // Reload votes to compute fresh stats
+        var votes = await _db.ReviewFreshnessVotes
+            .Where(v => v.ReviewId == reviewId)
+            .ToListAsync();
+
+        var totalVotes = votes.Count;
+        double? percentage = totalVotes >= FreshnessVotingConstants.MinVotesForDisplay
+            ? (double)votes.Count(v => v.IsStillValid) / totalVotes * 100
+            : null;
+        var notValidRatio = totalVotes >= FreshnessVotingConstants.MinVotesForDisplay
+            ? (double)votes.Count(v => !v.IsStillValid) / totalVotes
+            : 0;
+        var isFlagged = totalVotes >= FreshnessVotingConstants.MinVotesForDisplay
+                        && notValidRatio > FreshnessVotingConstants.OutdatedThreshold;
+
+        return new FreshnessVoteResultDto
+        {
+            Message = "Oyunuz kaydedildi.",
+            CurrentUserFreshnessVote = isStillValid,
+            FreshnessStillValidPercentage = percentage,
+            IsFlaggedAsOutdated = isFlagged,
+        };
+    }
+
     private static IQueryable<Review> ApplyProfessorReviewSort(IQueryable<Review> query, string sortBy) =>
         sortBy.Trim().ToLowerInvariant() switch
         {
@@ -419,31 +513,58 @@ public class ReviewService : IReviewService
             currentUserVote = vote?.IsUpvote;
         }
 
+        var isFreshnessVotingOpen = DateTime.UtcNow - r.CreatedAt >= FreshnessVotingConstants.MinAgeForVoting;
+        var freshnessVotes = r.FreshnessVotes;
+        var totalFreshnessVotes = freshnessVotes.Count;
+        var hasEnoughVotes = totalFreshnessVotes >= FreshnessVotingConstants.MinVotesForDisplay;
+
+        double? freshnessStillValidPercentage = isFreshnessVotingOpen && hasEnoughVotes
+            ? (double)freshnessVotes.Count(v => v.IsStillValid) / totalFreshnessVotes * 100
+            : null;
+
+        var notValidRatio = hasEnoughVotes
+            ? (double)freshnessVotes.Count(v => !v.IsStillValid) / totalFreshnessVotes
+            : 0;
+        var isFlaggedAsOutdated = isFreshnessVotingOpen
+                                  && hasEnoughVotes
+                                  && notValidRatio > FreshnessVotingConstants.OutdatedThreshold;
+
+        bool? currentUserFreshnessVote = null;
+        if (currentUserId.HasValue && isFreshnessVotingOpen)
+        {
+            var fv = freshnessVotes.FirstOrDefault(v => v.VoterUserId == currentUserId.Value);
+            if (fv != null) currentUserFreshnessVote = fv.IsStillValid;
+        }
+
         return new ReviewDto
         {
             Id = r.Id,
-        UserId = r.UserId,
-        ProfessorId = r.ProfessorId,
-        ProfessorFullName = r.Professor?.FullName ?? "",
-        UniversityName = r.Professor?.University?.Name ?? "",
-        Username = r.User?.Username ?? "Anonim",
-        CourseCode = r.CourseCode,
-        Grade = r.Grade,
-        Year = r.Year,
-        QualityRating = r.QualityRating,
-        DifficultyRating = r.DifficultyRating,
-        WouldTakeAgain = r.WouldTakeAgain,
-        AttendanceMandatory = r.AttendanceMandatory,
-        Comment = r.Comment,
-        Tags = JsonSerializer.Deserialize<List<string>>(r.TagsJson) ?? new(),
-        Status = r.Status.ToString(),
-        ManualReviewReasons = r.Status == ReviewStatus.Pending
-            ? ParsePendingReasons(r.ModeratorNote)
-            : [],
-        ThumbsUp = r.ThumbsUp,
-        ThumbsDown = r.ThumbsDown,
-        CurrentUserVote = currentUserVote,
-        CreatedAt = r.CreatedAt
+            UserId = r.UserId,
+            ProfessorId = r.ProfessorId,
+            ProfessorFullName = r.Professor?.FullName ?? "",
+            UniversityName = r.Professor?.University?.Name ?? "",
+            Username = r.User?.Username ?? "Anonim",
+            CourseCode = r.CourseCode,
+            Grade = r.Grade,
+            Year = r.Year,
+            QualityRating = r.QualityRating,
+            DifficultyRating = r.DifficultyRating,
+            WouldTakeAgain = r.WouldTakeAgain,
+            AttendanceMandatory = r.AttendanceMandatory,
+            Comment = r.Comment,
+            Tags = JsonSerializer.Deserialize<List<string>>(r.TagsJson) ?? new(),
+            Status = r.Status.ToString(),
+            ManualReviewReasons = r.Status == ReviewStatus.Pending
+                ? ParsePendingReasons(r.ModeratorNote)
+                : [],
+            ThumbsUp = r.ThumbsUp,
+            ThumbsDown = r.ThumbsDown,
+            CurrentUserVote = currentUserVote,
+            CreatedAt = r.CreatedAt,
+            IsFreshnessVotingOpen = isFreshnessVotingOpen,
+            FreshnessStillValidPercentage = freshnessStillValidPercentage,
+            IsFlaggedAsOutdated = isFlaggedAsOutdated,
+            CurrentUserFreshnessVote = currentUserFreshnessVote,
         };
     }
 }

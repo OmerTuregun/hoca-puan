@@ -87,3 +87,22 @@ public class ReviewReportConfiguration : IEntityTypeConfiguration<ReviewReport>
                .OnDelete(DeleteBehavior.Restrict);
     }
 }
+
+public class ReviewFreshnessVoteConfiguration : IEntityTypeConfiguration<ReviewFreshnessVote>
+{
+    public void Configure(EntityTypeBuilder<ReviewFreshnessVote> builder)
+    {
+        // Bir kullanıcı bir yoruma sadece bir kez güncellik oyu verebilir
+        builder.HasIndex(v => new { v.ReviewId, v.VoterUserId }).IsUnique();
+
+        builder.HasOne(v => v.Review)
+               .WithMany(r => r.FreshnessVotes)
+               .HasForeignKey(v => v.ReviewId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(v => v.Voter)
+               .WithMany()
+               .HasForeignKey(v => v.VoterUserId)
+               .OnDelete(DeleteBehavior.Restrict);
+    }
+}

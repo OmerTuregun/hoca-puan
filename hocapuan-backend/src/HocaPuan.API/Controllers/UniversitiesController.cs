@@ -56,6 +56,15 @@ public class UniversitiesController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Bölüm detayı (hocalar ve istatistikler dahil)</summary>
+    [HttpGet("{id:int}/departments/{departmentId:int}")]
+    public async Task<IActionResult> GetDepartmentDetail(int id, int departmentId)
+    {
+        var result = await _universityService.GetDepartmentDetailAsync(id, departmentId);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
     /// <summary>Üniversite ekle (Admin)</summary>
     [HttpPost]
     [Authorize(Roles = "Admin")]

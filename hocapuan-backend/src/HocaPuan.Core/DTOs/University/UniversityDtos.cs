@@ -55,3 +55,29 @@ public class TopProfessorDto
     public double AverageQuality { get; set; }
     public int TotalReviews { get; set; }
 }
+
+public class DepartmentProfessorDto
+{
+    public int Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public double AverageQuality { get; set; }
+    public double AverageDifficulty { get; set; }
+    public double WouldTakeAgainPercent { get; set; }
+    public int TotalReviews { get; set; }
+}
+
+public class DepartmentDetailDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int FacultyId { get; set; }
+    public string FacultyName { get; set; } = string.Empty;
+    public int UniversityId { get; set; }
+    public string UniversityName { get; set; } = string.Empty;
+    public double AvgQuality { get; set; }
+    public double AvgDifficulty { get; set; }
+    public int TotalProfessors { get; set; }
+    public int TotalReviews { get; set; }
+    public List<DepartmentProfessorDto> Professors { get; set; } = new();
+}

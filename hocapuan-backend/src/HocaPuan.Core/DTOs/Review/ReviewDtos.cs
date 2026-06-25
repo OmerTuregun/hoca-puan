@@ -24,6 +24,12 @@ public class ReviewDto
     public int ThumbsDown { get; set; }
     public bool? CurrentUserVote { get; set; }   // null=oy vermedi, true=up, false=down
     public DateTime CreatedAt { get; set; }
+
+    // Güncellik oylaması
+    public bool IsFreshnessVotingOpen { get; set; }
+    public double? FreshnessStillValidPercentage { get; set; }
+    public bool IsFlaggedAsOutdated { get; set; }
+    public bool? CurrentUserFreshnessVote { get; set; }  // null=oy vermedi, true=geçerli, false=geçersiz
 }
 
 public class CreateReviewDto
@@ -70,4 +76,17 @@ public class ReportReviewResultDto
 {
     public string Message { get; set; } = string.Empty;
     public int ReportCount { get; set; }
+}
+
+public class FreshnessVoteDto
+{
+    public bool IsStillValid { get; set; }
+}
+
+public class FreshnessVoteResultDto
+{
+    public string Message { get; set; } = string.Empty;
+    public bool? CurrentUserFreshnessVote { get; set; }
+    public double? FreshnessStillValidPercentage { get; set; }
+    public bool IsFlaggedAsOutdated { get; set; }
 }

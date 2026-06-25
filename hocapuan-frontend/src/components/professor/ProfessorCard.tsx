@@ -2,14 +2,11 @@ import { Link } from 'react-router-dom'
 import { MapPin, BookOpen, Users } from 'lucide-react'
 import type { Professor } from '../../services/api'
 import RatingBadge from '../ui/RatingBadge'
+import { displayProfessorName, professorInitials } from '../../utils/professorDisplay'
 
 export default function ProfessorCard({ professor: p }: { professor: Professor }) {
-  const displayName = (p.fullName?.trim() || `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim() || '—')
-  const initials = (() => {
-    const a = (p.firstName?.trim()?.[0] ?? displayName.trim()?.[0] ?? '')
-    const b = (p.lastName?.trim()?.[0] ?? displayName.trim().split(/\s+/).slice(-1)[0]?.[0] ?? '')
-    return `${a}${b}`.trim()
-  })()
+  const displayName = displayProfessorName(p)
+  const initials = professorInitials(p)
 
   return (
     <Link to={`/professors/${p.id}`} className="card-hover block p-5">
