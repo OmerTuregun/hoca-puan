@@ -11,6 +11,7 @@ public static class RateLimitingExtensions
 {
     public const string AuthPolicy = "auth";
     public const string CommentWritePolicy = "comment-write";
+    public const string ReportWritePolicy = "report-write";
     public const string GlobalPolicy = "global";
 
     public static IServiceCollection AddHocaPuanRateLimiting(
@@ -47,6 +48,19 @@ public static class RateLimitingExtensions
                     _ => CreateWindowOptions(settings.CommentWrite));
             });
 
+            options.AddPolicy(ReportWritePolicy, httpContext =>
+            {
+                var settings = ResolveSettings(httpContext);
+                var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var partition = string.IsNullOrEmpty(userId)
+                    ? $"report-write:anon:{ClientIpResolver.Resolve(httpContext)}"
+                    : $"report-write:user:{userId}";
+
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partition,
+                    _ => CreateWindowOptions(settings.ReportWrite));
+            });
+
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
                 var settings = ResolveSettings(httpContext);
@@ -80,7 +94,7 @@ public static class RateLimitingExtensions
         var httpContext = context.HttpContext;
         var policyName = ResolvePolicyName(httpContext);
         var partitionKey = ResolvePartitionKey(httpContext, policyName);
-        var maskedPartition = policyName == CommentWritePolicy && partitionKey.StartsWith("user:")
+        var maskedPartition = policyName is CommentWritePolicy or ReportWritePolicy && partitionKey.StartsWith("user:")
             ? partitionKey
             : ClientIpResolver.MaskForLog(partitionKey);
 
@@ -98,6 +112,7 @@ public static class RateLimitingExtensions
         {
             AuthPolicy => "Çok fazla deneme yaptınız, lütfen birkaç dakika sonra tekrar deneyin.",
             CommentWritePolicy => "Çok hızlı yorum gönderiyorsunuz, lütfen biraz bekleyin.",
+            ReportWritePolicy => "Çok hızlı şikayet gönderiyorsunuz, lütfen biraz bekleyin.",
             _ => "Çok fazla istek gönderdiniz, lütfen kısa bir süre sonra tekrar deneyin.",
         };
 
@@ -126,7 +141,7 @@ public static class RateLimitingExtensions
 
     private static string ResolvePartitionKey(HttpContext httpContext, string policyName)
     {
-        if (policyName == CommentWritePolicy)
+        if (policyName is CommentWritePolicy or ReportWritePolicy)
         {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!string.IsNullOrEmpty(userId))

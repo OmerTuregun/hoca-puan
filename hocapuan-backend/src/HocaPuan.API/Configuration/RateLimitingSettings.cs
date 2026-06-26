@@ -6,6 +6,7 @@ public class RateLimitingSettings
 
     public RateLimitPolicySettings Auth { get; set; } = new();
     public RateLimitPolicySettings CommentWrite { get; set; } = new();
+    public RateLimitPolicySettings ReportWrite { get; set; } = new();
     public RateLimitPolicySettings Global { get; set; } = new();
 }
 

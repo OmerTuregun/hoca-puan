@@ -3,13 +3,13 @@
 Docker Compose yapılandırması geliştirme ve production için ayrılmıştır.
 
 > **Not:** Kök dizindeki `docker-compose.yml` kaldırıldı. Geliştirme artık yalnızca
-> `docker-compose.dev.yml` ile çalıştırılır:
-> `docker compose -f docker-compose.dev.yml up --build -d`
+> `docker-compose-dev.yml` ile çalıştırılır:
+> `docker compose -f docker-compose-dev.yml up --build -d`
 
 | Dosya | Ortam | Env dosyası | Portlar (host) |
 |-------|-------|-------------|----------------|
-| `docker-compose.dev.yml` | Local geliştirme | `.env.development` | API 5001, Frontend 5173, DB 5433 |
-| `docker-compose.prod.yml` | Sunucu (IP + HTTP) | `.env.production` | API 5011, Frontend 8089, DB 5435 |
+| `docker-compose-dev.yml` | Local geliştirme | `.env.development` | API 5001, Frontend 5173, DB 5433* |
+| `docker-compose-prod.yml` | Sunucu (IP + HTTP) | `.env.production` | API 5011, Frontend 8089, DB 5435 |
 
 Dev ve prod **aynı sunucuda aynı anda** çalışabilir: portlar ve container adları çakışmaz.
 
@@ -28,20 +28,20 @@ cp .env.example .env.production
 ## Geliştirme
 
 ```bash
-docker compose --env-file .env.development -f docker-compose.dev.yml up --build -d
+docker compose --env-file .env.development -f docker-compose-dev.yml up --build -d
 ```
 
 - Frontend: http://localhost:5173 (Vite dev server, yalnızca localhost)
 - API: http://localhost:5001
 - pgAdmin: http://localhost:5051
-- PostgreSQL: localhost:5433
+- PostgreSQL: localhost:5433 (veya `.env.development` içindeki `DB_PORT`)
 
 `dotnet run` (Docker dışı) için proje kökünde `.env.development` veya `.env` bulunmalıdır. `ASPNETCORE_ENVIRONMENT=Development` iken `EnvLoader` önce `.env.development` dosyasını arar.
 
 ## Production
 
 ```bash
-docker compose --env-file .env.production -f docker-compose.prod.yml up --build -d
+docker compose --env-file .env.production -f docker-compose-prod.yml up --build -d
 ```
 
 - Frontend: `http://SUNUCU_IP:8089` (şimdilik Vite dev build — nginx/static TODO)

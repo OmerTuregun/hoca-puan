@@ -145,7 +145,7 @@ public class ReviewsController : ControllerBase
     /// <summary>Yorumu uygunsuz olarak bildir</summary>
     [HttpPost("{id:int}/report")]
     [Authorize]
-    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
+    [EnableRateLimiting(RateLimitingExtensions.ReportWritePolicy)]
     public async Task<IActionResult> Report(int id)
     {
         try
