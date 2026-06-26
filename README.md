@@ -75,13 +75,13 @@ Production ortamı `docker-compose-prod.yml` ve `.env.production` ile yönetilir
 
 ## CI/CD
 
-Backend testleri GitHub Actions ile çalışır:
+Backend ve frontend testleri GitHub Actions ile çalışır:
 
 - Workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 - `main` push ve PR'larda tetiklenir
-- `dotnet restore` → `build` → izole PostgreSQL üzerinde migration → `dotnet test`
+- **Backend:** `dotnet restore` → `build` → izole PostgreSQL üzerinde migration → `dotnet test`
+- **Frontend:** `hocapuan-frontend` içinde `npm ci` → `npm run test` (Vitest + Testing Library)
 - Otomatik deploy **yok**; yalnızca build/test doğrulaması
-- Frontend test altyapısı henüz yok; CI yalnızca backend'i kapsar
 
 ## Proje yapısı
 
@@ -105,7 +105,9 @@ hoca-puan/
 ## Katkıda bulunma
 
 1. `main` dalından feature branch açın
-2. Değişiklikleriniz için backend testlerinin geçtiğinden emin olun (`dotnet test hocapuan-backend/HocaPuan.sln`)
+2. Değişiklikleriniz için testlerin geçtiğinden emin olun:
+   - Backend: `dotnet test hocapuan-backend/HocaPuan.sln`
+   - Frontend: `cd hocapuan-frontend && npm run test`
 3. Pull request açın — CI sonucu PR üzerinde görünür
 
 ## Lisans

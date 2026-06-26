@@ -86,6 +86,8 @@ public static class EnvLoader
         Map("AUTH_COOKIE_SAMESITE", "AuthCookie__SameSite");
         Map("ALLOWED_ORIGIN", "Cors__AllowedOrigins__0");
 
+        Map("SENTRY_DSN_BACKEND", "Sentry__Dsn");
+
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AuthCookie__Secure")) &&
             !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("USE_HTTPS")))
         {

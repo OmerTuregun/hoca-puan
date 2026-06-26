@@ -10,6 +10,8 @@ CMD ["npm", "run", "dev"]
 # ─── Build Stage ─────────────────────────────────────────────
 FROM node:20-alpine AS build
 WORKDIR /app
+ARG VITE_SENTRY_DSN=
+ENV VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
 COPY package*.json ./
 RUN npm ci
 COPY . .

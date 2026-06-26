@@ -58,6 +58,7 @@ services:
       Email__From: ${EMAIL_FROM:-noreply@hocapuan.com}
       Cors__AllowedOrigins__0: ${ALLOWED_ORIGIN}
       USE_HTTPS: ${USE_HTTPS:-false}
+      Sentry__Dsn: ${SENTRY_DSN_BACKEND}
     ports:
       - "${API_PORT:-5011}:8080"
     depends_on:
@@ -73,12 +74,15 @@ services:
       context: ./hocapuan-frontend
       dockerfile: Dockerfile
       target: dev
+      args:
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN_FRONTEND}
     container_name: hocapuan_prod_frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-8089}:5173"
     environment:
       - VITE_API_URL=http://api:8080
+      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN_FRONTEND}
       - VITE_DISABLE_HMR=true
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true

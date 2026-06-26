@@ -12,6 +12,15 @@ EnvLoader.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.Debug = builder.Environment.IsDevelopment();
+    options.TracesSampleRate = 0;
+    options.AutoSessionTracking = true;
+    options.Environment = builder.Environment.EnvironmentName;
+});
+
 // ─── Servisler ───────────────────────────────────────────────
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);

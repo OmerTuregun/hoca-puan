@@ -92,12 +92,11 @@ CORS:
 
 ## Sürekli entegrasyon (CI)
 
-Backend testleri GitHub Actions ile çalışır:
+Backend ve frontend testleri GitHub Actions ile çalışır:
 
 - **Workflow dosyası:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 - **Tetikleyiciler:** `main` branch'ine her push ve `main` hedefli pull request'ler
-- **Kapsam:** `hocapuan-backend/HocaPuan.sln` restore, build ve `dotnet test` (deploy yok)
+- **Backend kapsamı:** `hocapuan-backend/HocaPuan.sln` restore, build ve `dotnet test` (deploy yok)
+- **Frontend kapsamı:** `hocapuan-frontend` içinde `npm ci` ve `npm run test` (Vitest + Testing Library)
 - **Veritabanı:** CI, GitHub Actions'ın geçici PostgreSQL servisini kullanır; production veya development veritabanına bağlanmaz
 - **PR'lar:** Merge öncesi GitHub'da yeşil/kırmızı test durumu görünür
-
-> **Not:** `hocapuan-frontend` içinde henüz test altyapısı (Vitest/Jest vb.) yok; CI yalnızca backend testlerini kapsar.

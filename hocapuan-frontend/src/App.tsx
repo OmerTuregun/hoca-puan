@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import * as Sentry from '@sentry/react'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/HomePage'
 import SearchPage from './pages/SearchPage'
@@ -18,8 +19,17 @@ import EditReviewPage from './pages/EditReviewPage'
 import AdminModerationPage from './pages/AdminModerationPage'
 import NotFoundPage from './pages/NotFoundPage'
 
+function SentryFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-8 text-center">
+      <p className="text-lg text-gray-700">Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin.</p>
+    </div>
+  )
+}
+
 export default function App() {
   return (
+    <Sentry.ErrorBoundary fallback={<SentryFallback />}>
     <Routes>
       <Route element={<Layout />}>
         <Route path="/"                    element={<HomePage />} />
@@ -42,5 +52,6 @@ export default function App() {
         <Route path="*"                    element={<NotFoundPage />} />
       </Route>
     </Routes>
+    </Sentry.ErrorBoundary>
   )
 }
