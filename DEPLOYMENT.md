@@ -90,3 +90,14 @@ CORS:
 - Development: `appsettings.Development.json` içindeki localhost origin listesi (değişmez)
 - Production: `ALLOWED_ORIGIN` (veya `Cors__AllowedOrigins__0`)
 
+## Sürekli entegrasyon (CI)
+
+Backend testleri GitHub Actions ile çalışır:
+
+- **Workflow dosyası:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+- **Tetikleyiciler:** `main` branch'ine her push ve `main` hedefli pull request'ler
+- **Kapsam:** `hocapuan-backend/HocaPuan.sln` restore, build ve `dotnet test` (deploy yok)
+- **Veritabanı:** CI, GitHub Actions'ın geçici PostgreSQL servisini kullanır; production veya development veritabanına bağlanmaz
+- **PR'lar:** Merge öncesi GitHub'da yeşil/kırmızı test durumu görünür
+
+> **Not:** `hocapuan-frontend` içinde henüz test altyapısı (Vitest/Jest vb.) yok; CI yalnızca backend testlerini kapsar.

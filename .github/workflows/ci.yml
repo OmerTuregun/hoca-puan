@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Unit tests use EF Core InMemory; PostgreSQL is only for optional integration
+# runners (DataCleanupRunnerTests) and API WebApplicationFactory smoke tests.
+# Production/dev secrets are never used in this workflow.
+
+env:
+  TEST_DB_CONNECTION: >-
+    Host=localhost;Port=5432;Database=hocapuan_test;Username=test_user;Password=test_password
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: hocapuan_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore hocapuan-backend/HocaPuan.sln
+
+      - name: Build
+        run: dotnet build hocapuan-backend/HocaPuan.sln --no-restore --configuration Release
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef --version 10.0.4
+
+      - name: Apply database migrations (isolated test DB)
+        run: >-
+          dotnet ef database update
+          --project hocapuan-backend/src/HocaPuan.Data
+          --startup-project hocapuan-backend/src/HocaPuan.API
+          --configuration Release
+        env:
+          ConnectionStrings__DefaultConnection: ${{ env.TEST_DB_CONNECTION }}
+          # Prevent EnvLoader from pulling a local .env during migration
+          ASPNETCORE_ENVIRONMENT: Testing
+
+      - name: Run tests
+        run: dotnet test hocapuan-backend/HocaPuan.sln --no-build --configuration Release --verbosity normal
+        env:
+          ConnectionStrings__DefaultConnection: ${{ env.TEST_DB_CONNECTION }}
+          ASPNETCORE_ENVIRONMENT: Testing
+          # DataCleanupRunnerTests only touch PostgreSQL when explicitly enabled
+          RUN_DATA_CLEANUP: '0'
+          RUN_DEPARTMENT_CLEANUP: '0'
