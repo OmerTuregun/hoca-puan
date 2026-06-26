@@ -89,3 +89,4 @@ CORS:
 
 - Development: `appsettings.Development.json` içindeki localhost origin listesi (değişmez)
 - Production: `ALLOWED_ORIGIN` (veya `Cors__AllowedOrigins__0`)
+
