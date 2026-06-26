@@ -543,7 +543,7 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
                 if (string.IsNullOrWhiteSpace(rawPath) && tdMain != null)
                 {
                     var tdText = Normalize1(await tdMain.InnerTextAsync());
-                    if (!string.IsNullOrWhiteSpace(tdText))
+                    if (!string.IsNullOrWhiteSpace(tdText) && !FacultyDepartmentNameValidator.IsCvContentDump(tdText))
                         rawPath = tdText;
                 }
 
@@ -637,8 +637,12 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
                         AddNote(response, $"DETAILPAGE [{universityName}] url='{c.DetailUrl}' bodyPreview='{preview}'");
                     }
 
-                    // Liste satırıyla aynı anahtar kelime çıkarımı (detay metninde etiket varyasyonları daha fazla).
-                    TryParseFacultyDepartmentFromKeywords(bodyText, out var faculty, out var dept);
+                    var affiliationText = ExtractDetailPageAffiliationText(bodyText);
+                    if (string.IsNullOrWhiteSpace(affiliationText))
+                        affiliationText = bodyText;
+
+                    FacultyDepartmentNameValidator.TryExtractFacultyDepartmentFromKeywords(
+                        affiliationText, out var faculty, out var dept);
 
                     if (faculty != "Bilinmiyor" || dept != "Bilinmiyor")
                     {
@@ -667,7 +671,7 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
         }
     }
 
-    private static (string FacultyName, string DepartmentName) ParseFacultyDepartmentFromPath(string rawPath, string universityName)
+    internal static (string FacultyName, string DepartmentName) ParseFacultyDepartmentFromPath(string rawPath, string universityName)
     {
         // Example:
         // KOCAELİ ÜNİVERSİTESİ/MÜHENDİSLİK FAKÜLTESİ/BİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ/BİLGİSAYAR BİLİMLERİ ANABİLİM DALI/
@@ -706,7 +710,8 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
             {
                 faculty = ToTitleCaseTr(parts[1]);
                 dept = ToTitleCaseTr(parts[2]);
-                return (faculty, dept);
+                if (IsUsableFacultyDept(faculty, dept))
+                    return (faculty, dept);
             }
 
             // FAKÜLTE / BÖLÜM / ANABİLİM DALI / ...
@@ -714,12 +719,15 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
             {
                 faculty = ToTitleCaseTr(parts[0]);
                 dept = ToTitleCaseTr(parts[1]);
-                return (faculty, dept);
+                if (IsUsableFacultyDept(faculty, dept))
+                    return (faculty, dept);
             }
 
-            var faculty2 = FacultyDepartmentNameValidator.SanitizeFacultyName(ToTitleCaseTr(parts[0]));
-            var dept2 = FacultyDepartmentNameValidator.SanitizeDepartmentName(ToTitleCaseTr(parts[1]));
-            return (faculty2, dept2);
+            if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept)
+                && IsAcceptableFacultyDepartment(faculty, dept))
+                return (faculty, dept);
+
+            return (FacultyDepartmentNameValidator.Unknown, FacultyDepartmentNameValidator.Unknown);
         }
 
         if (parts.Count == 2)
@@ -728,22 +736,26 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
             {
                 faculty = ToTitleCaseTr(parts[0]);
                 dept = ToTitleCaseTr(parts[1]);
-                return (faculty, dept);
+                if (IsUsableFacultyDept(faculty, dept))
+                    return (faculty, dept);
             }
 
-            if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept))
+            if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept)
+                && IsAcceptableFacultyDepartment(faculty, dept))
                 return (faculty, dept);
 
-            return ("Bilinmiyor", "Bilinmiyor");
+            return (FacultyDepartmentNameValidator.Unknown, FacultyDepartmentNameValidator.Unknown);
         }
 
-        if (parts.Count == 1 && TryParseFacultyDepartmentFromKeywords(parts[0], out faculty, out dept))
+        if (parts.Count == 1 && TryParseFacultyDepartmentFromKeywords(parts[0], out faculty, out dept)
+            && IsAcceptableFacultyDepartment(faculty, dept))
             return (faculty, dept);
 
-        if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept))
+        if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept)
+            && IsAcceptableFacultyDepartment(faculty, dept))
             return (faculty, dept);
 
-        return ("Bilinmiyor", "Bilinmiyor");
+        return (FacultyDepartmentNameValidator.Unknown, FacultyDepartmentNameValidator.Unknown);
     }
 
     private static string NormalizePathForFacultyDepartment(string rawPath)
@@ -801,34 +813,44 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
         FacultyDepartmentNameValidator.IsDisplayableFacultyName(faculty)
         && FacultyDepartmentNameValidator.IsDisplayableDepartmentName(dept);
 
-    /// <summary>
-    /// YÖK bazen tek satırda veya slash olmadan "… FAKÜLTESİ … BÖLÜMÜ" verir; slash parse yetmezse kullanılır.
-    /// </summary>
-    private static bool TryParseFacultyDepartmentFromKeywords(string text, out string faculty, out string department)
+    private static bool IsAcceptableFacultyDepartment(string faculty, string dept) =>
+        FacultyDepartmentNameValidator.IsDisplayableFacultyName(faculty)
+        && (dept.Equals(FacultyDepartmentNameValidator.Unknown, StringComparison.OrdinalIgnoreCase)
+            || FacultyDepartmentNameValidator.IsDisplayableDepartmentName(dept));
+
+    private static bool TryParseFacultyDepartmentFromKeywords(string text, out string faculty, out string department) =>
+        FacultyDepartmentNameValidator.TryExtractFacultyDepartmentFromKeywords(text, out faculty, out department);
+
+    /// <summary>YÖK detay sayfasında görev/kadro bölümlerinden kurum metnini çıkarır.</summary>
+    private static string ExtractDetailPageAffiliationText(string bodyText)
     {
-        faculty = "Bilinmiyor";
-        department = "Bilinmiyor";
-        if (string.IsNullOrWhiteSpace(text)) return false;
+        if (string.IsNullOrWhiteSpace(bodyText)) return string.Empty;
 
-        var t = Normalize1(text);
-        var facultyMatch = Regex.Match(
-            t,
-            @"(?i)((?:[^\n\r/|]{2,140}?(?:FAKÜLTESİ|FAKULTESI|FAKÜLTESI|ENSTİTÜSÜ|ENSTITUSU|ENSTİTÜSU|YÜKSEKOKULU|YUKSEKOKULU|MESLEK\s+YÜKSEKOKULU|MESLEK\s+YUKSEKOKULU|UYGULAMALI\s+BİLİMLER\s+YÜKSEKOKULU|UYGULAMALI\s+BILIMLER\s+YUKSEKOKULU))|(?:[^\n\r/|]{2,120}?\sMYO\b))");
+        var sections = new List<string>();
+        string[] startMarkers = ["Görev Yeri", "Gorev Yeri", "Kadro", "Kurum", "Birim"];
+        string[] endMarkers =
+        [
+            "Öğrenim Bilgisi", "Ogrenim Bilgisi", "Akademik Görev", "Akademik Gorev",
+            "Yayın", "Yayin", "Proje", "Ödül", "Odul", "Patent", "Tez", "Sertifika"
+        ];
 
-        if (!facultyMatch.Success)
-            return false;
+        foreach (var marker in startMarkers)
+        {
+            var idx = bodyText.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+            if (idx < 0) continue;
 
-        faculty = ToTitleCaseTr(facultyMatch.Groups[1].Value);
-        var startAt = Math.Min(t.Length, facultyMatch.Index + facultyMatch.Length);
-        var tail = t[startAt..];
-        var deptMatch = Regex.Match(
-            tail,
-            @"(?i)([^\n\r/|]{2,180}?(BÖLÜMÜ|BOLUMU|BÖLÜMU|ANABİLİM\s+DALI|ANABILIM\s+DALI|ANA\s+BİLİM\s+DALI|PROGRAMI))\b");
+            var slice = bodyText[idx..];
+            var end = Math.Min(slice.Length, 400);
+            foreach (var endMarker in endMarkers)
+            {
+                var ei = slice.IndexOf(endMarker, marker.Length, StringComparison.OrdinalIgnoreCase);
+                if (ei > 0 && ei < end) end = ei;
+            }
 
-        if (deptMatch.Success)
-            department = ToTitleCaseTr(deptMatch.Groups[1].Value);
+            sections.Add(slice[..end]);
+        }
 
-        return faculty != "Bilinmiyor" || department != "Bilinmiyor";
+        return sections.Count == 0 ? string.Empty : Normalize1(string.Join(" ", sections));
     }
 
     private static string ToDisplayTitle(string rawTitle) =>

@@ -211,7 +211,7 @@ export default function UniversityPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-text text-sm leading-tight">{d.name}</p>
-                        <p className="text-xs text-text-muted mt-1 truncate">{d.facultyName}</p>
+                        <p className="text-xs text-text-muted mt-1 line-clamp-2" title={d.facultyName}>{d.facultyName}</p>
                         <p className="text-xs text-text-muted mt-0.5">{d.totalProfessors} hoca</p>
                       </div>
                     </div>

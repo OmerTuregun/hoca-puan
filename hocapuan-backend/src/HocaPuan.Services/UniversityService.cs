@@ -18,28 +18,45 @@ public class UniversityService : IUniversityService
             .Include(u => u.Faculties).ThenInclude(f => f.Departments)
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return uni == null ? null : MapDetail(uni);
+        if (uni == null) return null;
+
+        var professorCount = await _db.Professors
+            .AsNoTracking()
+            .CountAsync(p => p.UniversityId == id);
+
+        return MapDetail(uni, professorCount);
     }
 
     public async Task<List<UniversityListItemDto>> GetAllAsync(string? search = null)
     {
         var query = _db.Universities.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            var s = search.ToLower();
-            query = query.Where(u =>
-                u.Name.ToLower().Contains(s) ||
-                u.ShortName.ToLower().Contains(s) ||
-                u.City.ToLower().Contains(s));
-        }
+        var professorCounts = await _db.Professors
+            .AsNoTracking()
+            .GroupBy(p => p.UniversityId)
+            .Select(g => new { UniversityId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.UniversityId, x => x.Count);
 
         var unis = await query
             .OrderByDescending(u => u.TotalReviews)
             .ThenBy(u => u.Name)
             .ToListAsync();
 
-        return unis.Select(MapListItem).ToList();
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var normalized = TurkishSearchNormalizer.Fold(search);
+            var compact = normalized.Replace(" ", "");
+            unis = unis
+                .Where(u =>
+                    TurkishSearchNormalizer.Matches(u.Name, normalized) ||
+                    TurkishSearchNormalizer.Matches(u.ShortName, normalized) ||
+                    TurkishSearchNormalizer.Matches(u.City, normalized) ||
+                    (!string.IsNullOrEmpty(compact) &&
+                     TurkishSearchNormalizer.Fold(u.Name).Replace(" ", "").Contains(compact, StringComparison.Ordinal)))
+                .ToList();
+        }
+
+        return unis.Select(u => MapListItem(u, professorCounts.GetValueOrDefault(u.Id, 0))).ToList();
     }
 
     public async Task<UniversityDetailDto> CreateAsync(CreateUniversityDto dto)
@@ -246,7 +263,7 @@ public class UniversityService : IUniversityService
     }
 
     // ────────────────────────────────────────────────────────────
-    private static UniversityListItemDto MapListItem(University u) => new()
+    private static UniversityListItemDto MapListItem(University u, int liveProfessorCount) => new()
     {
         Id = u.Id,
         Name = u.Name,
@@ -254,12 +271,12 @@ public class UniversityService : IUniversityService
         City = u.City,
         Type = u.Type == UniversityType.Vakif ? "Vakıf" : "Devlet",
         AverageRating = u.AverageRating,
-        TotalProfessors = u.TotalProfessors,
+        TotalProfessors = liveProfessorCount,
         TotalReviews = u.TotalReviews,
         LogoUrl = u.LogoUrl
     };
 
-    private static UniversityDetailDto MapDetail(University u) => new()
+    private static UniversityDetailDto MapDetail(University u, int liveProfessorCount) => new()
     {
         Id = u.Id,
         Name = u.Name,
@@ -269,7 +286,7 @@ public class UniversityService : IUniversityService
         Website = u.Website,
         EmailDomain = u.EmailDomain,
         AverageRating = u.AverageRating,
-        TotalProfessors = u.TotalProfessors,
+        TotalProfessors = liveProfessorCount,
         TotalReviews = u.TotalReviews,
         LogoUrl = u.LogoUrl,
         Faculties = u.Faculties

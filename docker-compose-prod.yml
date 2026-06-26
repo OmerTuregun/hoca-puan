@@ -5,6 +5,10 @@
 # Ayrıntılar: DEPLOYMENT.md
 #
 # Dev ile aynı sunucuda çalışabilir: farklı container adları, volume ve portlar.
+# Prod compose projesi — mevcut sunucudaki container/volume adlarıyla uyumlu (hoca-puan_*).
+# Dev için ayrı proje: hocapuan-dev (docker-compose-dev.yml)
+
+name: hoca-puan
 
 services:
   # ─── PostgreSQL ───────────────────────────────────────────────

@@ -30,4 +30,27 @@ public class DataCleanupRunnerTests
         Assert.True(facultyResult.FacultiesScanned >= 0);
         Assert.True(professorResult.ProfessorsScanned > 0);
     }
+
+    [Fact]
+    public async Task RunDepartmentCleanup_WhenEnvSet()
+    {
+        if (Environment.GetEnvironmentVariable("RUN_DEPARTMENT_CLEANUP") != "1")
+            return;
+
+        var conn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string missing");
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseNpgsql(conn)
+            .Options;
+
+        await using var db = new AppDbContext(options);
+
+        var result = await new FacultyDepartmentCleanupService(db).CleanupDepartmentsAsync();
+        Console.WriteLine(
+            $"DEPARTMENT_CLEANUP_RESULT scanned={result.DepartmentsScanned} salvaged={result.DepartmentsSalvaged} " +
+            $"unknown={result.DepartmentsMovedToUnknown} reassigned={result.ProfessorsReassigned} " +
+            $"deduped={result.ProfessorsDeduplicated} softDeleted={result.DepartmentsSoftDeleted}");
+        Assert.True(result.DepartmentsScanned >= 0);
+    }
 }
