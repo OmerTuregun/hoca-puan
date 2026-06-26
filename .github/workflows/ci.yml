@@ -51,21 +51,32 @@ jobs:
         run: dotnet tool install --global dotnet-ef --version 10.0.4
 
       - name: Apply database migrations (isolated test DB)
-        run: >-
-          dotnet ef database update
-          --project hocapuan-backend/src/HocaPuan.Data
-          --startup-project hocapuan-backend/src/HocaPuan.API
-          --configuration Release
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          dotnet ef database update \
+            --project hocapuan-backend/src/HocaPuan.Data \
+            --startup-project hocapuan-backend/src/HocaPuan.API \
+            --configuration Release
         env:
           ConnectionStrings__DefaultConnection: ${{ env.TEST_DB_CONNECTION }}
-          # Prevent EnvLoader from pulling a local .env during migration
           ASPNETCORE_ENVIRONMENT: Testing
+          # API startup (used by EF) reads JwtSettings from env; appsettings.json has no SecretKey
+          JwtSettings__SecretKey: integration-test-secret-key-min-32-chars!!
+          JwtSettings__Issuer: HocaPuanAPI
+          JwtSettings__Audience: HocaPuanClient
+          Email__Port: "2525"
+          App__FrontendUrl: http://localhost:5173
 
       - name: Run tests
         run: dotnet test hocapuan-backend/HocaPuan.sln --no-build --configuration Release --verbosity normal
         env:
           ConnectionStrings__DefaultConnection: ${{ env.TEST_DB_CONNECTION }}
           ASPNETCORE_ENVIRONMENT: Testing
+          JwtSettings__SecretKey: integration-test-secret-key-min-32-chars!!
+          JwtSettings__Issuer: HocaPuanAPI
+          JwtSettings__Audience: HocaPuanClient
+          Email__Port: "2525"
+          App__FrontendUrl: http://localhost:5173
           # DataCleanupRunnerTests only touch PostgreSQL when explicitly enabled
           RUN_DATA_CLEANUP: '0'
           RUN_DEPARTMENT_CLEANUP: '0'
