@@ -3,27 +3,34 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { universityApi } from '../services/api'
+import { useDebounce } from '../hooks/useDebounce'
 import Spinner from '../components/ui/Spinner'
+
+function normalizeSearch(s: string) {
+  return s.trim().toLocaleLowerCase('tr-TR')
+}
 
 export default function UniversitiesPage() {
   const navigate = useNavigate()
   const [q, setQ] = useState('')
+  const debouncedQ = useDebounce(q, 300)
 
-  const { data: universities, isLoading } = useQuery({
-    queryKey: ['universities'],
-    queryFn:  () => universityApi.list(),
+  const { data: universities, isLoading, isFetching } = useQuery({
+    queryKey: ['universities', debouncedQ.trim()],
+    queryFn: () => universityApi.list(debouncedQ.trim() || undefined),
   })
 
   const filtered = useMemo(() => {
     const list = universities ?? []
-    const needle = q.trim().toLowerCase()
+    const needle = normalizeSearch(debouncedQ)
     if (!needle) return list
     return list.filter(u =>
-      (u.name ?? '').toLowerCase().includes(needle)
-      || (u.shortName ?? '').toLowerCase().includes(needle)
-      || (u.city ?? '').toLowerCase().includes(needle)
+      normalizeSearch(u.name ?? '').includes(needle)
+      || normalizeSearch(u.shortName ?? '').includes(needle)
+      || normalizeSearch(u.city ?? '').includes(needle)
+      || normalizeSearch(u.name ?? '').replace(/\s+/g, '').includes(needle.replace(/\s+/g, ''))
     )
-  }, [universities, q])
+  }, [universities, debouncedQ])
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -52,6 +59,11 @@ export default function UniversitiesPage() {
         <Spinner />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filtered.length === 0 && !isFetching ? (
+            <p className="text-sm text-text-muted col-span-full py-8 text-center">
+              Aramanızla eşleşen üniversite bulunamadı.
+            </p>
+          ) : null}
           {filtered.map(u => (
             <button
               key={u.id}

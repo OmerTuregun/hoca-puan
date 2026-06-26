@@ -168,6 +168,16 @@ public class ImportController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>CV/öğrenim çöpü içeren bölüm kayıtlarını düzeltir veya Bilinmiyor'a taşır.</summary>
+    [HttpPost("cleanup-department-names")]
+    [Authorize(Roles = "Admin,Moderator")]
+    public async Task<IActionResult> CleanupDepartmentNames(CancellationToken cancellationToken)
+    {
+        var service = new FacultyDepartmentCleanupService(_db);
+        var result = await service.CleanupDepartmentsAsync(cancellationToken);
+        return Ok(result);
+    }
+
     /// <summary>Hatalı hoca ünvanlarını kısaltır (Unvan:Doçent → Doç. Dr. vb.).</summary>
     [HttpPost("cleanup-professor-names")]
     [Authorize(Roles = "Admin,Moderator")]

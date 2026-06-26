@@ -17,9 +17,7 @@ export PGPASSWORD="$DB_PASS"
 
 echo "=== Veri kalitesi taraması ($(date -Iseconds)) ==="
 
-PSQL="docker exec -e PGPASSWORD=$DB_PASS $CONTAINER psql -U $DB_USER -d $DB_NAME"
-
-$PSQL -v ON_ERROR_STOP=1 <<'SQL'
+docker exec -i -e PGPASSWORD="$DB_PASS" "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 <<'SQL'
 \pset format unaligned
 \pset tuples_only on
 
@@ -42,7 +40,11 @@ AND (
   d."Name" ILIKE 'bilinmiyor' = false AND (
     d."Name" ~* '(orcid|akademik|öğrenim bilgisi|araştırma görevlisi)'
     OR length(d."Name") > 80
-    OR d."Name" !~* '(bölümü|bolumu|anabilim|programı|programi)'
+    OR (
+      d."Name" !~* '(bölümü|bolumu|anabilim|programı|programi|\mpr\.)'
+      AND d."Name" !~* '(mühendisliği|muhendisligi|hemşireliği|hemsireligi|mimarlığı|mimarligi)\s*$'
+      AND d."Name" !~* '^(hukuk|tıp|tip|eczacılık|eczacilik|adalet|mimarlık|mimarlik|hemşirelik|hemsirelik|diş hekimliği|dis hekimligi|islami ilimler)(\s+pr\.)?$'
+    )
   )
 );
 
@@ -73,4 +75,4 @@ SQL
 
 echo ""
 echo "API raporu için (admin girişi gerekir): GET /api/import/data-quality-report"
-echo "Temizlik: POST /api/import/cleanup-faculty-names ve POST /api/import/cleanup-professor-names"
+echo "Temizlik: POST /api/import/cleanup-faculty-names, POST /api/import/cleanup-department-names ve POST /api/import/cleanup-professor-names"

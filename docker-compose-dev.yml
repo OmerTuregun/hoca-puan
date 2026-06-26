@@ -3,6 +3,9 @@
 #
 # Ortam dosyası: .env.development (bkz. .env.example, DEPLOYMENT.md)
 # Not: docker-compose.yml kaldırıldı; geliştirme yalnızca bu dosya ile çalıştırılır.
+# Prod ile aynı sunucuda: name: hocapuan-dev (prod compose'dan ayrı proje adı)
+
+name: hocapuan-dev
 
 services:
   # ─── PostgreSQL ───────────────────────────────────────────────
@@ -17,7 +20,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_dev:/var/lib/postgresql/data
     ports:
       - "${DB_PORT:-5433}:5432"
     networks:
@@ -97,7 +100,7 @@ services:
       - hocapuan_net
 
 volumes:
-  postgres_data:
+  postgres_data_dev:
 
 networks:
   hocapuan_net:
