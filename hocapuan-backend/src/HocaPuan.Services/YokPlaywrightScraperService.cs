@@ -681,15 +681,17 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
             return ("Bilinmiyor", "Bilinmiyor");
 
         var cleaned = NormalizePathForFacultyDepartment(rawPath);
+        var parts = FilterNonJunkPathSegments(
+            cleaned.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 
-        if (FacultyDepartmentNameValidator.IsObviouslyJunk(cleaned) || cleaned.Length > 250)
+        if (parts.Count == 0)
         {
             if (FacultyDepartmentNameValidator.TrySalvage(cleaned, out var salvagedFaculty, out var salvagedDept))
                 return (salvagedFaculty, salvagedDept);
             return (FacultyDepartmentNameValidator.Unknown, FacultyDepartmentNameValidator.Unknown);
         }
 
-        var parts = cleaned.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+        var cleanedFromParts = string.Join("/", parts);
 
         string faculty;
         string dept;
@@ -723,7 +725,7 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
                     return (faculty, dept);
             }
 
-            if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept)
+            if (TryParseFacultyDepartmentFromKeywords(cleanedFromParts, out faculty, out dept)
                 && IsAcceptableFacultyDepartment(faculty, dept))
                 return (faculty, dept);
 
@@ -740,7 +742,7 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
                     return (faculty, dept);
             }
 
-            if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept)
+            if (TryParseFacultyDepartmentFromKeywords(cleanedFromParts, out faculty, out dept)
                 && IsAcceptableFacultyDepartment(faculty, dept))
                 return (faculty, dept);
 
@@ -751,12 +753,23 @@ public class YokPlaywrightScraperService : IYokPlaywrightScraperService
             && IsAcceptableFacultyDepartment(faculty, dept))
             return (faculty, dept);
 
-        if (TryParseFacultyDepartmentFromKeywords(cleaned, out faculty, out dept)
+        if (TryParseFacultyDepartmentFromKeywords(cleanedFromParts, out faculty, out dept)
             && IsAcceptableFacultyDepartment(faculty, dept))
             return (faculty, dept);
 
         return (FacultyDepartmentNameValidator.Unknown, FacultyDepartmentNameValidator.Unknown);
     }
+
+    /// <summary>
+    /// YÖK path segmentlerinden CV/çöp parçaları ayıklar. Tam path uzunluğu ile reddetme yapılmaz —
+    /// çok seviyeli üniversite/fakülte/bölüm/anabilim birleşimleri doğal olarak 80+ karakter olabilir.
+    /// </summary>
+    private static List<string> FilterNonJunkPathSegments(IEnumerable<string> segments) =>
+        segments
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Where(p => !FacultyDepartmentNameValidator.IsObviouslyJunk(p))
+            .Where(p => !FacultyDepartmentNameValidator.IsCvContentDump(p))
+            .ToList();
 
     private static string NormalizePathForFacultyDepartment(string rawPath)
     {

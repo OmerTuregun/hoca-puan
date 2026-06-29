@@ -49,4 +49,48 @@ public class YokPlaywrightScraperParsingTests
         Assert.Contains("Mühendislik Fakültesi", faculty, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Bölümü", dept, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public void ParseFacultyDepartmentFromPath_VanYyu_ComputerEngineering_FourLevelPath()
+    {
+        var path = "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ/MÜHENDİSLİK FAKÜLTESİ/BİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ/BİLGİSAYAR BİLİMLERİ ANABİLİM DALI/";
+        var (faculty, dept) = YokPlaywrightScraperService.ParseFacultyDepartmentFromPath(
+            path, "Van Yüzüncü Yıl Üniversitesi");
+
+        Assert.Equal("Mühendislik Fakültesi", faculty);
+        Assert.Equal("Bilgisayar Mühendisliği Bölümü", dept);
+    }
+
+    [Fact]
+    public void ParseFacultyDepartmentFromPath_VanYyu_MaritimeEngineering_FourLevelPath()
+    {
+        var path = "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ/DENİZCİLİK FAKÜLTESİ/GEMİ MAKİNALARI İŞLETME MÜHENDİSLİĞİ BÖLÜMÜ/GEMİ MAKİNELERİ İŞLETME MÜHENDİSLİĞİ ANABİLİM DALI/";
+        var (faculty, dept) = YokPlaywrightScraperService.ParseFacultyDepartmentFromPath(
+            path, "Van Yüzüncü Yıl Üniversitesi");
+
+        Assert.Equal("Denizcilik Fakültesi", faculty);
+        Assert.Equal("Gemi Makinaları İşletme Mühendisliği Bölümü", dept);
+    }
+
+    [Fact]
+    public void ParseFacultyDepartmentFromPath_VanYyu_Dentistry_FourLevelPath()
+    {
+        var path = "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ/DİŞ HEKİMLİĞİ FAKÜLTESİ/KLİNİK BİLİMLER BÖLÜMÜ/PEDODONTİ ANABİLİM DALI/";
+        var (faculty, dept) = YokPlaywrightScraperService.ParseFacultyDepartmentFromPath(
+            path, "Van Yüzüncü Yıl Üniversitesi");
+
+        Assert.Equal("Diş Hekimliği Fakültesi", faculty);
+        Assert.Equal("Klinik Bilimler Bölümü", dept);
+    }
+
+    [Fact]
+    public void ParseFacultyDepartmentFromPath_VanYyu_MyoPath_StillWorks()
+    {
+        var path = "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ/BAŞKALE MESLEK YÜKSEKOKULU/BİLGİSAYAR TEKNOLOJİLERİ BÖLÜMÜ/BİLGİSAYAR PROGRAMCILIĞI PR./";
+        var (faculty, dept) = YokPlaywrightScraperService.ParseFacultyDepartmentFromPath(
+            path, "Van Yüzüncü Yıl Üniversitesi");
+
+        Assert.Equal("Başkale Meslek Yüksekokulu", faculty);
+        Assert.Equal("Bilgisayar Teknolojileri Bölümü", dept);
+    }
 }
