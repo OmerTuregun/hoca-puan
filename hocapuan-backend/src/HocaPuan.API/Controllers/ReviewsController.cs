@@ -128,7 +128,7 @@ public class ReviewsController : ControllerBase
     /// <summary>Yorum oyla (👍/👎)</summary>
     [HttpPost("{id:int}/vote")]
     [Authorize]
-    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
+    [EnableRateLimiting(RateLimitingExtensions.VotePolicy)]
     public async Task<IActionResult> Vote(int id, [FromQuery] bool isUpvote)
     {
         try
@@ -186,7 +186,7 @@ public class ReviewsController : ControllerBase
     /// <summary>Yorum güncellik oyu — 1+ yıllık yorumlar için "hâlâ geçerli mi?"</summary>
     [HttpPost("{id:int}/freshness-vote")]
     [Authorize]
-    [EnableRateLimiting(RateLimitingExtensions.CommentWritePolicy)]
+    [EnableRateLimiting(RateLimitingExtensions.VotePolicy)]
     public async Task<IActionResult> FreshnessVote(int id, [FromBody] FreshnessVoteDto dto)
     {
         try
