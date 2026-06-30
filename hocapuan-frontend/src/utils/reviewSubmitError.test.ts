@@ -47,6 +47,16 @@ describe('parseReviewSubmitError', () => {
     })
   })
 
+  it('maps VotePolicy 429 message from API to general kind', () => {
+    const result = parseReviewSubmitError(
+      axiosError(429, 'Çok hızlı oy veriyorsunuz, lütfen biraz bekleyin.'),
+    )
+    expect(result).toEqual({
+      message: 'Çok hızlı oy veriyorsunuz, lütfen biraz bekleyin.',
+      kind: 'general',
+    })
+  })
+
   it('maps 429 with API message to general kind', () => {
     const result = parseReviewSubmitError(axiosError(429, 'Çok fazla istek'))
     expect(result).toEqual({

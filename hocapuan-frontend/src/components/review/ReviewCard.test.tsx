@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ReviewCard from './ReviewCard'
 import type { Review } from '../../services/api'
+import { reviewApi } from '../../services/api'
 import { useAuthStore } from '../../store/authStore'
 
 vi.mock('../../services/api', () => ({
@@ -63,6 +64,8 @@ function renderCard(review: Review) {
 describe('ReviewCard', () => {
   beforeEach(() => {
     resetAuth()
+    vi.mocked(reviewApi.vote).mockReset()
+    vi.mocked(reviewApi.freshnessVote).mockReset()
   })
 
   it('shows Edit and Delete for the review owner', () => {
@@ -114,5 +117,24 @@ describe('ReviewCard', () => {
     await user.click(screen.getByRole('button', { name: 'Yorumu düzenle' }))
     expect(screen.getByText('Yorumu düzenle')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Değişiklikleri kaydet/i })).toBeInTheDocument()
+  })
+
+  it('shows backend rate limit message when vote returns 429', async () => {
+    const user = userEvent.setup()
+    const rateLimitMessage = 'Çok hızlı oy veriyorsunuz, lütfen biraz bekleyin.'
+    vi.mocked(reviewApi.vote).mockRejectedValue({
+      response: { status: 429, data: { message: rateLimitMessage } },
+    })
+    resetAuth({
+      isLoggedIn: true,
+      user: { id: 99, username: 'voter', email: 'v@uni.edu.tr', role: 'User', isEmailVerified: true },
+    })
+
+    renderCard(makeReview({ userId: 42, thumbsUp: 2 }))
+
+    await user.click(screen.getByRole('button', { name: '2' }))
+
+    expect(await screen.findByText(rateLimitMessage)).toBeInTheDocument()
+    expect(screen.queryByText('Oy kaydedilemedi.')).not.toBeInTheDocument()
   })
 })

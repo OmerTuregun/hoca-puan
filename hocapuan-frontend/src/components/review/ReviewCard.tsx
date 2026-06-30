@@ -7,6 +7,7 @@ import RatingBadge from '../ui/RatingBadge'
 import ReviewEditForm from './ReviewEditForm'
 import ConfirmModal from '../ui/ConfirmModal'
 import { buildDeleteConfirmMessage, parseReviewDeleteError } from '../../utils/reviewDeleteError'
+import { parseReviewSubmitError } from '../../utils/reviewSubmitError'
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 
@@ -84,8 +85,13 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
       setVotes({ up: res.thumbsUp, down: res.thumbsDown })
       setUserVote(res.userVote ?? undefined)
       onVote?.()
-    } catch {
-      setVoteError('Oy kaydedilemedi.')
+    } catch (e: unknown) {
+      const status = (e as { response?: { status?: number } })?.response?.status
+      if (status === 429) {
+        setVoteError(parseReviewSubmitError(e).message)
+      } else {
+        setVoteError('Oy kaydedilemedi.')
+      }
     } finally {
       setVoting(false)
     }
