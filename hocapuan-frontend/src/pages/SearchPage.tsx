@@ -107,7 +107,7 @@ export default function SearchPage() {
                 <button
                   key={opt.value}
                   onClick={() => setParam('sort', opt.value)}
-                  className={`w-full text-left px-3 py-2 rounded text-sm mb-1 transition-colors ${
+                  className={`w-full text-left px-3 min-h-[44px] flex items-center rounded text-sm mb-1 transition-colors ${
                     sortBy === opt.value
                       ? 'bg-primary-light text-primary font-medium'
                       : 'hover:bg-surface-alt text-text-muted'
@@ -121,7 +121,7 @@ export default function SearchPage() {
             {(query || universityId || facultyId) && (
               <button
                 onClick={() => { setParams({}); setPage(1) }}
-                className="mt-4 text-xs text-text-muted hover:text-danger underline"
+                className="touch-link mt-2 text-sm text-text-muted hover:text-danger underline"
               >
                 Filtreleri temizle
               </button>

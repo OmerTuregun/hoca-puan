@@ -15,19 +15,19 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-3 text-sm text-text-muted sm:flex-row sm:items-center sm:gap-6">
           <Link
             to="/search"
-            className="hover:text-primary transition-colors min-h-[44px] flex items-center sm:min-h-0"
+            className="touch-link hover:text-primary transition-colors"
           >
             Hocalar
           </Link>
           <Link
             to="/universities"
-            className="hover:text-primary transition-colors min-h-[44px] flex items-center sm:min-h-0"
+            className="touch-link hover:text-primary transition-colors"
           >
             Üniversiteler
           </Link>
           <a
             href="mailto:info_hocapuan@gmail.com"
-            className="inline-flex items-center justify-center gap-2 hover:text-primary transition-colors min-h-[44px] sm:min-h-0"
+            className="touch-link gap-2 hover:text-primary transition-colors"
           >
             <Mail className="w-4 h-4 shrink-0" />
             info_hocapuan@gmail.com

@@ -102,9 +102,9 @@ export default function ProfessorPage() {
 
       {/* Breadcrumb */}
       <nav className="flex flex-wrap items-center gap-1 text-sm text-text-muted mb-4">
-        <Link to="/" className="hover:text-primary transition-colors">Ana Sayfa</Link>
+        <Link to="/" className="touch-link hover:text-primary transition-colors">Ana Sayfa</Link>
         <ChevronRight className="w-3.5 h-3.5 shrink-0" />
-        <Link to={`/universities/${p.universityId}`} className="hover:text-primary transition-colors">
+        <Link to={`/universities/${p.universityId}`} className="touch-link hover:text-primary transition-colors">
           {p.universityName}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 shrink-0" />
@@ -152,9 +152,9 @@ export default function ProfessorPage() {
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-text-muted">
               <Link
                 to={`/universities/${p.universityId}`}
-                className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                className="touch-link gap-1.5 hover:text-primary transition-colors"
               >
-                <MapPin className="w-4 h-4" />{p.universityName}
+                <MapPin className="w-4 h-4 shrink-0" />{p.universityName}
               </Link>
               {p.facultyName && (
                 <span className="flex items-center gap-1.5">
@@ -165,13 +165,13 @@ export default function ProfessorPage() {
                 <BookOpen className="w-4 h-4" />{p.departmentName}
               </span>
               {p.email && (
-                <a href={`mailto:${p.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                  <Mail className="w-4 h-4" />{p.email}
+                <a href={`mailto:${p.email}`} className="touch-link gap-1.5 hover:text-primary transition-colors">
+                  <Mail className="w-4 h-4 shrink-0" />{p.email}
                 </a>
               )}
               {p.personalWebsite && (
-                <a href={p.personalWebsite} target="_blank" rel="noopener" className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                  <Globe className="w-4 h-4" />Web sitesi
+                <a href={p.personalWebsite} target="_blank" rel="noopener" className="touch-link gap-1.5 hover:text-primary transition-colors">
+                  <Globe className="w-4 h-4 shrink-0" />Web sitesi
                 </a>
               )}
             </div>
@@ -248,7 +248,7 @@ export default function ProfessorPage() {
             type="button"
             onClick={() => setTagFilter(prev => (prev === tag ? null : tag))}
             className={clsx(
-              'px-3 py-1.5 rounded-full text-sm border transition-all min-h-[44px] sm:min-h-0',
+              'px-3 py-1.5 rounded-full text-sm border transition-all inline-flex items-center min-h-[44px] -my-[5px]',
               tagFilter === tag
                 ? 'bg-primary border-primary text-white'
                 : 'border-surface-border text-text-muted hover:border-primary hover:text-primary'

@@ -6,22 +6,36 @@
  *
  * Ortam değişkenleri:
  *   FRONTEND_URL  — varsayılan http://127.0.0.1:8089
+ *   JWT_SECRET    — HTTP taramasında oturum için (varsayılan: .env.production)
  *   ADMIN_EMAIL   — varsayılan admin@hocapuan.com
- *   ADMIN_PASSWORD — varsayılan Admin123!
+ *   ADMIN_PASSWORD — (artık UI login yerine JWT cookie kullanılır)
  */
 
 import { chromium } from 'playwright'
 import fs from 'fs'
 import path from 'path'
+import crypto from 'crypto'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_DIR = path.join(__dirname, 'output', 'mobile-screenshots')
 const REPORT_PATH = path.join(__dirname, 'output', 'mobile-scan-report.json')
+const ENV_FILE = path.join(__dirname, '..', '.env.production')
 
 const BASE_URL = (process.env.FRONTEND_URL || 'http://127.0.0.1:8089').replace(/\/$/, '')
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hocapuan.com'
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin123!'
+const ADMIN_USERNAME = process.env.SCAN_ADMIN_USERNAME || 'admin'
+const ADMIN_USER_ID = process.env.SCAN_ADMIN_USER_ID || '1'
+const ADMIN_ROLE = process.env.SCAN_ADMIN_ROLE || 'Admin'
+const ACCESS_TOKEN_COOKIE = process.env.AUTH_ACCESS_TOKEN_COOKIE || 'access_token'
+
+const REVIEWS_ROUTE = '**/api/reviews'
+const CSRF_ROUTE = '**/api/auth/csrf-token'
+const REVIEW_FORM_HEADING = 'Yorum yaz'
+const PAGE_WAIT_TIMEOUT = 30000
+const REVIEW_FORM_TIMEOUT = 20000
+const OVERLAY_WAIT_TIMEOUT = 12000
 
 const VIEWPORTS = [
   { width: 375, label: '375px', device: 'iPhone SE' },
@@ -30,6 +44,9 @@ const VIEWPORTS = [
 ]
 
 const VIEWPORT_HEIGHT = 844
+
+/** @type {import('playwright').BrowserContext} */
+let context
 
 /** @type {import('playwright').Page} */
 let page
@@ -54,7 +71,88 @@ function slug(name) {
     .replace(/^-|-$/g, '')
 }
 
-async function ensureDirs() {
+function loadEnvFile(filepath) {
+  if (!fs.existsSync(filepath)) return
+  for (const line of fs.readFileSync(filepath, 'utf8').split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eq = trimmed.indexOf('=')
+    if (eq === -1) continue
+    const key = trimmed.slice(0, eq).trim()
+    const value = trimmed.slice(eq + 1).trim()
+    if (process.env[key] === undefined) process.env[key] = value
+  }
+}
+
+function base64urlJson(value) {
+  return Buffer.from(JSON.stringify(value)).toString('base64url')
+}
+
+function signJwt(payload, secret) {
+  const header = base64urlJson({ alg: 'HS256', typ: 'JWT' })
+  const body = base64urlJson(payload)
+  const data = `${header}.${body}`
+  const signature = crypto.createHmac('sha256', secret).update(data).digest('base64url')
+  return `${data}.${signature}`
+}
+
+function mintScanAccessToken() {
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error(
+      'JWT_SECRET bulunamadı. HTTP üzerinde UI login CSRF nedeniyle çalışmaz; ' +
+      '.env.production veya ortam değişkeni olarak JWT_SECRET gerekir.',
+    )
+  }
+
+  const issuer = process.env.JWT_ISSUER || 'HocaPuanAPI'
+  const audience = process.env.JWT_AUDIENCE || 'HocaPuanClient'
+  const hours = Number(process.env.JWT_EXPIRATION_HOURS || '24')
+  const exp = Math.floor(Date.now() / 1000) + hours * 3600
+
+  return signJwt({
+    sub: ADMIN_USER_ID,
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': ADMIN_USER_ID,
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': ADMIN_EMAIL,
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': ADMIN_USERNAME,
+    'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': ADMIN_ROLE,
+    iss: issuer,
+    aud: audience,
+    exp,
+  }, secret)
+}
+
+async function ensureScanAuth() {
+  const { hostname } = new URL(BASE_URL)
+  const token = mintScanAccessToken()
+  await context.addCookies([{
+    name: ACCESS_TOKEN_COOKIE,
+    value: token,
+    domain: hostname,
+    path: '/',
+    httpOnly: true,
+    secure: BASE_URL.startsWith('https://'),
+    sameSite: 'Lax',
+  }])
+}
+
+async function clearScanRoutes() {
+  await page.unroute(REVIEWS_ROUTE).catch(() => {})
+  await page.unroute(CSRF_ROUTE).catch(() => {})
+}
+
+async function waitForReviewForm(timeout = REVIEW_FORM_TIMEOUT) {
+  await page.waitForURL(/\/professors\/\d+\/review(?:\?.*)?$/, { timeout })
+  if (page.url().includes('/login')) {
+    throw new Error('Oturum doğrulanamadı — yorum formu yerine login sayfası yüklendi')
+  }
+  await page.getByRole('heading', { name: REVIEW_FORM_HEADING }).waitFor({
+    state: 'visible',
+    timeout,
+  })
+}
+
+function ensureDirs() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true })
 }
 
@@ -170,7 +268,7 @@ async function capturePage(pageKey, pageLabel, url, options = {}) {
 
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: VIEWPORT_HEIGHT })
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: PAGE_WAIT_TIMEOUT })
     if (waitFor) await waitFor()
     if (beforeScreenshot) await beforeScreenshot()
 
@@ -228,11 +326,14 @@ function describeFont(el) {
 }
 
 async function loginAsAdmin() {
-  await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' })
-  await page.fill('input[type="email"]', ADMIN_EMAIL)
-  await page.fill('input[type="password"]', ADMIN_PASSWORD)
-  await page.click('button[type="submit"]')
-  await page.waitForTimeout(2000)
+  // HTTP prod taramasında UI login CSRF SecurePolicy nedeniyle başarısız olur.
+  // Tarayıcıya geçerli access_token cookie enjekte edilir; /auth/me ile oturum doğrulanır.
+  await ensureScanAuth()
+  await page.goto(`${BASE_URL}/profile`, { waitUntil: 'domcontentloaded', timeout: PAGE_WAIT_TIMEOUT })
+  await page.waitForTimeout(1200)
+  if (page.url().includes('/login')) {
+    throw new Error('Scan oturumu doğrulanamadı — profil sayfası login\'e yönlendirdi')
+  }
 }
 
 async function fillReviewForm() {
@@ -240,12 +341,34 @@ async function fillReviewForm() {
   await qualityStars.nth(0).click()
   await qualityStars.nth(1).click()
 
-  await page.fill('textarea', 'Mobil tarama test yorumu — ders anlatımı ve sınav deneyimi hakkında örnek metin.')
+  await page.fill(
+    'textarea',
+    'Mobil tarama test yorumu — ders anlatımı ve sınav deneyimi hakkında örnek metin.',
+  )
 
-  const tags = page.locator('button[type="button"]').filter({ hasText: /^[A-ZÇĞİÖŞÜ]/ })
-  if (await tags.count() > 0) {
-    await tags.first().click().catch(() => {})
+  const tagButtons = page.locator('form button[type="button"]').filter({ hasText: /^[A-ZÇĞİÖŞÜ]/ })
+  if (await tagButtons.count() > 0) {
+    await tagButtons.first().click().catch(() => {})
   }
+}
+
+async function installOverlayMocks() {
+  await page.route(CSRF_ROUTE, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ token: 'mobile-scan-csrf-mock' }),
+    })
+  })
+
+  await page.route(REVIEWS_ROUTE, async (route) => {
+    if (route.request().method() === 'POST') {
+      await new Promise(resolve => setTimeout(resolve, 15000))
+      await route.abort('failed')
+      return
+    }
+    await route.continue()
+  })
 }
 
 async function captureReviewOverlay(professorId) {
@@ -263,24 +386,19 @@ async function captureReviewOverlay(professorId) {
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: VIEWPORT_HEIGHT })
 
-    await page.route('**/api/reviews', async (route) => {
-      if (route.request().method() === 'POST') {
-        await new Promise(r => setTimeout(r, 15000))
-        await route.abort('failed')
-      } else {
-        await route.continue()
-      }
-    })
-
     try {
-      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 })
-      await page.waitForSelector('h1:has-text("Yorum yaz")', { timeout: 10000 })
+      await clearScanRoutes()
+      await ensureScanAuth()
+      await installOverlayMocks()
+
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: PAGE_WAIT_TIMEOUT })
+      await waitForReviewForm()
       await fillReviewForm()
 
       const submitBtn = page.getByRole('button', { name: /Yorumu gönder|Gönderiliyor/i })
       await submitBtn.click()
 
-      await page.waitForSelector('[role="alertdialog"]', { timeout: 8000 })
+      await page.waitForSelector('[role="alertdialog"]', { timeout: OVERLAY_WAIT_TIMEOUT })
       await page.waitForTimeout(400)
 
       const screenshotName = `${slug(pageKey)}-${vp.label}.png`
@@ -320,7 +438,7 @@ async function captureReviewOverlay(professorId) {
         detail: `Overlay ekran görüntüsü alınamadı: ${err}`,
       })
     } finally {
-      await page.unroute('**/api/reviews').catch(() => {})
+      await clearScanRoutes()
     }
   }
 
@@ -328,10 +446,11 @@ async function captureReviewOverlay(professorId) {
 }
 
 async function main() {
+  loadEnvFile(ENV_FILE)
   await ensureDirs()
 
   const browser = await chromium.launch({ headless: true })
-  const context = await browser.newContext({
+  context = await browser.newContext({
     locale: 'tr-TR',
     ignoreHTTPSErrors: true,
   })
@@ -376,7 +495,8 @@ async function main() {
     requiresAuth: true,
     note: professorId ? null : 'Hoca olmadığı için form yüklenmeyebilir',
     waitFor: async () => {
-      await page.waitForTimeout(1500)
+      await waitForReviewForm().catch(() => {})
+      await page.waitForTimeout(600)
     },
   })
 

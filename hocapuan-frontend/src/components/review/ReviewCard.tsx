@@ -298,7 +298,7 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
                   onClick={() => handleVote(true)}
                   disabled={voting}
                   className={clsx(
-                    'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                    'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors min-h-[44px] min-w-[44px] justify-center -my-[10px]',
                     userVote === true
                       ? 'bg-green-50 text-green-700 ring-1 ring-green-200'
                       : 'hover:bg-green-50 hover:text-green-700 text-text-muted'
@@ -312,7 +312,7 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
                   onClick={() => handleVote(false)}
                   disabled={voting}
                   className={clsx(
-                    'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                    'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors min-h-[44px] min-w-[44px] justify-center -my-[10px]',
                     userVote === false
                       ? 'bg-red-50 text-red-700 ring-1 ring-red-200'
                       : 'hover:bg-red-50 hover:text-red-700 text-text-muted'
@@ -326,7 +326,7 @@ export default function ReviewCard({ review: r, onDeleted, onVote, onUpdate }: P
               <Link
                 to="/login"
                 state={{ from: window.location.pathname }}
-                className="text-xs text-primary hover:underline"
+                className="touch-link text-sm text-primary hover:underline"
               >
                 Oy vermek için giriş yap
               </Link>

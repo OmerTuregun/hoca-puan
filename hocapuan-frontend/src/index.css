@@ -16,7 +16,12 @@
   /* ─── Butonlar ─────────────────────────────────────── */
   .btn {
     @apply inline-flex items-center gap-2 px-5 py-2.5 rounded font-sans font-semibold text-sm
-           transition-all duration-150 cursor-pointer select-none;
+           transition-all duration-150 cursor-pointer select-none min-h-[44px];
+  }
+
+  /* Metin linkleri — en az 44px dokunma alanı */
+  .touch-link {
+    @apply inline-flex items-center min-h-[44px] py-2;
   }
   .btn-primary {
     @apply btn bg-primary text-white hover:bg-primary-hover active:scale-[0.98] shadow-sm;

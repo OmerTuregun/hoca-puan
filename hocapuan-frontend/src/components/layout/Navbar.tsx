@@ -138,8 +138,11 @@ export default function Navbar() {
     <header className="bg-white border-b border-surface-border sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
 
-        <Link to="/" className="flex items-center gap-2 shrink-0 min-h-[44px]">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 shrink-0 min-h-[44px] min-w-[44px] -ml-2 pl-2 pr-1 sm:pr-0"
+        >
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
           <span className="font-display text-xl text-text hidden sm:block">Hocanı Yorumla</span>

@@ -84,7 +84,7 @@ export default function LoginPage() {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-sm font-medium text-text">Şifre</label>
-              <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+              <Link to="/forgot-password" className="touch-link text-sm text-primary hover:underline -my-2">
                 Şifremi unuttum
               </Link>
             </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-text-muted mt-4">
           Hesabın yok mu?{' '}
-          <Link to="/register" className="text-primary font-medium hover:underline">Kayıt ol</Link>
+          <Link to="/register" className="touch-link text-primary font-medium hover:underline">Kayıt ol</Link>
         </p>
       </div>
     </div>
