@@ -17,6 +17,14 @@ describe('parseReviewSubmitError', () => {
     })
   })
 
+  it('maps 400 CSRF errors to general kind with retry hint', () => {
+    const result = parseReviewSubmitError(axiosError(400, 'Geçersiz veya eksik CSRF token.'))
+    expect(result).toEqual({
+      message: 'Oturum doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.',
+      kind: 'general',
+    })
+  })
+
   it('maps 400 with API message to moderation kind', () => {
     const result = parseReviewSubmitError(axiosError(400, 'Uygunsuz içerik'))
     expect(result).toEqual({

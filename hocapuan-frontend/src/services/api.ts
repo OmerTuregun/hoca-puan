@@ -24,8 +24,27 @@ api.interceptors.request.use(async config => {
 
 api.interceptors.response.use(
   res => res,
-  err => {
-    if (err.response?.status !== 401) {
+  async err => {
+    const config = err.config as (typeof err.config & { _csrfRetry?: boolean }) | undefined
+    const status = err.response?.status
+    const apiMessage = err.response?.data?.message
+
+    if (
+      status === 400 &&
+      config &&
+      !config._csrfRetry &&
+      typeof apiMessage === 'string' &&
+      /csrf/i.test(apiMessage)
+    ) {
+      config._csrfRetry = true
+      useAuthStore.getState().setCsrfToken(null)
+      const token = await ensureCsrfToken()
+      config.headers = config.headers ?? {}
+      config.headers['X-CSRF-TOKEN'] = token
+      return api.request(config)
+    }
+
+    if (status !== 401) {
       return Promise.reject(err)
     }
 

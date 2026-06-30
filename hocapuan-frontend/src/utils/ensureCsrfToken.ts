@@ -1,12 +1,21 @@
 import { authApi } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 
-/** State-değiştiren istek öncesi CSRF token'ın hazır olduğundan emin olur. */
-export async function ensureCsrfToken(): Promise<string> {
-  const existing = useAuthStore.getState().csrfToken
-  if (existing) return existing
+let inFlight: Promise<string> | null = null
 
-  const { token } = await authApi.getCsrfToken()
-  useAuthStore.getState().setCsrfToken(token)
-  return token
+/** State-değiştiren istek öncesi sunucudan güncel CSRF token alır (cookie ile eşleşir). */
+export async function ensureCsrfToken(): Promise<string> {
+  if (inFlight) return inFlight
+
+  inFlight = authApi
+    .getCsrfToken()
+    .then(({ token }) => {
+      useAuthStore.getState().setCsrfToken(token)
+      return token
+    })
+    .finally(() => {
+      inFlight = null
+    })
+
+  return inFlight
 }

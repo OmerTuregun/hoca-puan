@@ -22,6 +22,12 @@ export function parseReviewSubmitError(error: unknown): ParsedReviewSubmitError 
   }
 
   if (status === 400 && apiMessage) {
+    if (/csrf/i.test(apiMessage)) {
+      return {
+        message: 'Oturum doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.',
+        kind: 'general',
+      }
+    }
     return { message: apiMessage, kind: 'moderation' }
   }
 
