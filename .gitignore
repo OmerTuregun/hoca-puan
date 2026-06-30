@@ -63,6 +63,7 @@ scripts/output/hizli-onay.json
 scripts/output/filtrenin-kacirdiklari.json
 scripts/output/mobile-screenshots/
 scripts/output/mobile-scan-report.json
+scripts/output/mobile-scan-report-*.json
 
 # ─── Docker ───────────────────────────────────────────────────
 docker-compose.override.yml
