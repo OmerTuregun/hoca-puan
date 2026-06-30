@@ -99,7 +99,6 @@ public static class DatabaseSeeder
             new() { Name = "Gazi Üniversitesi", ShortName = "GÜ", City = "Ankara", Type = UniversityType.Devlet, Website = "https://www.gazi.edu.tr", EmailDomain = "gazi.edu.tr" },
             new() { Name = "Gaziantep İslam Bilim ve Teknoloji Üniversitesi", ShortName = "GİBTÜ", City = "Gaziantep", Type = UniversityType.Devlet, Website = "https://www.gibtu.edu.tr", EmailDomain = "gibtu.edu.tr" },
             new() { Name = "Gaziantep Üniversitesi", ShortName = "GAÜN", City = "Gaziantep", Type = UniversityType.Devlet, Website = "https://www.gantep.edu.tr", EmailDomain = "gantep.edu.tr" },
-            new() { Name = "Gaziosmanpaşa Üniversitesi", ShortName = "GOPÜ", City = "Tokat", Type = UniversityType.Devlet, Website = "https://www.gop.edu.tr", EmailDomain = "gop.edu.tr" },
             new() { Name = "Gebze Teknik Üniversitesi", ShortName = "GTÜ", City = "Kocaeli", Type = UniversityType.Devlet, Website = "https://www.gtu.edu.tr", EmailDomain = "gtu.edu.tr" },
             new() { Name = "Giresun Üniversitesi", ShortName = "GRÜ", City = "Giresun", Type = UniversityType.Devlet, Website = "https://www.giresun.edu.tr", EmailDomain = "giresun.edu.tr" },
             new() { Name = "Girne Amerikan Üniversitesi", ShortName = "GAÜ", City = "KKTC", Type = UniversityType.Vakif, Website = null, EmailDomain = null },
