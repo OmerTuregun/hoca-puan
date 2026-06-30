@@ -25,7 +25,7 @@ services:
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT:-5435}:5432"
+      - "127.0.0.1:${DB_PORT:-5435}:5432"
     networks:
       - hocapuan_prod_net
     healthcheck:
@@ -60,33 +60,25 @@ services:
       USE_HTTPS: ${USE_HTTPS:-false}
       Sentry__Dsn: ${SENTRY_DSN_BACKEND}
     ports:
-      - "${API_PORT:-5011}:8080"
+      - "127.0.0.1:${API_PORT:-5011}:8080"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - hocapuan_prod_net
 
-  # ─── React + Vite Frontend ────────────────────────────────────
-  # TODO: Production nginx + static build burada eklenecek, şu an dev build kullanılıyor.
+  # ─── React SPA (nginx + static build) ─────────────────────────
   frontend:
     build:
       context: ./hocapuan-frontend
       dockerfile: Dockerfile
-      target: dev
+      target: production
       args:
         VITE_SENTRY_DSN: ${VITE_SENTRY_DSN_FRONTEND}
     container_name: hocapuan_prod_frontend
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-8089}:5173"
-    environment:
-      - VITE_API_URL=http://api:8080
-      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN_FRONTEND}
-      - VITE_DISABLE_HMR=true
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-    command: npm run dev -- --host 0.0.0.0 --port 5173
+      - "127.0.0.1:${FRONTEND_PORT:-8089}:80"
     depends_on:
       - api
     networks:
